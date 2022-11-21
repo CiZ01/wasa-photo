@@ -1,3 +1,6 @@
+#TODO Sistemare tutte le regex
+#TODO getMyStream
+
 openapi: 3.0.0
 servers:
   - url: "http://localhost:3000"
@@ -6,141 +9,7 @@ info:
   description: Fantastic Coffee (decaffeinated), the skeleton project for Web and Software architecture course
   version: 1.0.0
 paths:
-  /status:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    get:
-      tags: ["General"]
-      operationId: getStatusMessage
-      summary: Get status message for the user about issues / updates
-      description: |-
-        The response contains a status message meant for the user. It might
-        contains information about current technical issues, update messages
-        or general information.
-      responses:
-        "200":
-          description: Status message available
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StatusInfo"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /:
-    get:
-      tags: ["Group 1"]
-      operationId: index
-      summary: Get an index
-      description: |-
-        This is an example of an index API description
-      responses:
-        "200":
-          description: Successful
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-  /context:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    post:
-      tags: ["Group 1"]
-      operationId: getContext
-      summary: Another API example
-      description: |-
-        Example description 2
-      responses:
-        "200":
-          description: Request ok
-          headers:
-            X-Access-Token:
-              description: Access token for authenticated requests
-              schema: { type: string }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-  /authenticated:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-    get:
-      tags: ["Group 2"]
-      operationId: getAuthenticatedExample
-      summary: Get an endpoint with authentication
-      description: |-
-        Get an endpoint with auth
-      security:
-        - LegacyAuth: []
-        - AppToken: []
-      responses:
-        "200":
-          description: Logout successful
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /pictures/{cat}:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-      - $ref: "#/components/parameters/cat"
-    get:
-      tags: ["Cat pictures"]
-      operationId: getCatFromPicture
-      summary: Example of a parameter in URL
-      description: |-
-        Example of a parameter in URL
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Student picture found
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-              example: Picture binary file
-        "404":
-          description: Student picture not found
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-
-  /autofeeder/{cat}:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
-      - $ref: "#/components/parameters/cat"
-    put:
-      tags: ["Autofeeder"]
-      operationId: createCatAutofeeder
-      summary: Example of PUT operation
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Auto feed enabled
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-    delete:
-      tags: ["Autofeeder"]
-      operationId: deleteCatAutofeeder
-      summary: Example of DELETE operation
-      security:
-        - LegacyAuth: []
-      responses:
-        "200":
-          description: Auto feed disabled
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
+  #devo importare quello del prof
   /session/login:
     parameters:
       - $ref: "#/components/parameters/XAppBuild"
@@ -163,7 +32,7 @@ paths:
                 userid:
                   type: string
                   pattern: '^[a-zA-Z0-9]+$'
-                  minLength: 3
+                  minLength: 3  
                   maxLength: 255
                 password:
                   type: string
@@ -186,6 +55,292 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /account/setMyUserName:
+    put:
+      tags: ["Account management"]
+      operationId: setMyUserName
+      summary: Set my user name
+      description: |-
+        Set my user name
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  pattern: '^[a-zA-Z0-9]+$'
+                  minLength: 3
+                  maxLength: 13
+      responses:
+        "200":
+          description: Set user name successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Set user name failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profile/followUser:
+    put:
+      tags: ["Profile management"]
+      operationId: followUser
+      summary: Follow user
+      description: |-
+        Follow user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          $ref: "#/components/schemas/Username"
+          required: true
+
+        
+      responses:
+        "200":
+          description: Follow user successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Follow user failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  /profile/unfollowUser:
+    delete:
+      tags: ["Profile management"]
+      operationId: unfollowUser
+      summary: Unfollow user
+      description: |-
+        Unfollow user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          $ref: "#/components/schemas/Username"
+          required: true
+        
+      responses:
+        "200":
+          description: Unfollow user successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Unfollow user failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profile/banUser: 
+    put:
+      tags: ["Profile management"]
+      operationId: banUser
+      summary: Ban user
+      description: |-
+        Ban user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          $ref: "#/components/schemas/Username"
+          required: true
+        
+      responses:
+        "200":
+          description: Ban user successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Ban user failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profile/unbanUser:
+    delete:
+      tags: ["Profile management"]
+      operationId: unbanUser
+      summary: Unban user
+      description: |-
+        Unban user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          $ref: "#/components/schemas/Username"
+          required: true
+        
+      responses:
+        "200":
+          description: Unban user successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Unban user failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
+  /profile/getUserProfile:
+    get: 
+      tags: ["Profile management"]
+      operationId: getUserProfile
+      summary: Get user profile
+      description: |-
+        Get user profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          $ref: "#/components/schemas/Username"
+          required: true
+        
+      responses:
+        "200":
+          description: Get user profile successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Get user profile failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  /post/uploadPhoto:
+    post: 
+      tags: ["Post management"]
+      operationId: uploadPhoto
+      summary: Upload photo
+      description: |-
+        Upload photo
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          'image/jpeg':
+            schema:
+              type: string
+              format: binary
+          'image/png':
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: Upload photo successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Upload photo failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profile/{userId}/post/{photoId}/likePhoto:
+    put: 
+      tags: ["Post management"]
+      operationId: likePhoto
+      summary: Like photo
+      description: |-
+        Like photo
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                #così lato backend so direttamente come fare riferimento al post e incrementare i like
+                userId: { $ref: "#/components/schemas/UserId" }
+                photoId: { $ref: "#/components/schemas/PhotoId" }
+                #E so che è stato questo utente
+                fromUserId: { $ref: "#/components/schemas/UserId" }
+      responses:
+        "200":
+          description: Liked successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Post failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profile/{userId}/post/{photoId}/unlikePhoto:
+    delete: 
+      tags: ["Post management"]
+      operationId: unlikePhoto
+      summary: Unlike photo
+      description: |-
+        Unlike photo
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { $ref: "#/components/schemas/UserId" }
+                photoId: { $ref: "#/components/schemas/PhotoId" }
+      responses:
+        "200":
+          description: Unliked successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Post failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: '#/components/responses/InternalServerError' }
+
+  /profile/{userId}/post/{photoId}/commentPhoto: 
+    post: 
+      tags: ["Post management"]
+      operationId: commentPhoto
+      summary: Comment photo
+      description: |-
+        Comment photo
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId: { $ref: "#/components/schemas/UserId" }
+                photoId: { $ref: "#/components/schemas/PhotoId" }
+                fromUserId: { $ref: "#/components/schemas/UserId" }
+                comment: { $ref: "#/components/schemas/Comment" }
+      responses:
+        "200":
+          description: Comment successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Post failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
 components:
   schemas:
@@ -203,7 +358,91 @@ components:
         title: { type: string }
         message: { type: string }
         url: { type: string }
-
+    UserId:
+      title: User ID
+      description: Numeric ID of the user
+      type: string
+      pattern: '[0-9]*'
+      example: "00010"
+      minLength: 5
+      maxLength: 5
+    Username: 
+      title: Username
+      description: Username of the user
+      type: string
+      pattern: '^[a-zA-Z]+$'
+      example: "Maria"
+      minLength: 3
+      maxLength: 13
+    User: 
+      title: User
+      description: User
+      type: object
+      properties:
+        userId: { $ref: "#/components/schemas/UserId" }
+        username: { $ref: "#/components/schemas/Username" }
+    LikeList:
+      title: Like List
+      description: List of likes
+      type: array
+      items:
+        type: object
+        properties:
+          user: { $ref: "#/components/schemas/User" }
+    PhotoId:
+      title: Photo ID
+      description: Numeric ID of the photo
+      type: string
+      pattern: '[0-9]*'
+      example: "00010"
+      minLength: 5
+      maxLength: 5
+    Comment:
+      title: Comment
+      description: Comment of the photo
+      type: object
+      properties:
+        fromUser: { $ref: "#/components/schemas/User" }
+        text:
+          type: string
+          example: "Bella foto!"
+          minLength: 1
+          maxLength: 144
+    CommentList:
+      title: Comment List
+      description: List of comments
+      type: array
+      items:
+        - comment: { $ref: "#/components/schemas/Comment" }
+    Photo: 
+      title: Photo
+      description: Photo of the user
+      type: object
+      properties:
+        photoId: { $ref: "#/components/schemas/PhotoId" }
+        userId: { $ref: "#/components/schemas/UserId" }
+        photo:
+          type: string
+          format: binary
+        likes:
+          type: integer
+          example: 0
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              fromUser:
+                type: string
+                pattern: '^[a-zA-Z]+$'
+                example: "Maria"
+                minLength: 3
+                maxLength: 13
+              text:
+                type: string
+                example: "Bella foto!"
+                minLength: 1
+                maxLength: 144
   responses:
     Unauthorized:
       description: The access token is missing or it's expired
@@ -213,13 +452,9 @@ components:
       description: The server encountered an internal error. Further info in server logs
 
   securitySchemes:
-    LegacyAuth:
-      type: apiKey
-      in: header
-      name: X-App-Token
-      description: |-
-        App session token value. This value is sent by the server in the login
-        and session refresh APIs.
+    bearerAuth:    
+      type: http
+      scheme: bearer
 
   parameters:
     XAppVersion:
@@ -259,15 +494,4 @@ components:
       in: header
       required: true
       description: App operating system / platform
-      allowEmptyValue: false
-    cat:
-      schema:
-        type: string
-        pattern: '^[a-zA-Z]+$'
-        minLength: 3
-        maxLength: 10
-      name: cat
-      in: path
-      required: true
-      description: Cat
       allowEmptyValue: false
