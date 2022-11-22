@@ -1,63 +1,76 @@
 #TODO Sistemare tutte le regex
 #TODO getMyStream
+#TODO sistemare tutti i path ed evitare tante request body
 
 openapi: 3.0.0
 servers:
   - url: "http://localhost:3000"
 info:
-  title: Fantastic Coffee (decaffeinated)
-  description: Fantastic Coffee (decaffeinated), the skeleton project for Web and Software architecture course
+  title: Wasa Photo
+  description: |
+    Wasa Photo is a photo sharing platform. It allows users to upload photo of their best moment.
   version: 1.0.0
+
+tags:
+  - name: "Session"
+    description: "Everything about your session"
+  - name: "Profile"
+    description: "Everything about your Profile"
+  - name: "Post"
+    description: "Everything about your Posts"
+
 paths:
   #devo importare quello del prof
-  /session/login:
-    parameters:
-      - $ref: "#/components/parameters/XAppBuild"
-      - $ref: "#/components/parameters/XAppVersion"
-      - $ref: "#/components/parameters/XAppLanguage"
-      - $ref: "#/components/parameters/XAppPlatform"
+  #MANCA IL LOGIN
+  /session:
     post:
-      tags: ["Session management"]
-      operationId: login
-      summary: Log-in into system
+      tags: ["Login"]
+      summary: Logs in the user
       description: |-
-        Perform a log-in action using username and password credentials.
-        Returns a token which can be used in authenticated requests.
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
       requestBody:
+        description: User details
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
-                userid:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+$'
-                  minLength: 3  
-                  maxLength: 255
-                password:
-                  type: string
-                  pattern: '^.*?$'
-                  minLength: 8
-                  maxLength: 255
+                username: { $ref: "#/components/schemas/Username" }
+        required: true
       responses:
-        "200":
-          description: Login successful
-          headers:
-            X-Access-Token:
-              description: Access token for authenticated requests
-              schema: { type: string }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Login failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        201:
+          description: |
+            A new account has been created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                #manca l'auth
+                  my_identifier: { $ref: "#/components/schemas/UserId" }
+        200:
+          description: |
+            Log-in succesfull.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier: { $ref: "#/components/schemas/UserId" }
+        400:
+          description: |
+            Formatting request invalid.
+            Missing argument or username formatting is invalid.
+          content:
+            plain/text:
+              example: Error
 
-  /account/setMyUserName:
+  /profile/setMyUserName:
     put:
-      tags: ["Account management"]
+      tags: ["Profile"]
       operationId: setMyUserName
       summary: Set my user name
       description: |-
@@ -89,7 +102,7 @@ paths:
 
   /profile/followUser:
     put:
-      tags: ["Profile management"]
+      tags: ["Profile"]
       operationId: followUser
       summary: Follow user
       description: |-
@@ -116,7 +129,7 @@ paths:
   
   /profile/unfollowUser:
     delete:
-      tags: ["Profile management"]
+      tags: ["Profile"]
       operationId: unfollowUser
       summary: Unfollow user
       description: |-
@@ -142,7 +155,7 @@ paths:
 
   /profile/banUser: 
     put:
-      tags: ["Profile management"]
+      tags: ["Profile"]
       operationId: banUser
       summary: Ban user
       description: |-
@@ -166,9 +179,9 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/unbanUser:
+  /profile/{userId}/unbanUser/{bannedUserId}:
     delete:
-      tags: ["Profile management"]
+      tags: ["Profile"]
       operationId: unbanUser
       summary: Unban user
       description: |-
@@ -195,7 +208,7 @@ paths:
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
   /profile/getUserProfile:
     get: 
-      tags: ["Profile management"]
+      tags: ["Profile"]
       operationId: getUserProfile
       summary: Get user profile
       description: |-
@@ -221,7 +234,7 @@ paths:
   
   /post/uploadPhoto:
     post: 
-      tags: ["Post management"]
+      tags: ["Post"]
       operationId: uploadPhoto
       summary: Upload photo
       description: |-
@@ -252,7 +265,7 @@ paths:
 
   /profile/{userId}/post/{photoId}/likePhoto:
     put: 
-      tags: ["Post management"]
+      tags: ["Post"]
       operationId: likePhoto
       summary: Like photo
       description: |-
@@ -284,21 +297,22 @@ paths:
 
   /profile/{userId}/post/{photoId}/unlikePhoto:
     delete: 
-      tags: ["Post management"]
+      tags: ["Post"]
       operationId: unlikePhoto
       summary: Unlike photo
       description: |-
         Unlike photo
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId: { $ref: "#/components/schemas/UserId" }
-                photoId: { $ref: "#/components/schemas/PhotoId" }
+      parameters:
+        - in: path
+          name: userId
+          schema: { $ref: "#/components/schemas/UserId" }
+          required: true
+        - in: path
+          name: photoId
+          schema: { $ref: "#/components/schemas/PhotoId" }
+          required: true
       responses:
         "200":
           description: Unliked successful
@@ -313,7 +327,7 @@ paths:
 
   /profile/{userId}/post/{photoId}/commentPhoto: 
     post: 
-      tags: ["Post management"]
+      tags: ["Post"]
       operationId: commentPhoto
       summary: Comment photo
       description: |-
@@ -328,11 +342,16 @@ paths:
               properties:
                 userId: { $ref: "#/components/schemas/UserId" }
                 photoId: { $ref: "#/components/schemas/PhotoId" }
-                fromUserId: { $ref: "#/components/schemas/UserId" }
                 comment: { $ref: "#/components/schemas/Comment" }
       responses:
-        "200":
-          description: Comment successful
+        "201":
+          description: Comment created successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
           description: Post failed
@@ -408,12 +427,13 @@ components:
           example: "Bella foto!"
           minLength: 1
           maxLength: 144
+        timestamp: { type: string }
     CommentList:
       title: Comment List
-      description: List of comments
+      description: All comment of the photo
       type: array
       items:
-        - comment: { $ref: "#/components/schemas/Comment" }
+        { $ref: "#/components/schemas/Comment" }
     Photo: 
       title: Photo
       description: Photo of the user
@@ -424,25 +444,10 @@ components:
         photo:
           type: string
           format: binary
-        likes:
-          type: integer
-          example: 0
-        comments:
-          type: array
-          items:
-            type: object
-            properties:
-              fromUser:
-                type: string
-                pattern: '^[a-zA-Z]+$'
-                example: "Maria"
-                minLength: 3
-                maxLength: 13
-              text:
-                type: string
-                example: "Bella foto!"
-                minLength: 1
-                maxLength: 144
+        likes: { $ref: "#/components/schemas/LikeList" }
+        comments: { $ref: "#/components/schemas/CommentList" }
+        timestamp: { type: string }
+ 
   responses:
     Unauthorized:
       description: The access token is missing or it's expired
