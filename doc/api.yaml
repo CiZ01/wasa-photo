@@ -12,7 +12,7 @@ info:
   version: 1.0.0
 
 tags:
-  - name: "Session"
+  - name: "Login"
     description: "Everything about your session"
   - name: "Profile"
     description: "Everything about your Profile"
@@ -49,7 +49,9 @@ paths:
               schema:
                 type: object
                 properties:
-                #manca l'auth
+                  auth: 
+                    type: string
+                    description: The user auth token.
                   my_identifier: { $ref: "#/components/schemas/UserId" }
         200:
           description: |
@@ -461,37 +463,6 @@ components:
       type: http
       scheme: bearer
 
-  parameters:
-    XAppVersion:
-      schema:
-        type: string
-        pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
-        minLength: 1
-        maxLength: 10
-      name: X-App-Version
-      in: header
-      required: true
-      description: App human readable version ("semantic version" format)
-      allowEmptyValue: false
-    XAppBuild:
-      schema: { type: integer }
-      name: X-App-Build
-      in: header
-      required: true
-      description: App build number
-      allowEmptyValue: false
-    XAppLanguage:
-      schema:
-        type: string
-        pattern: '^[a-z]{2}([-_][A-Z]{2})?$'
-        minLength: 2
-        maxLength: 5
-      name: X-App-Language
-      in: header
-      required: true
-      description: App language in ISO 639-1 format
-      allowEmptyValue: false
-    XAppPlatform:
       schema:
         type: string
         enum: [ios, android]
