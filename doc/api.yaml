@@ -1,6 +1,8 @@
 #TODO Sistemare tutte le regex
 #TODO getMyStream
 #TODO sistemare tutti i path ed evitare tante request body
+# + forse l'avrei finito
+#TODO sistemare i response
 
 openapi: 3.0.0
 servers:
@@ -20,8 +22,6 @@ tags:
     description: "Everything about your Posts"
 
 paths:
-  #devo importare quello del prof
-  #MANCA IL LOGIN
   /session:
     post:
       tags: ["Login"]
@@ -52,7 +52,7 @@ paths:
                   auth: 
                     type: string
                     description: The user auth token.
-                  my_identifier: { $ref: "#/components/schemas/UserID" }
+                  userID: { $ref: "#/components/schemas/UserID" }
         200:
           description: |
             Log-in succesfull.
@@ -61,7 +61,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  identifier: { $ref: "#/components/schemas/UserID" }
+                  auth: 
+                    type: string
+                    description: The user auth token.
+                  userID: { $ref: "#/components/schemas/UserID" }
         400:
           description: |
             Formatting request invalid.
@@ -70,7 +73,7 @@ paths:
             plain/text:
               example: Error
 
-  /user/setMyUserName:
+  /user/{userID}/setMyUserName:
     put:
       tags: ["User"]
       operationId: setMyUserName
@@ -79,20 +82,22 @@ paths:
         Set my user name
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  pattern: '^[a-zA-Z0-9]+$'
-                  minLength: 3
-                  maxLength: 13
+      parameters:
+        - name: username
+          in: query
+          description: The new username of the user (must be unique)
+          required: true
+          schema: { $ref: "#/components/schemas/Username" }
+        - name: userID 
+          in: path
+          description: The user Id of the user whose username is to be changed
+          required: true
+          schema: { $ref: "#/components/schemas/UserID" }
+
       responses:
         "200":
           description: Set user name successful
+
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
           description: Set user name failed
@@ -112,9 +117,15 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - in: query
-          name: userID
-          $ref: "#/components/schemas/Username"
+        - name: userToFollowID
+          in: query
+          description: The user Id of the user to follow
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+        - name: userID 
+          in: path
+          description: The user Id of the user who wants to follow
+          schema: { $ref: "#/components/schemas/UserID" }
           required: true
 
         
@@ -140,9 +151,15 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - in: query
-          name: userID
-          $ref: "#/components/schemas/Username"
+        - name: userToUnfollowID
+          in: query
+          description: The user Id of the user to unfollow.
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+        - name: userID 
+          in: path
+          description: The user Id of the user who wants to unfollow
+          schema: { $ref: "#/components/schemas/UserID" }
           required: true
         
       responses:
@@ -167,9 +184,15 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - in: query
-          name: userID
-          $ref: "#/components/schemas/Username"
+        - name: userToBanID
+          in: query
+          description: The user Id of the user to ban
+          schema : { $ref: "#/components/schemas/UserID" }
+          required: true
+        - name: userID
+          in: path
+          description: The user Id of the user who wants to ban
+          schema : { $ref: "#/components/schemas/UserID" }
           required: true
         
       responses:
@@ -194,8 +217,14 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - in: query
-          name: userID
+        - name: unbanUserID 
+          in: query
+          description: The user Id of the user to unban
+          $ref: "#/components/schemas/Username"
+          required: true
+        - name: userID 
+          in: path
+          description: The user Id of the user who wants to unban
           $ref: "#/components/schemas/Username"
           required: true
         
@@ -223,9 +252,15 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
-          name: userID
-          $ref: "#/components/schemas/UserID"
+          name: profileUserID
+          description: The user Id of the user whose profile you want to see
+          schema: { $ref: "#/components/schemas/UserID" }
           required: true
+        - name: userID 
+          in: path
+          description: The user Id of the user who wants to see the profile
+          required: true
+          schema: { $ref: "#/components/schemas/UserID" }
         
       responses:
         "200":
@@ -291,10 +326,10 @@ paths:
               type: object
               properties:
                 #così lato backend so direttamente come fare riferimento al post e incrementare i like
-                userId: { $ref: "#/components/schemas/UserId" }
-                photoId: { $ref: "#/components/schemas/PhotoId" }
+                userID: { $ref: "#/components/schemas/UserID" }
+                photoID: { $ref: "#/components/schemas/PhotoID" }
                 #E so che è stato questo utente
-                fromUserId: { $ref: "#/components/schemas/UserId" }
+                fromUserID: { $ref: "#/components/schemas/UserID" }
       responses:
         "200":
           description: Liked successful
@@ -319,11 +354,11 @@ paths:
       parameters:
         - in: path
           name: userId
-          schema: { $ref: "#/components/schemas/UserId" }
+          schema: { $ref: "#/components/schemas/UserID" }
           required: true
         - in: path
-          name: photoId
-          schema: { $ref: "#/components/schemas/PhotoId" }
+          name: photoID
+          schema: { $ref: "#/components/schemas/PhotoID" }
           required: true
       responses:
         "200":
@@ -337,7 +372,7 @@ paths:
               schema: { type: string }
         "500": { $ref: '#/components/responses/InternalServerError' }
 
-  /user/{userId}/post/{photoId}/commentPhoto: 
+  /user/{userID}/post/{photoID}/commentPhoto: 
     post: 
       tags: ["Post"]
       operationId: commentPhoto
@@ -353,7 +388,7 @@ paths:
               type: object
               properties:
                 userID: { $ref: "#/components/schemas/UserID" }
-                photoId: { $ref: "#/components/schemas/PhotoId" }
+                photoID: { $ref: "#/components/schemas/PhotoID" }
                 comment: { $ref: "#/components/schemas/Comment" }
       responses:
         "201":
@@ -363,7 +398,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  commentId: { $ref: "#/components/schemas/Comment" }
+                  commentID: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
           description: Post failed
@@ -390,10 +425,10 @@ components:
         message: { type: string }
         url: { type: string }
     UserID:
-      title: User ID
-      description: Numeric ID of the user
+      title: User id
+      description: Numeric id of the user
       type: string
-      pattern: '[0-9]*'
+      pattern: '^[0-9]{5}$'
       example: "00010"
       minLength: 5
       maxLength: 5
@@ -401,7 +436,7 @@ components:
       title: Username
       description: Username of the user
       type: string
-      pattern: '^[a-zA-Z]+$'
+      pattern: '^[a-z0-9._]{3,13}$'
       example: "Maria"
       minLength: 3
       maxLength: 13
@@ -420,14 +455,15 @@ components:
         type: object
         properties:
           user: { $ref: "#/components/schemas/User" }
-    PhotoId:
-      title: Photo ID
-      description: Numeric ID of the photo
+    #possibile idea è quella di unire il photoid e lo user id, per averli tutti in una volta
+    PhotoID:
+      title: Photo id
+      description: Numeric id of the photo
       type: string
-      pattern: '[0-9]*'
-      example: "00010"
-      minLength: 5
-      maxLength: 5
+      pattern: '^[a-zA-Z]{3}$'
+      example: "001"
+      minLength: 3
+      maxLength: 3
     Comment:
       title: Comment
       description: Comment of the photo
@@ -451,7 +487,7 @@ components:
       description: Photo of the user
       type: object
       properties:
-        photoId: { $ref: "#/components/schemas/PhotoId" }
+        photoID: { $ref: "#/components/schemas/PhotoID" }
         userID: { $ref: "#/components/schemas/UserID" }
         photo:
           type: string
