@@ -209,7 +209,7 @@ paths:
 
   /user/{userID}/unbanUser/:
     delete:
-      tags: ["user"]
+      tags: ["User"]
       operationId: unbanUser
       summary: Unban user
       description: |-
@@ -243,7 +243,7 @@ paths:
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
   /user/{userID}/getUserProfile:
     get: 
-      tags: ["Profile"]
+      tags: ["User"]
       operationId: getUserProfile
       summary: Get user profile
       description: |-
@@ -309,6 +309,41 @@ paths:
               description: Error message
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /user/{userID}/post/{photoID}/deletePhoto:
+    delete: 
+      tags: ["Post"]
+      operationId: deletePhoto
+      summary: Delete photo
+      description: |-
+        Delete the specified photo by photoID from the storage server
+        and delete the post from user profile.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: photoID
+          in: path
+          description: The photo Id of the photo to delete
+          schema: { $ref: "#/components/schemas/PhotoID" }
+          required: true
+        - name: userID 
+          in: path
+          description: The user Id of the user who wants to delete the photo
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+        
+      responses:
+        "200":
+          description: Delete photo successful
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Delete photo failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
 
   /user/{userId}/post/{photoId}/likePhoto:
     put: 
@@ -399,6 +434,40 @@ paths:
                 type: object
                 properties:
                   commentID: { $ref: "#/components/schemas/Comment" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Post failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /user/{userID}/photo/{photoID}/deleteCommentPhoto: 
+    delete: 
+      tags: ["Post"]
+      operationId: deleteCommentPhoto
+      summary: Delete a comment from a post
+      description: |-
+        Delete the comment specified by ID in query from the post.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userID 
+          in: path
+          description: |
+            The user Id of the user who wants to delete the comment. 
+            Only the owner post can delete comments.
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+        - name: photoID
+          in: query
+          description: The photo Id of the photo whose comment you want to delete.
+          schema: { $ref: "#/components/schemas/PhotoID" }
+          required: true
+      responses:
+        "200":
+          description: Comment deleted successful
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
           description: Post failed
