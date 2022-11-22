@@ -14,8 +14,8 @@ info:
 tags:
   - name: "Login"
     description: "Everything about your session"
-  - name: "Profile"
-    description: "Everything about your Profile"
+  - name: "User"
+    description: "Everything about your user"
   - name: "Post"
     description: "Everything about your Posts"
 
@@ -52,7 +52,7 @@ paths:
                   auth: 
                     type: string
                     description: The user auth token.
-                  my_identifier: { $ref: "#/components/schemas/UserId" }
+                  my_identifier: { $ref: "#/components/schemas/UserID" }
         200:
           description: |
             Log-in succesfull.
@@ -61,7 +61,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  identifier: { $ref: "#/components/schemas/UserId" }
+                  identifier: { $ref: "#/components/schemas/UserID" }
         400:
           description: |
             Formatting request invalid.
@@ -70,9 +70,9 @@ paths:
             plain/text:
               example: Error
 
-  /profile/setMyUserName:
+  /user/setMyUserName:
     put:
-      tags: ["Profile"]
+      tags: ["User"]
       operationId: setMyUserName
       summary: Set my user name
       description: |-
@@ -102,9 +102,9 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/followUser:
+  /user/{userID}/followUser:
     put:
-      tags: ["Profile"]
+      tags: ["User"]
       operationId: followUser
       summary: Follow user
       description: |-
@@ -113,6 +113,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: userID
           $ref: "#/components/schemas/Username"
           required: true
 
@@ -129,9 +130,9 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /profile/unfollowUser:
+  /user/{userID}/unfollowUser:
     delete:
-      tags: ["Profile"]
+      tags: ["User"]
       operationId: unfollowUser
       summary: Unfollow user
       description: |-
@@ -140,6 +141,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: userID
           $ref: "#/components/schemas/Username"
           required: true
         
@@ -155,9 +157,9 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/banUser: 
+  /user/{userID}/banUser: 
     put:
-      tags: ["Profile"]
+      tags: ["User"]
       operationId: banUser
       summary: Ban user
       description: |-
@@ -166,6 +168,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: userID
           $ref: "#/components/schemas/Username"
           required: true
         
@@ -181,9 +184,9 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{userId}/unbanUser/{bannedUserId}:
+  /user/{userID}/unbanUser/:
     delete:
-      tags: ["Profile"]
+      tags: ["user"]
       operationId: unbanUser
       summary: Unban user
       description: |-
@@ -192,6 +195,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
+          name: userID
           $ref: "#/components/schemas/Username"
           required: true
         
@@ -208,7 +212,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
   
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
-  /profile/getUserProfile:
+  /user/{userID}/getUserProfile:
     get: 
       tags: ["Profile"]
       operationId: getUserProfile
@@ -219,7 +223,8 @@ paths:
         - bearerAuth: []
       parameters:
         - in: query
-          $ref: "#/components/schemas/Username"
+          name: userID
+          $ref: "#/components/schemas/UserID"
           required: true
         
       responses:
@@ -234,13 +239,18 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /post/uploadPhoto:
+  /user/{userID}/post/uploadPhoto:
+    parameters:
+      - in: path
+        $ref: "#/components/schemas/UserID"
+        required: true
+
     post: 
       tags: ["Post"]
       operationId: uploadPhoto
       summary: Upload photo
       description: |-
-        Upload photo
+        Upload the photo and save it in the storage server.
       security:
         - bearerAuth: []
       requestBody:
@@ -265,11 +275,11 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{userId}/post/{photoId}/likePhoto:
+  /user/{userId}/post/{photoId}/likePhoto:
     put: 
       tags: ["Post"]
       operationId: likePhoto
-      summary: Like photo
+      summary: Like the photo and add the user to the likes list of the photo.
       description: |-
         Like photo
       security:
@@ -297,13 +307,13 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{userId}/post/{photoId}/unlikePhoto:
+  /user/{userId}/post/{photoId}/unlikePhoto:
     delete: 
       tags: ["Post"]
       operationId: unlikePhoto
       summary: Unlike photo
       description: |-
-        Unlike photo
+        Unlike the photo and remove the user from the likes list of the photo.
       security:
         - bearerAuth: []
       parameters:
@@ -327,7 +337,7 @@ paths:
               schema: { type: string }
         "500": { $ref: '#/components/responses/InternalServerError' }
 
-  /profile/{userId}/post/{photoId}/commentPhoto: 
+  /user/{userId}/post/{photoId}/commentPhoto: 
     post: 
       tags: ["Post"]
       operationId: commentPhoto
@@ -342,7 +352,7 @@ paths:
             schema:
               type: object
               properties:
-                userId: { $ref: "#/components/schemas/UserId" }
+                userID: { $ref: "#/components/schemas/UserID" }
                 photoId: { $ref: "#/components/schemas/PhotoId" }
                 comment: { $ref: "#/components/schemas/Comment" }
       responses:
@@ -379,7 +389,7 @@ components:
         title: { type: string }
         message: { type: string }
         url: { type: string }
-    UserId:
+    UserID:
       title: User ID
       description: Numeric ID of the user
       type: string
@@ -400,7 +410,7 @@ components:
       description: User
       type: object
       properties:
-        userId: { $ref: "#/components/schemas/UserId" }
+        userID: { $ref: "#/components/schemas/UserID" }
         username: { $ref: "#/components/schemas/Username" }
     LikeList:
       title: Like List
@@ -442,7 +452,7 @@ components:
       type: object
       properties:
         photoId: { $ref: "#/components/schemas/PhotoId" }
-        userId: { $ref: "#/components/schemas/UserId" }
+        userID: { $ref: "#/components/schemas/UserID" }
         photo:
           type: string
           format: binary
@@ -462,12 +472,3 @@ components:
     bearerAuth:    
       type: http
       scheme: bearer
-
-      schema:
-        type: string
-        enum: [ios, android]
-      name: X-App-Platform
-      in: header
-      required: true
-      description: App operating system / platform
-      allowEmptyValue: false
