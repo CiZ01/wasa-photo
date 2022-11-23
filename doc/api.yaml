@@ -155,17 +155,17 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{userID}/banUser: 
+  /user/{userID}/banUser/{targetUserID}: 
     parameters:
     - name: targetUserID 
-      in: query
+      in: path
       description: The user Id of the user to (un)ban
-      $ref: "#/components/schemas/Username"
+      schema : { $ref: "#/components/schemas/UserID" }
       required: true
     - name: userID 
       in: path
       description: The user Id of the user who wants to (un)ban
-      $ref: "#/components/schemas/Username"
+      schema: { $ref: "#/components/schemas/UserID" }
       required: true
     
     put:
@@ -210,7 +210,19 @@ paths:
 
   
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
-  /user/{userID}/getUserProfile:
+  /user/{userID}/getUserProfile/{profileUserID}:
+    parameters:
+    - name: profileUserID
+      in: path
+      description: The user Id of the user whose profile you want to see
+      schema: { $ref: "#/components/schemas/UserID" }
+      required: true
+    - name: userID 
+      in: path
+      description: The user Id of the user who wants to see the profile
+      required: true
+      schema: { $ref: "#/components/schemas/UserID" }
+      
     get: 
       tags: ["User"]
       operationId: getUserProfile
@@ -219,18 +231,6 @@ paths:
         Get user profile
       security:
         - bearerAuth: []
-      parameters:
-        - in: query
-          name: profileUserID
-          description: The user Id of the user whose profile you want to see
-          schema: { $ref: "#/components/schemas/UserID" }
-          required: true
-        - name: userID 
-          in: path
-          description: The user Id of the user who wants to see the profile
-          required: true
-          schema: { $ref: "#/components/schemas/UserID" }
-        
       responses:
         "200":
           description: Get user profile successful
@@ -243,7 +243,7 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /user/{userID}/post/managePhoto:
+  /user/{userID}/post/uploadPhoto:
     parameters:
       - name: userID
         in: path
@@ -286,6 +286,14 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /user/{userID}/post/{photoID}/deletePhoto:
+    parameters:
+    - name: photoID
+      in: query
+      description: The photo Id of the photo to delete
+      schema: { $ref: "#/components/schemas/PhotoID" }
+      required: true
+      
     delete: 
       tags: ["Post"]
       operationId: deletePhoto
@@ -295,13 +303,6 @@ paths:
         delete the post from user profile and delete all like and comment related to the post.
       security:
         - bearerAuth: []
-      parameters:
-        - name: photoID
-          in: query
-          description: The photo Id of the photo to delete
-          schema: { $ref: "#/components/schemas/PhotoID" }
-          required: true
-        
       responses:
         "200":
           description: Delete photo successful
