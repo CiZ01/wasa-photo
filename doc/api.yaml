@@ -63,12 +63,24 @@ paths:
         400:
           description: |
             Formatting request invalid.
-            Missing argument or username formatting is invalid.
+            Missing argument or username formatting is invalid
           content:
             plain/text:
               example: Error
 
-  /user/{userID}/setMyUserName:
+  /users/{userID}/setMyUserName/{newUsername}:
+    parameters:
+    - name: newUsername
+      in: path
+      description: The new username of the user (must be unique)
+      required: true
+      schema: { $ref: "#/components/schemas/Username" }
+    - name: userID 
+      in: path
+      description: The user Id of the user who want to change username
+      required: true
+      schema: { $ref: "#/components/schemas/UserID" }
+      
     put:
       tags: ["User"]
       operationId: setMyUserName
@@ -77,18 +89,6 @@ paths:
         Set my user name
       security:
         - bearerAuth: []
-      parameters:
-        - name: username
-          in: query
-          description: The new username of the user (must be unique)
-          required: true
-          schema: { $ref: "#/components/schemas/Username" }
-        - name: userID 
-          in: path
-          description: The user Id of the user whose username is to be changed
-          required: true
-          schema: { $ref: "#/components/schemas/UserID" }
-
       responses:
         "200":
           description: Set user name successful
@@ -102,10 +102,10 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{userID}/followUser:
+  /users/{userID}/followUser/{targetUserID}:
     parameters:
     - name: targetUserID
-      in: query
+      in: path
       description: The user Id of the user to (un)follow.
       schema: { $ref: "#/components/schemas/UserID" }
       required: true
@@ -120,7 +120,7 @@ paths:
       operationId: followUser
       summary: Follow user
       description: |-
-        Follow user
+        Follow the user with the given user ID.
       security:
         - bearerAuth: [] 
       responses:
@@ -140,7 +140,7 @@ paths:
       operationId: unfollowUser
       summary: Unfollow user
       description: |-
-        Unfollow user
+        Unfollow the user with the given user ID and delete it from the follower list. 
       security:
         - bearerAuth: []
       responses:
@@ -155,7 +155,7 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{userID}/banUser/{targetUserID}: 
+  /users/{userID}/banUser/{targetUserID}: 
     parameters:
     - name: targetUserID 
       in: path
@@ -173,7 +173,7 @@ paths:
       operationId: banUser
       summary: Ban user
       description: |-
-        Ban user
+        Ban the user with the given user ID
       security:
         - bearerAuth: []
       responses:
@@ -193,7 +193,7 @@ paths:
       operationId: unbanUser
       summary: Unban user
       description: |-
-        Unban user
+        Unban the user with the given user ID
       security:
         - bearerAuth: []
       responses:
@@ -210,7 +210,7 @@ paths:
 
   
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
-  /user/{userID}/getUserProfile/{profileUserID}:
+  /users/{userID}/getUserProfile/{profileUserID}:
     parameters:
     - name: profileUserID
       in: path
@@ -243,7 +243,7 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /user/{userID}/post/uploadPhoto:
+  /users/{userID}/post/uploadPhoto:
     parameters:
       - name: userID
         in: path
@@ -286,10 +286,10 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{userID}/post/{photoID}/deletePhoto:
+  /users/{userID}/post/{photoID}/deletePhoto:
     parameters:
     - name: photoID
-      in: query
+      in: path
       description: The photo Id of the photo to delete
       schema: { $ref: "#/components/schemas/PhotoID" }
       required: true
@@ -316,23 +316,17 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
 
-  /user/{userId}/post/{photoId}/likePhoto:
+  /users/{userId}/post/{uniquePhotoId}/likePhoto:
     parameters:
       - name : userID
         in: path 
-        description: The user Id of the owner post
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - name: photoID
-        in: path
-        description: The photo Id of the photo to (un)like
-        schema: { $ref: "#/components/schemas/PhotoID" }
-        required: true
-        #con questo parametro so chi mette like
-      - name: fromUserID
-        in: query
         description: The user Id of the user who wants to (un)like the photo
         schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: uniquePhotoID
+        in: path
+        description: The photo Id of the photo to (un)like
+        schema: { $ref: "#/components/schemas/UniquePhotoID" }
         required: true
 
     put: 
@@ -375,7 +369,7 @@ paths:
               schema: { type: string }
         "500": { $ref: '#/components/responses/InternalServerError' }
 
-  /user/{userID}/post/{photoID}/commentPhoto: 
+  /users/{userID}/post/{uniquePhotoID}/commentPhoto: 
     post: 
       tags: ["Post"]
       operationId: commentPhoto
@@ -391,7 +385,7 @@ paths:
               type: object
               properties:
                 userID: { $ref: "#/components/schemas/UserID" }
-                photoID: { $ref: "#/components/schemas/PhotoID" }
+                uniquePhotoID: { $ref: "#/components/schemas/UniquePhotoID" }
                 comment: { $ref: "#/components/schemas/Comment" }
       responses:
         "201":
@@ -411,7 +405,8 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /user/{userID}/photo/{photoID}/deleteCommentPhoto: 
+  #non metto uniquePhotoID perché può cancellare i post solo il proprietario, cioè lo user id che combacia con uniquePhotoID[:5]
+  /users/{userID}/photo/{photoID}/deleteCommentPhoto: 
     delete: 
       tags: ["Post"]
       operationId: deleteCommentPhoto
@@ -492,7 +487,7 @@ components:
         type: object
         properties:
           user: { $ref: "#/components/schemas/User" }
-    #possibile idea è quella di unire il photoid e lo user id, per averli tutti in una volta
+    #possibile idea è quella di unire il photoid e lo user id, per averli tutti in una volta -> uniquephotoID
     PhotoID:
       title: Photo id
       description: Numeric id of the photo
@@ -501,6 +496,14 @@ components:
       example: "001"
       minLength: 3
       maxLength: 3
+    UniquePhotoID: 
+      title: UniquePhotoID 
+      description: The unique photo id is the combination of the user id and photo id
+      type: string
+      pattern: '^[0-9]{5}[a-zA-Z]{3}$'
+      example: "00010aAz"
+      minLength: 8
+      maxLength: 8
     Comment:
       title: Comment
       description: Comment of the photo
