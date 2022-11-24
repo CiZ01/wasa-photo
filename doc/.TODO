@@ -1,6 +1,6 @@
 **#DONE** Sistemare tutte le regex \
 **#DONE** getMyStream \
-**#TODO** sistemare tutti i path ed evitare tante request 
+**#DONE** sistemare tutti i path ed evitare tante request 
 body. forse l'avrei finito \
 **#TODO** sistemare i response \
 **#DONE** get comments list and likes list \    

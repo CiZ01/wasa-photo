@@ -353,12 +353,12 @@ paths:
           The start index of the posts to get. <br>
           <details> 
           <summary> Other details </summary>
-          If the value is **not specified**, it will be set to 10. <br>
-          If the value is **greater than** the number of likes, an empty array will be returned. <br>
+          If the value is **not specified**, it will be set to 0. <br>
+          If the value is **greater than** the number of posts, an empty array will be returned. <br>
           If the value is **negative**, it will be set to 0. <br>
           If the value is **not an integer**, it will be set to 0.
           </details>
-        schema: { type: integer }
+        schema: { type: integer, default: 0, minimum: 0 }
         required: false
       - name: limit
         in: query
@@ -456,12 +456,12 @@ paths:
           The start index of the likes to get. <br>
           <details> 
           <summary> Other details </summary>
-          If not specified, the value will be set to 0. <br>
-          If the value is greater than the number of likes, an empty array will be returned. <br>
-          If the value is negative, it will be set to 0. <br>
-          If the value is not an integer, it will be set to 0.
+          If the value is **not specified**, it will be set to 0. <br>
+          If the value is **greater than** the number of likes, an empty array will be returned. <br>
+          If the value is **negative**, it will be set to 0. <br>
+          If the value is **not an integer**, it will be set to 0.
           </details>
-        schema: { type: integer }
+        schema: { type: integer, default: 0, minimum: 0 }
         required: false
       - name: limit
         in: query
@@ -469,13 +469,13 @@ paths:
           The number of likes to get. <br>
           <details> 
           <summary> Other details </summary>
+          If the value is **not specified**, it will be set to 20. <br>
           If the value is **greater than 100**, it will be set to 100. <br>
-          If the value is less than 1, it will be set to 10. <br>
-          If the value is not specified, it will be set to 10. <br>
-          If the value is not an integer, it will be set to 10. <br>
-          If the value is greater than the number of likes, it will be set to the number of likes. 
+          If the value is **less than 1**, it will be set to 20. <br>
+          If the value is **not an integer**, it will be set to 20. <br>
+          If the value is **greater than the number of likes**, it will be set to the number of likes. 
           </details>
-        schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+        schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
         required: false
     get: 
       tags: ["Post"]
@@ -565,21 +565,27 @@ paths:
         in: query
         description: | 
           The start index of the comments to get. <br>
-          If not specified, the default value is 0. <br>
-          If the value is greater than the number of comments, an empty array will be returned.
-          If the value is negative, the default value is 0. <br>
-          If the value is not a integer, the default value is 0. <br>        
-        schema: { type: integer, default: 0 }
+          <details>
+          <summary> Other details </summary>
+          If the value is **not specified**, it will be set to 0. <br>
+          If the value is **greater than** the number of comments, an empty array will be returned.
+          If the value is **negative**, the default value is 0. <br>
+          If the value is **not a integer**, the default value is 0.
+          </details>
+        schema: { type: integer, default: 0, minimum: 0 }
         required: false 
       - name: limit
         in: query
         description: |
           The number of comments to return. <br>
-          If not specified, the default is 20. <br>
-          If the value is greater than 100, it will be set to 100. <br>
-          If the value is less than 1, it will be set to 1. <br>
-          If the value is not a integer, it will be set to 20. <br>
-          If the value is greater than the number of comments, it will be set to the number of comments.
+          <details>
+          <summary>Other details</summary>
+          If the value is **not specified**, it will be set to 20. <br>
+          If the value is **greater than 100**, it will be set to 100. <br>
+          If the value is **less than 1**, it will be set to 20. <br>
+          If the value is **not a integer**, it will be set to 20. <br>
+          If the value is **greater than** the number of comments, it will be set to the number of comments.
+          </details>
         #il default value è da capire in base a quanti commenti entrano in una schermata
         schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
         required: false
