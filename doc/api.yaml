@@ -31,6 +31,7 @@ paths:
         content:
           application/json:
             schema:
+              description: The username of the user who wants to login
               type: object
               properties:
                 username: { $ref: "#/components/schemas/Username" }
@@ -42,11 +43,10 @@ paths:
           content:
             application/json:
               schema:
+                description: The user authorization and the userID. Both strings are the same thing.
                 type: object
                 properties:
-                  auth: 
-                    type: string
-                    description: The user auth token.
+                  auth: { $ref: "#/components/schemas/Auth" }
                   userID: { $ref: "#/components/schemas/UserID" }
         200:
           description: |
@@ -56,9 +56,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  auth: 
-                    type: string
-                    description: The user auth token.
+                  auth: { $ref: "#/components/schemas/Auth" }
                   userID: { $ref: "#/components/schemas/UserID" }
         400:
           description: |
@@ -66,20 +64,17 @@ paths:
             Missing argument or username formatting is invalid
           content:
             plain/text:
-              example: Error
+              schema:
+                type: string
+                example: Error
 
-  /users/{userID}/setMyUserName/{newUsername}:
+  /users/{userID}/setMyUserName:
     parameters:
-    - name: newUsername
-      in: path
-      description: The new username of the user (must be unique)
-      required: true
-      schema: { $ref: "#/components/schemas/Username" }
     - name: userID 
       in: path
       description: The user Id of the user who want to change username
+      schema: { $ref: "#/components/schemas/UserID" }      
       required: true
-      schema: { $ref: "#/components/schemas/UserID" }
       
     put:
       tags: ["User"]
@@ -89,6 +84,16 @@ paths:
         Set my user name
       security:
         - bearerAuth: []
+      requestBody:
+        description: New username to set.
+        content:
+          application/json:
+            schema:
+              description: The new username of the user
+              type: object
+              properties:
+                username: { $ref: "#/components/schemas/Username" }
+        required: true
       responses:
         "200":
           description: Set user name successful
@@ -220,8 +225,8 @@ paths:
     - name: userID 
       in: path
       description: The user Id of the user who wants to see the profile
-      required: true
       schema: { $ref: "#/components/schemas/UserID" }
+      required: true
       
     get: 
       tags: ["User"]
@@ -268,7 +273,8 @@ paths:
               properties:
                 caption: 
                   type: string
-                  minLength: 0
+                  pattern: ".{1,64}"
+                  minLength: 1
                   maxLength: 64
                 file:
                   type: string
@@ -288,6 +294,13 @@ paths:
 
   /users/{userID}/post/{photoID}/deletePhoto:
     parameters:
+    - name: userID
+      in: path
+      description: |
+        The user Id of the user who wants to delete the photo.
+        Only the owner of the photo can delete it.
+      schema: { $ref: "#/components/schemas/UserID" }
+      required: true
     - name: photoID
       in: path
       description: The photo Id of the photo to delete
@@ -316,7 +329,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
 
-  /users/{userId}/post/{uniquePhotoId}/likePhoto:
+  /users/{userID}/post/{uniquePhotoID}/likePhoto:
     parameters:
       - name : userID
         in: path 
@@ -370,6 +383,17 @@ paths:
         "500": { $ref: '#/components/responses/InternalServerError' }
 
   /users/{userID}/post/{uniquePhotoID}/commentPhoto: 
+    parameters:
+      - name : userID
+        in: path 
+        description: The user Id of the user who wants to comment the photo
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: uniquePhotoID
+        in: path
+        description: The unique photo Id of the photo to comment
+        schema: { $ref: "#/components/schemas/UniquePhotoID" }
+        required: true
     post: 
       tags: ["Post"]
       operationId: commentPhoto
@@ -384,8 +408,6 @@ paths:
             schema:
               type: object
               properties:
-                userID: { $ref: "#/components/schemas/UserID" }
-                uniquePhotoID: { $ref: "#/components/schemas/UniquePhotoID" }
                 comment: { $ref: "#/components/schemas/Comment" }
       responses:
         "201":
@@ -407,6 +429,19 @@ paths:
 
   #non metto uniquePhotoID perché può cancellare i post solo il proprietario, cioè lo user id che combacia con uniquePhotoID[:5]
   /users/{userID}/photo/{photoID}/deleteCommentPhoto: 
+    parameters:
+    - name: userID 
+      in: path
+      description: |
+        The user Id of the user who wants to delete the comment. 
+        Only the owner post can delete comments.
+      schema: { $ref: "#/components/schemas/UserID" }
+      required: true
+    - name: photoID
+      in: path
+      description: The photo Id of the photo whose comment you want to delete.
+      schema: { $ref: "#/components/schemas/PhotoID" }
+      required: true
     delete: 
       tags: ["Post"]
       operationId: deleteCommentPhoto
@@ -415,19 +450,6 @@ paths:
         Delete the comment specified by ID in query from the post.
       security:
         - bearerAuth: []
-      parameters:
-        - name: userID 
-          in: path
-          description: |
-            The user Id of the user who wants to delete the comment. 
-            Only the owner post can delete comments.
-          schema: { $ref: "#/components/schemas/UserID" }
-          required: true
-        - name: photoID
-          in: query
-          description: The photo Id of the photo whose comment you want to delete.
-          schema: { $ref: "#/components/schemas/PhotoID" }
-          required: true
       responses:
         "200":
           description: Comment deleted successful
@@ -466,10 +488,10 @@ components:
       maxLength: 5
     Username: 
       title: Username
-      description: Username of the user
+      description: Username of the user, not accepted upper case characters
       type: string
       pattern: '^[a-z0-9._]{3,13}$'
-      example: "Maria"
+      example: "haru_22"
       minLength: 3
       maxLength: 13
     User: 
@@ -493,7 +515,7 @@ components:
       description: Numeric id of the photo
       type: string
       pattern: '^[a-zA-Z]{3}$'
-      example: "001"
+      example: "aAk"
       minLength: 3
       maxLength: 3
     UniquePhotoID: 
@@ -513,15 +535,19 @@ components:
         text:
           type: string
           example: "Bella foto!"
+          pattern: '^.{1,100}$'
           minLength: 1
-          maxLength: 144
-        timestamp: { type: string }
+          maxLength: 100
+        timestamp: 
+          type: string
+          format: date-time 
     CommentList:
       title: Comment List
       description: All comment of the photo
       type: array
       items:
         { $ref: "#/components/schemas/Comment" }
+    #dovrebbe essere inutile
     Photo: 
       title: Photo
       description: Photo of the user
@@ -534,8 +560,18 @@ components:
           format: binary
         likes: { $ref: "#/components/schemas/LikeList" }
         comments: { $ref: "#/components/schemas/CommentList" }
-        timestamp: { type: string }
- 
+        timestamp: 
+          type: string
+          format: date-time 
+    Auth:
+      title: Auth
+      description: The authorization code is the userID. 
+      type: string
+      pattern: "^[0-9]{5}$"
+      example: "00010"
+      minLength: 5
+      maxLength: 5
+
   responses:
     Unauthorized:
       description: The access token is missing or it's expired
