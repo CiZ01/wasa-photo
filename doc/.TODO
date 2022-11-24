@@ -1,6 +1,16 @@
-#DONE Sistemare tutte le regex
-#TODO getMyStream
-#TODO sistemare tutti i path ed evitare tante request body. forse l'avrei finito
-#TODO sistemare i response
-#TODO get comments list and likes list
-#TODO 
+**#DONE** Sistemare tutte le regex \
+**#DONE** getMyStream \
+**#TODO** sistemare tutti i path ed evitare tante request 
+body. forse l'avrei finito \
+**#TODO** sistemare i response \
+**#DONE** get comments list and likes list \    
+**#DONE** sistemare il ritorno dei dati. Quando un client fa richiesta di un post, 
+oltre alla foto viene inviato anche il numero di like e commenti, timestap e caption 
+la lista di commenti e like viene inviata dopo a richieste esplicite. \
+_es.click sul numero di like e click sull'icona dei commenti_
+(potrei fare anche double click) \
+**#TODO** sistemare getuserprofile, non ritorna tutti i psot, aggiungere query. lista follower e lista following vanno ritornare dopo, va ritornata la propic. \
+**#TODO** Aggiungere propic. \
+**#DONE** getMyStream add query range \
+**#TODO** gestire l'errore dei query range, in caso lo start sia out of index. \
+**#TODO** controllare le descriptions \

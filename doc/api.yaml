@@ -68,7 +68,7 @@ paths:
                 type: string
                 example: Error
 
-  /users/{userID}/setMyUserName:
+  /users/{userID}/username:
     parameters:
     - name: userID 
       in: path
@@ -107,7 +107,68 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/followUser/{targetUserID}:
+  /users/{userID}/feed: 
+    parameters:
+      - name: userID 
+        in: path
+        description: The user Id of the user who want to get his stream
+        schema: { $ref: "#/components/schemas/UserID" }      
+        required: true
+      - name: start
+        in: query
+        description: |
+          The start index of the posts to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If not specified, the value will be set to 0. <br>
+          If the value is greater than the number of posts, an empty array will be returned. <br>
+          If the value is negative, it will be set to 0. <br>
+          If the value is not an integer, it will be set to 0.
+          </details>
+        schema: { type: integer, default: 0, minimum: 0 }
+        required: false 
+      - name: limit
+        in: query
+        description: |
+          The number of posts to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If the value is **greater than 50**, it will be set to 50. <br>
+          If the value is less than 1, it will be set to 1. <br>
+          If the value is not specified, it will be set to 10. <br>
+          If the value is not an integer, it will be set to 10. <br>
+          If the value is greater than the number of posts, it will be set to the number of posts. 
+          </details>
+        schema: { type: integer, default: 10, minimum: 1, maximum: 50 }
+        required: false
+
+    get: 
+      tags: ["User"]
+      operationId: getMyStream
+      summary: Get the user stream
+      description: |-
+        Get the user stream, return a list of posts. See Post schema for more details.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get stream successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/Post" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Get stream failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/follow/{targetUserID}:
     parameters:
     - name: targetUserID
       in: path
@@ -160,7 +221,7 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/banUser/{targetUserID}: 
+  /users/{userID}/ban/{targetUserID}: 
     parameters:
     - name: targetUserID 
       in: path
@@ -215,7 +276,7 @@ paths:
 
   
   #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
-  /users/{userID}/getUserProfile/{profileUserID}:
+  /users/{userID}/profile/{profileUserID}:
     parameters:
     - name: profileUserID
       in: path
@@ -248,21 +309,21 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{userID}/post/uploadPhoto:
+  /users/{userID}/posts/upload:
     parameters:
       - name: userID
         in: path
-        description: The user Id of the user who wants to add/delete the photo.
+        description: The user Id of the user who wants to add/delete the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
     post: 
       tags: ["Post"]
       operationId: uploadPhoto
-      summary: Upload photo
+      summary: Upload photo and create a post.
       description: |-
         Upload the photo and save it in the storage server.
-        The user can specify the caption of the photo with a max length of 64 characters.
+        The user can specify the caption of the post with a max length of 64 characters.
       security:
         - bearerAuth: []
       requestBody:
@@ -281,47 +342,47 @@ paths:
                   format: binary
       
       responses:
-        "200":
-          description: Upload photo successful
+        "201":
+          description: Upload photo and created post successful
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
-          description: Upload photo failed
+          description: Upload photo or created post failed
           headers:
             X-Message:
               description: Error message
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/post/{photoID}/deletePhoto:
+  /users/{userID}/posts/{uniquePostID}/delete:
     parameters:
     - name: userID
       in: path
       description: |
-        The user Id of the user who wants to delete the photo.
-        Only the owner of the photo can delete it.
+        The user Id of the user who wants to delete the post.
+        Only the owner of the post can delete it
       schema: { $ref: "#/components/schemas/UserID" }
       required: true
-    - name: photoID
+    - name: uniquePostID
       in: path
-      description: The photo Id of the photo to delete
-      schema: { $ref: "#/components/schemas/PhotoID" }
+      description: The unique post Id of the post to delete
+      schema: { $ref: "#/components/schemas/UniquePostID" }
       required: true
       
     delete: 
       tags: ["Post"]
       operationId: deletePhoto
-      summary: Delete photo
+      summary: Delete post
       description: |-
-        Delete the specified photo by photoID from the storage server, 
-        delete the post from user profile and delete all like and comment related to the post.
+        Delete the specified post by unique post id from the storage server, 
+        delete the post from user profile and delete all like and comment related to it.
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Delete photo successful
+          description: Delete photo and post successful
         "400": { $ref: "#/components/responses/BadRequest" }
         "403":
-          description: Delete photo failed
+          description: Delete photo and post failed
           headers:
             X-Message:
               description: Error message
@@ -329,25 +390,25 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
 
-  /users/{userID}/post/{uniquePhotoID}/likePhoto:
+  /users/{userID}/posts/{uniquePostID}/like:
     parameters:
       - name : userID
         in: path 
-        description: The user Id of the user who wants to (un)like the photo
+        description: The user Id of the user who wants to (un)like the post
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: uniquePhotoID
+      - name: uniquePostID
         in: path
-        description: The photo Id of the photo to (un)like
-        schema: { $ref: "#/components/schemas/UniquePhotoID" }
+        description: The unique post id of the post to (un)like
+        schema: { $ref: "#/components/schemas/UniquePostID" }
         required: true
 
     put: 
       tags: ["Post"]
       operationId: likePhoto
-      summary: Like the photo and add the user to the likes list of the photo.
+      summary: Like the post and add the user to the likes list of the post.
       description: |-
-        Like photo
+        Like post
       security:
         - bearerAuth: []
       responses:
@@ -365,9 +426,9 @@ paths:
     delete: 
       tags: ["Post"]
       operationId: unlikePhoto
-      summary: Unlike photo
+      summary: Unlike post
       description: |-
-        Unlike the photo and remove the user from the likes list of the photo.
+        Unlike the post and remove the user from the likes list of the post.
       security:
         - bearerAuth: []
       responses:
@@ -381,25 +442,77 @@ paths:
               description: Error message
               schema: { type: string }
         "500": { $ref: '#/components/responses/InternalServerError' }
+  
+  /users/{userID}/posts/{uniquePostID}/likes:
+    parameters:
+      - name: userID
+        in: path
+        description: The user Id of the user who wants to see the list of users who liked the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: uniquePostID
+        in: path
+        description: The unique post id of the post to see the list of users who liked it
+        schema: { $ref: "#/components/schemas/UniquePostID" }
+        required: true
 
-  /users/{userID}/post/{uniquePhotoID}/commentPhoto: 
+      - name: start
+        in: query
+        description: The start index of the list of users who liked the post
+        schema: { type: integer }
+        required: false
+      - name: limit
+        in: query
+        description: |
+
+        schema: { type: integer, minimum: 1, maximum: 100 }
+        required: false
+    get: 
+      tags: ["Post"]
+      operationId: getLikes
+      summary: Get the list of users who liked the post
+      description: |-
+        Get the list of users who liked the post, 
+        the users object is composed by the userID and the username.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get the list of users who liked the post
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/User" } 
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Get the list of users who liked the post failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/posts/{uniquePostID}/comment: 
     parameters:
       - name : userID
         in: path 
-        description: The user Id of the user who wants to comment the photo
+        description: The user Id of the user who wants to comment the post
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: uniquePhotoID
+      - name: uniquePostID
         in: path
-        description: The unique photo Id of the photo to comment
-        schema: { $ref: "#/components/schemas/UniquePhotoID" }
+        description: The unique post Id of the post to comment
+        schema: { $ref: "#/components/schemas/UniquePostID" }
         required: true
+    
     post: 
       tags: ["Post"]
       operationId: commentPhoto
-      summary: Comment photo
+      summary: Comment post
       description: |-
-        Comment photo
+        Comment post
       security:
         - bearerAuth: []
       requestBody:
@@ -427,21 +540,6 @@ paths:
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  #non metto uniquePhotoID perché può cancellare i post solo il proprietario, cioè lo user id che combacia con uniquePhotoID[:5]
-  /users/{userID}/photo/{photoID}/deleteCommentPhoto: 
-    parameters:
-    - name: userID 
-      in: path
-      description: |
-        The user Id of the user who wants to delete the comment. 
-        Only the owner post can delete comments.
-      schema: { $ref: "#/components/schemas/UserID" }
-      required: true
-    - name: photoID
-      in: path
-      description: The photo Id of the photo whose comment you want to delete.
-      schema: { $ref: "#/components/schemas/PhotoID" }
-      required: true
     delete: 
       tags: ["Post"]
       operationId: deleteCommentPhoto
@@ -461,6 +559,71 @@ paths:
               description: Error message
               schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/posts/{uniquePostID}/comments:
+    parameters:
+      - name : userID
+        in: path 
+        description: The user Id of the user who wants to get the comments of the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: uniquePostID
+        in: path
+        description: The unique post Id of the post to get the comments
+        schema: { $ref: "#/components/schemas/UniquePostID" }
+        required: true
+      - name: start
+        in: query
+        description: | 
+          The start index of the comments to get. <br>
+          If not specified, the default value is 0. <br>
+          If the value is not a integer, the default value is 0. <br>
+          If the value is negative, the default value is 0. <br>
+          If the value is greater than the number of comments, the response will be empty.
+        schema: { type: integer, default: 0 }
+        required: false 
+      - name: limit
+        in: query
+        description: |
+          The number of comments to return. <br>
+          If not specified, the default is 20. <br>
+          If the value is greater than 100, it will be set to 100. <br>
+          If the value is less than 1, it will be set to 1. <br>
+          If the value is not a integer, it will be set to 20. <br>
+          If the value is greater than the number of comments, it will be set to the number of comments.
+        #il default value è da capire in base a quanti commenti entrano in una schermata
+        schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
+        required: false
+
+    get: 
+      tags: ["Post"]
+      operationId: getComments
+      summary: Get a subset or all comments of a post
+      description: |-
+        Get a subset or all comments of a post. 
+        It's possible to specify a range and limit of comments to get by using query parameters.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get comments successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/Comment" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403":
+          description: Get comments failed
+          headers:
+            X-Message:
+              description: Error message
+              schema: { type: string }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+
+#---------------------------COMPONENTS--------------------------#
 
 components:
   schemas:
@@ -506,21 +669,13 @@ components:
       description: List of likes
       type: array
       items:
-        type: object
-        properties:
-          user: { $ref: "#/components/schemas/User" }
-    #possibile idea è quella di unire il photoid e lo user id, per averli tutti in una volta -> uniquephotoID
-    PhotoID:
-      title: Photo id
-      description: Numeric id of the photo
-      type: string
-      pattern: '^[a-zA-Z]{3}$'
-      example: "aAk"
-      minLength: 3
-      maxLength: 3
-    UniquePhotoID: 
-      title: UniquePhotoID 
-      description: The unique photo id is the combination of the user id and photo id
+        { $ref: "#/components/schemas/User" }
+    UniquePostID: 
+      title: UniquePostID 
+      description: |
+        The unique post id is used to identify a post.
+        The unique post id is the combination of the user id and post id.
+        The post id is generated by the server and it's unique for each user.
       type: string
       pattern: '^[0-9]{5}[a-zA-Z]{3}$'
       example: "00010aAz"
@@ -528,10 +683,18 @@ components:
       maxLength: 8
     Comment:
       title: Comment
-      description: Comment of the photo
+      description: Comment of the post
       type: object
       properties:
-        fromUser: { $ref: "#/components/schemas/User" }
+        CommentID:
+          type: string
+          description: |
+            The comment id is the combination of the user id and a numeric id.
+            The numeric id is generated by the server and it's unique for each user.
+          pattern: '^[0-9]{5}[0-9]{2}$'
+          example: "000100"
+          minLength: 7
+          maxLength: 7
         text:
           type: string
           example: "Bella foto!"
@@ -541,25 +704,38 @@ components:
         timestamp: 
           type: string
           format: date-time 
-    CommentList:
+    CommentsList:
       title: Comment List
-      description: All comment of the photo
+      description: All comment of the post
       type: array
       items:
         { $ref: "#/components/schemas/Comment" }
-    #dovrebbe essere inutile
-    Photo: 
-      title: Photo
-      description: Photo of the user
+    Post: 
+      title: Post
+      description: The post is a collection of post, like count and comment cou. Contain a timestamp.
       type: object
       properties:
-        photoID: { $ref: "#/components/schemas/PhotoID" }
-        userID: { $ref: "#/components/schemas/UserID" }
-        photo:
+        uniquePostID: { $ref: "#/components/schemas/UniquePostID" }
+        photoURL: 
           type: string
-          format: binary
-        likes: { $ref: "#/components/schemas/LikeList" }
-        comments: { $ref: "#/components/schemas/CommentList" }
+          format: uri
+          #vorrei usare l'estensione webp
+          pattern: '^https:\/\/[a-zA-Z.-_\/]*\/[0-9]{5}\/[a-zA-Z]{3}\.jpg$'
+          example: "https://www.example.com/users/00001/posts/aAk.jpg"
+        caption:
+          type: string
+          example: "Foto al lago con Haru"
+          pattern: '^[^\/\\]{1,100}$'
+          minLength: 0
+          maxLength: 100
+        likesCount: 
+          type: number
+          format: int32
+          minimum: 0
+        commentsCount:
+          type: number
+          format: int32
+          minimum: 0 
         timestamp: 
           type: string
           format: date-time 
