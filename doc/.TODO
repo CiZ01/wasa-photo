@@ -12,5 +12,8 @@ _es.click sul numero di like e click sull'icona dei commenti_
 **#TODO** sistemare getuserprofile, non ritorna tutti i psot, aggiungere query. lista follower e lista following vanno ritornare dopo, va ritornata la propic. \
 **#TODO** Aggiungere propic. \
 **#DONE** getMyStream add query range \
-**#TODO** gestire l'errore dei query range, in caso lo start sia out of index. \
-**#TODO** controllare le descriptions \
+**#DONE** gestire l'errore dei query range, in caso lo start sia out of index. \
+**#TODO** controllare le descriptions per limit\
+**#TODO** sistemare tutti i bold delle description \
+**#TODO** creare component: followers, followings, bio, profilePic \
+**#TODO** aggiungere 404 per quando manca la risorsa \

@@ -37,7 +37,7 @@ paths:
                 username: { $ref: "#/components/schemas/Username" }
         required: true
       responses:
-        201:
+        "201":
           description: |
             A new account has been created.
           content:
@@ -47,8 +47,8 @@ paths:
                 type: object
                 properties:
                   auth: { $ref: "#/components/schemas/Auth" }
-                  userID: { $ref: "#/components/schemas/UserID" }
-        200:
+                  user: { $ref: "#/components/schemas/User" }
+        "200":
           description: |
             Log-in succesfull.
           content:
@@ -58,7 +58,7 @@ paths:
                 properties:
                   auth: { $ref: "#/components/schemas/Auth" }
                   userID: { $ref: "#/components/schemas/UserID" }
-        400:
+        "400":
           description: |
             Formatting request invalid.
             Missing argument or username formatting is invalid
@@ -97,14 +97,7 @@ paths:
       responses:
         "200":
           description: Set user name successful
-
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Set user name failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/feed: 
@@ -134,7 +127,7 @@ paths:
           <details> 
           <summary> Other details </summary>
           If the value is **greater than 50**, it will be set to 50. <br>
-          If the value is less than 1, it will be set to 1. <br>
+          If the value is less than 1, it will be set to 10. <br>
           If the value is not specified, it will be set to 10. <br>
           If the value is not an integer, it will be set to 10. <br>
           If the value is greater than the number of posts, it will be set to the number of posts. 
@@ -147,7 +140,7 @@ paths:
       operationId: getMyStream
       summary: Get the user stream
       description: |-
-        Get the user stream, return a list of posts. See Post schema for more details.
+        Get the user stream, return a list of posts sorted chronologically. See Post for more details.
       security:
         - bearerAuth: []
       responses:
@@ -160,12 +153,6 @@ paths:
                 items:
                   { $ref: "#/components/schemas/Post" }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Get stream failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/follow/{targetUserID}:
@@ -193,12 +180,6 @@ paths:
         "200":
           description: Follow user successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Follow user failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
     
     delete:
@@ -213,12 +194,6 @@ paths:
         "200":
           description: Unfollow user successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Unfollow user failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/ban/{targetUserID}: 
@@ -246,12 +221,6 @@ paths:
         "200":
           description: Ban user successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Ban user failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
     
     delete:
@@ -266,12 +235,6 @@ paths:
         "200":
           description: Unban user successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Unban user failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   
@@ -299,14 +262,14 @@ paths:
         - bearerAuth: []
       responses:
         "200":
-          description: Get user profile successful
+          description: |
+            Get user profile successful. Return some information about the user.
+            For posts list see /users/{usersID}/posts: get.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Get user profile failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
   /users/{userID}/posts/upload:
@@ -343,14 +306,8 @@ paths:
       
       responses:
         "201":
-          description: Upload photo and created post successful
+          description: Upload photo and created post successful.
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Upload photo or created post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/posts/{uniquePostID}/delete:
@@ -381,14 +338,63 @@ paths:
         "200":
           description: Delete photo and post successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Delete photo and post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /users/{userID}/posts:
+    parameters: 
+      - name: userID
+        in: path
+        description: The user Id of the user whose posts you want to see
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: start
+        in: query
+        description: |
+          The start index of the posts to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If the value is **not specified**, it will be set to 10. <br>
+          If the value is **greater than** the number of likes, an empty array will be returned. <br>
+          If the value is **negative**, it will be set to 0. <br>
+          If the value is **not an integer**, it will be set to 0.
+          </details>
+        schema: { type: integer }
+        required: false
+      - name: limit
+        in: query
+        description: |
+          The number of posts to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If the value is **greater than 50**, it will be set to 50. <br>
+          If the value is **less than 1**, it will be set to 10. <br>
+          If the value is **not specified**, it will be set to 10. <br>
+          If the value is **not an integer**, it will be set to 10. <br>
+          If the value is **greater than the number of posts**, it will be set to the number of posts. 
+          </details>
+        schema: { type: integer, default: 10, minimum: 1, maximum: 50 }
+        required: false
+
+
+    get:
+      tags: ["Post"]
+      operationId: getPosts
+      summary: Get posts
+      description: |-
+        Get the posts of the user with the given user ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get posts list successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/Post" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/posts/{uniquePostID}/like:
     parameters:
@@ -412,15 +418,9 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        "201":
           description: Liked successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete: 
@@ -435,12 +435,6 @@ paths:
         "200":
           description: Unliked successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: '#/components/responses/InternalServerError' }
   
   /users/{userID}/posts/{uniquePostID}/likes:
@@ -458,14 +452,30 @@ paths:
 
       - name: start
         in: query
-        description: The start index of the list of users who liked the post
+        description: |
+          The start index of the likes to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If not specified, the value will be set to 0. <br>
+          If the value is greater than the number of likes, an empty array will be returned. <br>
+          If the value is negative, it will be set to 0. <br>
+          If the value is not an integer, it will be set to 0.
+          </details>
         schema: { type: integer }
         required: false
       - name: limit
         in: query
         description: |
-
-        schema: { type: integer, minimum: 1, maximum: 100 }
+          The number of likes to get. <br>
+          <details> 
+          <summary> Other details </summary>
+          If the value is **greater than 100**, it will be set to 100. <br>
+          If the value is less than 1, it will be set to 10. <br>
+          If the value is not specified, it will be set to 10. <br>
+          If the value is not an integer, it will be set to 10. <br>
+          If the value is greater than the number of likes, it will be set to the number of likes. 
+          </details>
+        schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
         required: false
     get: 
       tags: ["Post"]
@@ -486,12 +496,6 @@ paths:
                 items:
                   { $ref: "#/components/schemas/User" } 
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Get the list of users who liked the post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/posts/{uniquePostID}/comment: 
@@ -518,10 +522,7 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              properties:
-                comment: { $ref: "#/components/schemas/Comment" }
+            schema: { $ref: "#/components/schemas/Comment" }
       responses:
         "201":
           description: Comment created successful
@@ -532,12 +533,6 @@ paths:
                 properties:
                   commentID: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete: 
@@ -552,12 +547,6 @@ paths:
         "200":
           description: Comment deleted successful
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Post failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /users/{userID}/posts/{uniquePostID}/comments:
@@ -577,9 +566,9 @@ paths:
         description: | 
           The start index of the comments to get. <br>
           If not specified, the default value is 0. <br>
-          If the value is not a integer, the default value is 0. <br>
+          If the value is greater than the number of comments, an empty array will be returned.
           If the value is negative, the default value is 0. <br>
-          If the value is greater than the number of comments, the response will be empty.
+          If the value is not a integer, the default value is 0. <br>        
         schema: { type: integer, default: 0 }
         required: false 
       - name: limit
@@ -614,12 +603,6 @@ paths:
                 items:
                   { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "403":
-          description: Get comments failed
-          headers:
-            X-Message:
-              description: Error message
-              schema: { type: string }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
 
@@ -627,20 +610,6 @@ paths:
 
 components:
   schemas:
-    StatusInfo:
-      title: Status Info
-      type: object
-      properties:
-        status:
-          type: string
-          enum:
-            - info
-            - warning
-            - critical
-            - ""
-        title: { type: string }
-        message: { type: string }
-        url: { type: string }
     UserID:
       title: User id
       description: Numeric id of the user
@@ -664,6 +633,17 @@ components:
       properties:
         userID: { $ref: "#/components/schemas/UserID" }
         username: { $ref: "#/components/schemas/Username" }
+    Profile:
+      title: Profile
+      description: Profile of the user
+      type: object
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        #bio: { $ref: "#/components/schemas/Bio" }
+        #profilePic: { $ref: "#/components/schemas/ProfilePic" }
+        #followers: { $ref: "#/components/schemas/Followers" }
+        #following: { $ref: "#/components/schemas/Following" }
+        #non ritorna posts, i posts verrano ritornati con un'altra chiamata
     LikeList:
       title: Like List
       description: List of likes
