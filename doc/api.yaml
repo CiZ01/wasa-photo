@@ -96,35 +96,8 @@ paths:
         description: The user Id of the user who want to get his stream
         schema: { $ref: "#/components/schemas/UserID" }      
         required: true
-      - name: start
-        in: query
-        description: |
-          The start index of the posts to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is not specified, it will be set to 0. <br>
-          If the value is greater than the number of posts, an empty array will be returned. <br>
-          If the value is negative, it will be set to 0. <br>
-          If the value is not an integer, it will be set to 0.
-          </details>
-        schema: { type: integer, default: 0, minimum: 0 }
-        required: false 
-      - name: limit
-        in: query
-        description: |
-          The number of posts to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is not specified, it will be set to 10. <br>          
-          If the value is **greater than 50**, it will be set to 50. <br>
-          If the value is less than 1, it will be set to 10. <br>
-          If the value is not specified, it will be set to 10. <br>
-          If the value is not an integer, it will be set to 10. <br>
-          If the value is greater than the number of posts, it will be set to the number of posts. 
-          </details>
-        schema: { type: integer, default: 10, minimum: 1, maximum: 50 }
-        required: false
-
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
     get: 
       tags: ["User"]
       operationId: getMyStream
@@ -365,33 +338,8 @@ paths:
         description: The user Id of the user whose posts you want to see
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: start
-        in: query
-        description: |
-          The start index of the posts to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is **not specified**, it will be set to 0. <br>
-          If the value is **greater than** the number of posts, an empty array will be returned. <br>
-          If the value is **negative**, it will be set to 0. <br>
-          If the value is **not an integer**, it will be set to 0.
-          </details>
-        schema: { type: integer, default: 0, minimum: 0 }
-        required: false
-      - name: limit
-        in: query
-        description: |
-          The number of posts to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is **greater than 50**, it will be set to 50. <br>
-          If the value is **less than 1**, it will be set to 10. <br>
-          If the value is **not specified**, it will be set to 10. <br>
-          If the value is **not an integer**, it will be set to 10. <br>
-          If the value is **greater than the number of posts**, it will be set to the number of posts. 
-          </details>
-        schema: { type: integer, default: 10, minimum: 1, maximum: 50 }
-        required: false
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
     get:
       tags: ["Post"]
       operationId: getPosts
@@ -471,33 +419,9 @@ paths:
         schema: { $ref: "#/components/schemas/UniquePostID" }
         required: true
 
-      - name: start
-        in: query
-        description: |
-          The start index of the likes to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is **not specified**, it will be set to 0. <br>
-          If the value is **greater than** the number of likes, an empty array will be returned. <br>
-          If the value is **negative**, it will be set to 0. <br>
-          If the value is **not an integer**, it will be set to 0.
-          </details>
-        schema: { type: integer, default: 0, minimum: 0 }
-        required: false
-      - name: limit
-        in: query
-        description: |
-          The number of likes to get. <br>
-          <details> 
-          <summary> Other details </summary>
-          If the value is **not specified**, it will be set to 20. <br>
-          If the value is **greater than 100**, it will be set to 100. <br>
-          If the value is **less than 1**, it will be set to 20. <br>
-          If the value is **not an integer**, it will be set to 20. <br>
-          If the value is **greater than the number of likes**, it will be set to the number of likes. 
-          </details>
-        schema: { type: integer, default: 20, minimum: 1, maximum: 100 }
-        required: false
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+
     get: 
       tags: ["Post"]
       operationId: getLikes
@@ -512,7 +436,7 @@ paths:
           description: Get the list of users who liked the post
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/LikesList" }
+              schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -556,7 +480,7 @@ paths:
       operationId: uncommentPhoto
       summary: Delete a comment from a post
       description: |-
-        Delete the comment specified by ID in query from the post.
+        Delete the comment specified by ID in path from the post.
       security:
         - bearerAuth: []
       responses:
@@ -581,34 +505,8 @@ paths:
         description: The unique post Id of the post to get the comments
         schema: { $ref: "#/components/schemas/UniquePostID" }
         required: true
-      - name: start
-        in: query
-        description: | 
-          The start index of the comments to get. <br>
-          <details>
-          <summary> Other details </summary>
-          If the value is **not specified**, it will be set to 0. <br>
-          If the value is **greater than** the number of comments, an empty array will be returned.
-          If the value is **negative**, the default value is 0. <br>
-          If the value is **not a integer**, the default value is 0.
-          </details>
-        schema: { type: integer, default: 0, minimum: 0 }
-        required: false 
-      - name: limit
-        in: query
-        description: |
-          The number of comments to return. <br>
-          <details>
-          <summary>Other details</summary>
-          If the value is **not specified**, it will be set to 20. <br>
-          If the value is **greater than 100**, it will be set to 100. <br>
-          If the value is **less than 1**, it will be set to 20. <br>
-          If the value is **not a integer**, it will be set to 20. <br>
-          If the value is **greater than** the number of comments, it will be set to the number of comments.
-          </details>
-        #il default value è da capire in base a quanti commenti entrano in una schermata
-        schema: { type: integer, default: 20, minimum: 1, maximum: 50 }
-        required: false
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
 
     get: 
       tags: ["Post"]
@@ -664,18 +562,11 @@ components:
       properties:
         user: { $ref: "#/components/schemas/User" }
         bio: { $ref: "#/components/schemas/Bio" }
-        #profilePic: { $ref: "#/components/schemas/ProfilePic" }
-        #followers: { $ref: "#/components/schemas/Followers" }
-        #following: { $ref: "#/components/schemas/Following" }
+        profilePic: { $ref: "#/components/schemas/ImgURL" }
+        followers: { $ref: "#/components/schemas/UsersList" }
+        followings: { $ref: "#/components/schemas/UsersList" }
         #non ritorna posts, i posts verrano ritornati con un'altra chiamata
-    LikesList:
-      title: Likes List
-      description: List of likes
-      type: array
-      items:
-        { $ref: "#/components/schemas/User" }
-      minItems: 0
-      maxItems: 100
+        #forse si potrebbe usare link nei responses.
     UniquePostID: 
       title: UniquePostID 
       description: |
@@ -692,7 +583,9 @@ components:
       description: Comment of the post
       type: object
       properties:
-        CommentID:
+        user: { $ref: "#/components/schemas/User" }
+        userProPic: { $ref: "#/components/schemas/ImgURL" }
+        commentID:
           type: string
           description: |
             The comment id is the combination of the user id and a numeric id.
@@ -720,20 +613,14 @@ components:
       items:
         { $ref: "#/components/schemas/Comment" }
       minItems: 0
-      maxItems: 50
+      maxItems: 100
     Post: 
       title: Post
       description: The post is a collection of post, like count and comment cou. Contain a timestamp.
       type: object
       properties:
         uniquePostID: { $ref: "#/components/schemas/UniquePostID" }
-        photoURL: 
-          type: string
-          format: uri
-          #vorrei usare l'estensione webp
-          pattern: '^https:\/\/[a-zA-Z.-_\/]*\/users\/[0-9]{5}\/posts\/[a-zA-Z]{3}\.jpg$'
-          minLength: 34
-          example: "https://www.example.com/users/00001/posts/aAk.jpg"
+        photoURL: { $ref: "#/components/schemas/ImgURL" }
         caption:
           type: string
           example: "Foto al lago con Haru"
@@ -761,13 +648,20 @@ components:
       items:
         { $ref: "#/components/schemas/Post" }
       minItems: 0
-      maxItems: 50
-    FollowsList: #vorrei aggiungere anche la propic ai commenti...
-      title: Follow List
-      description: List of followers or following
+      maxItems: 100
+    UsersList:
+      title: Users List
+      description: |
+        A list of users for many responses.
+        It's used to get a list of users for the search, follower and followings lists, banned users list and likes list.
       type: array
       items:
-        { $ref: "#/components/schemas/User" }
+          type: object
+          properties:
+            user: { $ref: "#/components/schemas/User" }
+            proPic: { $ref: "#/components/schemas/ImgURL" }
+      minItems: 0
+      maxItems: 100
     Bio:
       title: Bio
       description: Bio of the user
@@ -798,6 +692,17 @@ components:
       example: "OK, action successfully completed"
       minLength: 2
       maxLength: 50
+    ImgURL:
+      title: ImgURL
+      description: Image URL specification.
+      type: string
+      format: uri
+      #vorrei usare l'estensione webp
+      pattern: '^https:\/\/[a-zA-Z.-_\/]*\/users\/[0-9]{5}\/(propic|posts)\/[a-zA-Z]{3}\.jpg$'
+      minLength: 34
+      example: 
+        - "https://www.example.com/users/00001/posts/aAk.jpg"
+        - "https://www.example.com/users/00001/propic/sNd.jpg"
 
   
   responses:
@@ -808,6 +713,8 @@ components:
           schema:
             type: string
             example: "Unauthorized"
+            minLength: 12
+            maxLength: 30
     BadRequest:
       description: The request was not compliant with the documentation (eg. missing fields, etc).
       content:
@@ -815,6 +722,8 @@ components:
           schema:
             type: string
             example: "Bad Request"
+            minLength: 11
+            maxLength: 30
     InternalServerError:
       description: The server encountered an internal error. Further info in server logs.
       content:
@@ -822,6 +731,8 @@ components:
           schema:
             type: string
             example: "Internal Server Error"
+            minLength: 21
+            maxLength: 30
     NotFound:
       description: The resource was not found.
       content:
@@ -829,8 +740,40 @@ components:
           schema:
             type: string
             example: "Not Found"
-
+            minLength: 9
+            maxLength: 30
   securitySchemes:
     bearerAuth:    
       type: http
       scheme: bearer
+
+  parameters:
+    Offset:
+      name: offset
+      in: query
+      description: |
+        The start index of the elements to get. <br>
+        <details> 
+        <summary> Other details </summary>
+        If the value is **not specified**, it will be set to 0. <br>
+        If the value is **greater than** the number of elements, an empty array will be returned. <br>
+        If the value is **negative**, it will be set to 0. <br>
+        If the value is **not an integer**, it will be set to 0.
+        </details>
+      schema: { type: integer, default: 0, minimum: 0 }
+      required: false
+    Limit:
+      name: Limit
+      in: query
+      description: |
+        The maximum number of elements to get. <br>
+        <details> 
+        <summary> Other details </summary>
+        If the value is **not specified**, it will be set to 10. <br>          
+        If the value is **greater than 100**, it will be set to 100. <br>
+        If the value is **less than 1**, it will be set to 10. <br>
+        If the value is **not an integer**, it will be set to 10. <br>
+        If the value is **greater than** the number of elements, it will be set to the total number of elements. 
+        </details>
+      schema: { type: integer, default: 10, minimum: 1, maximum: 100 }
+      required: false

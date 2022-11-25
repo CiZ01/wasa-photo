@@ -1,22 +1,22 @@
 ***#DONE*** Sistemare tutte le regex \
 ***#DONE*** getMyStream \
-***#DONE***sistemare tutti i path ed evitare tante request 
-body. forse l'avrei finito \
+***#DONE***sistemare tutti i path ed evitare tante request body. forse l'avrei finito \
 ***#DONE*** sistemare i response \
 ***#DONE*** get comments list and likes list \    
 ***#DONE*** sistemare il ritorno dei dati. Quando un client fa richiesta di un post, 
-oltre alla foto viene inviato anche il numero di like e commenti, timestap e caption 
-la lista di commenti e like viene inviata dopo a richieste esplicite. \
-_es.click sul numero di like e click sull'icona dei commenti_
-(potrei fare anche double click) \
-**#TODO** sistemare getuserprofile, non ritorna tutti i psot, aggiungere query. lista follower e lista following vanno ritornare dopo, va ritornata la propic. \
-**#TODO** Aggiungere propic. \
+            oltre alla foto viene inviato anche il numero di like e commenti, timestap e caption 
+            la lista di commenti e like viene inviata dopo a richieste esplicite. \
+            _es.click sul numero di like e click sull'icona dei commenti_
+            (potrei fare anche double click) \
+***#DONE*** sistemare getuserprofile, non ritorna tutti i psot, aggiungere query. lista follower e lista following vanno 
+            ritornare  dopo, va ritornata la propic. \
 ***#DONE*** getMyStream add query range \
 ***#DONE*** gestire l'errore dei query range, in caso lo start sia out of index. \
-**#TODO** controllare le descriptions per limit\
-**#TODO** sistemare tutti i bold delle description \
-**#TODO** creare component: followers, followings, bio, profilePic \
+***#DONE*** controllare le descriptions per limit\
+***#DONE*** sistemare tutti i bold delle description \
+***#DONE*** creare component: followers, followings, bio, profilePic \
 **#TODO** aggiungere 404 per quando manca la risorsa \
 ***#DONE*** add 401 Unauthorized \
 ***#DONE*** set array min adn max \
-**#TODO** add pattern to schema OK 
+**#TODO** add pattern to schema OK  \
+***#DONE*** potrei raggruppare le description 
