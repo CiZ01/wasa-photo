@@ -89,7 +89,8 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }        
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/feed: 
+  #non mi convince
+  /feeds/{userID}: 
     parameters:
       - name: userID 
         in: path
@@ -300,7 +301,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/profile/{profileUserID}:
+  /users/{userID}/profiles/{profileUserID}:
     parameters:
     - name: profileUserID
       in: path
@@ -523,7 +524,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/comment/{username}: 
+  /users/{userID}/posts/{uniquePostID}/comments/{username}: 
     parameters:
       - name : userID
         in: path 

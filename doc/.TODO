@@ -19,4 +19,6 @@
 **#TODO** fix schema description and schema property description \
 **#TODO** aggiungere 404 per quando manca la risorsa \
 **#TODO** add pattern to schema OK  
+**#TODO** ripensare a feed
+**#TODO** non mi convince setMyUsername path
 
