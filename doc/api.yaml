@@ -115,7 +115,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/follow/{targetUserID}:
+  /users/{userID}/followings/{targetUserID}:
     parameters:
     - name: targetUserID
       in: path
@@ -167,7 +167,61 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/ban/{targetUserID}: 
+  /users/{userID}/followers:
+    get:
+      parameters:
+      - name: userID
+        in: path
+        description: The user Id of the user who want to get his followers
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+      tags: ["User"]
+      operationId: getMyFollowers
+      summary: Get my followers
+      description: |-
+        Get the followers of the user with the given user ID.
+        Return a list of users. See User for more details.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get followers successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  /users/{userID}/followings:
+    get:
+      parameters:
+      - name: userID
+        in: path
+        description: The user Id of the user who want to get his followings.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+      tags: ["User"]
+      operationId: getMyFollowers
+      summary: Get my followers
+      description: |-
+        Get the followings of the user with the given user ID.
+        Return a list of users. See User for more details.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get followings successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/banneds/{targetUserID}: 
     parameters:
     - name: targetUserID 
       in: path
@@ -191,8 +245,8 @@ paths:
       responses:
         "200":
           description: |-
-            Ban user successful.
-            Return the user ID and username of the banned user.
+            Ban user successful. <br>
+            Return the user of the banned user. See User for more details. 
           content:
             application/json:
               schema: { $ref: "#/components/schemas/User" }
@@ -219,8 +273,33 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }        
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  
-  #penso che non ci sia problema se ritornare o no un profilo, visto che non esistono privati.
+  /users/{userID}/banneds:
+    get:
+      parameters:
+      - name: userID
+        in: path
+        description: The user Id of the user who want to get his bans
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+      tags: ["User"]
+      operationId: getMyBans
+      summary: Get my bans
+      description: |-
+        Get the bans of the user with the given user ID.
+        Return a list of users. See User for more details.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get bans successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
   /users/{userID}/profile/{profileUserID}:
     parameters:
     - name: profileUserID
@@ -254,7 +333,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }       
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{userID}/posts/upload:
+  /users/{userID}/posts:
     parameters:
       - name: userID
         in: path
@@ -291,6 +370,8 @@ paths:
                   description: The photo to upload.
                   type: string
                   format: binary
+                  minLength: 1
+                  maxLength: 1000000
       
       responses:
         "201":
@@ -302,7 +383,25 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }        
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/delete:
+    get:
+      tags: ["Post"]
+      operationId: getPosts
+      summary: Get posts
+      description: |-
+        Get the posts of the user with the given user ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get posts list successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PostsList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }        
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/posts/{uniquePostID}:
     parameters:
     - name: userID
       in: path
@@ -336,34 +435,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }        
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts:
-    parameters: 
-      - name: userID
-        in: path
-        description: The user Id of the user whose posts you want to see
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
-    get:
-      tags: ["Post"]
-      operationId: getPosts
-      summary: Get posts
-      description: |-
-        Get the posts of the user with the given user ID
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Get posts list successful
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/PostsList" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }        
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /users/{userID}/posts/{uniquePostID}/like:
+  /users/{userID}/posts/{uniquePostID}/likes/{username}:
     parameters:
       - name : userID
         in: path 
@@ -374,6 +446,11 @@ paths:
         in: path
         description: The unique post id of the post to (un)like
         schema: { $ref: "#/components/schemas/UniquePostID" }
+        required: true
+      - name: username
+        in: path
+        description: The username of the user who wants to (un)like the post
+        schema: { $ref: "#/components/schemas/Username" }
         required: true
 
     put: 
@@ -446,17 +523,22 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/comment: 
+  /users/{userID}/posts/{uniquePostID}/comment/{username}: 
     parameters:
       - name : userID
         in: path 
-        description: The user Id of the user who wants to comment the post
+        description: The user Id of the user who wants to (un)comment the post
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
         in: path
         description: The unique post Id of the post to comment
         schema: { $ref: "#/components/schemas/UniquePostID" }
+        required: true
+      - name: username
+        in: path
+        description: The username of the user who wants to (un)comment the post
+        schema: { $ref: "#/components/schemas/User" }
         required: true
     
     post: 
@@ -700,9 +782,8 @@ components:
       #vorrei usare l'estensione webp
       pattern: '^https:\/\/[a-zA-Z.-_\/]*\/users\/[0-9]{5}\/(propic|posts)\/[a-zA-Z]{3}\.jpg$'
       minLength: 34
-      example: 
-        - "https://www.example.com/users/00001/posts/aAk.jpg"
-        - "https://www.example.com/users/00001/propic/sNd.jpg"
+      maxLength: 128
+      example: "https://www.example.com/users/00001/posts/aAk.jpg"
     Timestamp:
       title: Timestamp
       description: The timestamp of the post.
