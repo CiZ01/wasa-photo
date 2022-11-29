@@ -22,4 +22,5 @@
 **#TODO** non mi convince setMyUsername path
 **#TODO** l'idea adesso è quella di aggiungere a tutti il profiles, quindi users è inutile? \
             perché in questo caso usando users sempre, mi si rompe search.
+**#TODO** dovrei sistemare tutti i uniquePostID ora dovrebbe essere inutile
 
