@@ -90,7 +90,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   #non mi convince
-  /users/{userID}/feeds:
+  /users/{userID}/feed:
     parameters:
       - name: userID
         in: path
@@ -173,12 +173,17 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/followers:
+  /users/{userID}/profiles/{profileUserID}/followers:
     get:
       parameters:
         - name: userID
           in: path
           description: The user Id of the user who want to get his followers
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+        - name: profileUserID
+          in: path
+          description: The user Id of the owner of the post.
           schema: { $ref: "#/components/schemas/UserID" }
           required: true
         - { $ref: "#/components/parameters/Offset" }
@@ -348,11 +353,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts:
+  /users/{userID}/profiles/{profileUserID}/posts:
     parameters:
       - name: userID
         in: path
-        description: The user Id of the user who wants to add/delete the post.
+        description: The user Id of the user who wants to add or see the posts.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the posts.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
@@ -377,7 +387,7 @@ paths:
                 caption:
                   description: The caption of the post.
                   type: string
-                  pattern: "^[^\/\\]{1,100}$"
+                  pattern: "^[^\/\\]{1,64}$"
                   example: "In montagna con Haru"
                   minLength: 1
                   maxLength: 64
@@ -418,13 +428,19 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}:
+  /users/{userID}/profiles/{profileUserID}/posts/{uniquePostID}:
     parameters:
       - name: userID
         in: path
         description: |-
           The user Id of the user who wants to delete the post.
-          Only the owner of the post can delete it
+          Only the owner of the post can delete it.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: |-
+          The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
@@ -453,11 +469,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/likes/{username}:
+  /users/{userID}/profiles/{profileUserID}/posts/{uniquePostID}/likes/{username}:
     parameters:
       - name: userID
         in: path
         description: The user Id of the user who wants to (un)like the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
@@ -509,11 +530,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/likes:
+  /users/{userID}/profiles/{profileUserID}/posts/{uniquePostID}/likes:
     parameters:
       - name: userID
         in: path
         description: The user Id of the user who wants to see the list of users who liked the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
@@ -545,11 +571,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/comments/{username}:
+  /users/{userID}/profiles/{profileUserID}/posts/{uniquePostID}/comments/{username}:
     parameters:
       - name: userID
         in: path
         description: The user Id of the user who wants to (un)comment the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
@@ -605,11 +636,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /users/{userID}/posts/{uniquePostID}/comments:
+  /users/{userID}/profiles/{profileUserID}/posts/{uniquePostID}/comments:
     parameters:
       - name: userID
         in: path
         description: The user Id of the user who wants to get the comments of the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - name: uniquePostID
@@ -635,6 +671,47 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CommentsList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{userID}/profiles:
+    parameters:
+      - name: username
+        in: query
+        description: The username of the user to get the profile.
+        schema: { $ref: "#/components/schemas/Username" }
+        required: true
+      - name: fromFollows
+        in: query
+        description: The search is limited to followers and followings.
+        schema: 
+          type: boolean
+          default: false
+        required: false
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+    get:
+      tags: ["User"]
+      operationId: searchUsers
+      summary: Get the list of profiles 
+      description: |-
+        Get the list of Users that match with the username specified in the query.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userID
+          in: path
+          description: The user Id of the user who wants to get the list of profiles
+          schema: { $ref: "#/components/schemas/UserID" }
+          required: true
+      responses:
+        "200":
+          description: Get the list of profiles of the user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }

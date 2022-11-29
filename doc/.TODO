@@ -20,4 +20,6 @@
 ***#DONE*** aggiungere 404 per quando manca la risorsa \
 ***#DONE*** ripensare a feed
 **#TODO** non mi convince setMyUsername path
+**#TODO** l'idea adesso è quella di aggiungere a tutti il profiles, quindi users è inutile? \
+            perché in questo caso usando users sempre, mi si rompe search.
 
