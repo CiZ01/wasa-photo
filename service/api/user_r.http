@@ -1,0 +1,8 @@
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+
+{
+    "userID": 2,
+    "username": "h",
+    "userPropicURL": "asd"
+}

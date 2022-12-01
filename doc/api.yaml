@@ -174,15 +174,16 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profileUserID}/followers:
+    parameters:
+      - name: profileUserID
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }    
+
     get:
-      parameters:
-        - name: profileUserID
-          in: path
-          description: The user Id of the owner of the post.
-          schema: { $ref: "#/components/schemas/UserID" }
-          required: true
-        - { $ref: "#/components/parameters/Offset" }
-        - { $ref: "#/components/parameters/Limit" }
       tags: ["User"]
       operationId: getMyFollowers
       summary: Get my followers
@@ -203,15 +204,16 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profile/{profileUserID}/followings:
+    parameters:
+      - name: profileUserID
+        in: path
+        description: The user Id of the user who want to get his followings.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+
     get:
-      parameters:
-        - name: profileUserID
-          in: path
-          description: The user Id of the user who want to get his followings.
-          schema: { $ref: "#/components/schemas/UserID" }
-          required: true
-        - { $ref: "#/components/parameters/Offset" }
-        - { $ref: "#/components/parameters/Limit" }
       tags: ["User"]
       operationId: getMyFollowings
       summary: Get my followings
@@ -286,15 +288,16 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profileUserID}/banneds:
+    parameters:
+      - name: profileUserID
+        in: path
+        description: The user Id of the user who want to get his bans
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }    
+
     get:
-      parameters:
-        - name: profileUserID
-          in: path
-          description: The user Id of the user who want to get his bans
-          schema: { $ref: "#/components/schemas/UserID" }
-          required: true
-        - { $ref: "#/components/parameters/Offset" }
-        - { $ref: "#/components/parameters/Limit" }
       tags: ["User"]
       operationId: getMyBans
       summary: Get my bans
@@ -363,7 +366,6 @@ paths:
       requestBody:
         content:
           multipart/form-data:
-            #possibile description
             schema:
               description: |-
                 The photo to upload and the caption of the post.

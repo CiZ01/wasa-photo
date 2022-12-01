@@ -36,17 +36,39 @@ import (
 	"fmt"
 )
 
-// AppDatabase is the high level interface for the DB
-type AppDatabase interface {
-	GetName() (string, error)
-	SetName(name string) error
+// ATTENTO A QUESTA
+var ErrFountainDoesNotExist = errors.New("fountain does not exist")
 
-	Ping() error
+type User struct {
+	UserID        uint32
+	Username      string
+	UserPropicURL string
 }
 
 type appdbimpl struct {
 	c *sql.DB
 }
+
+type AppDatabase interface {
+	CreateUser(u User) (User, error)
+	// Ping checks whether the database is available or not (in that case, an error will be returned)
+	Ping() error
+}
+
+var sqlStmt = `CREATE TABLE User 
+			(
+				userID INTEGER NOT NULL PRIMARY KEY, 
+				username STRING NOT NULL,
+				userPropicURL BLOB NOT NULL,
+				bio TEXT,
+				timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+				CHECK(
+					length(username) > 13 OR
+					length(username) < 3 OR
+					length(bio) > 64 OR
+					length(userID) > 5
+				)
+			);`
 
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
 // `db` is required - an error will be returned if `db` is `nil`.
@@ -57,9 +79,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='User';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)

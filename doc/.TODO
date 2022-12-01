@@ -1,26 +1,23 @@
 ***#DONE***sistemare tutti i path ed evitare tante request body. forse l'avrei finito \
 ***#DONE*** sistemare tutti i bold delle description \
 ***#DONE*** sistemare il ritorno dei dati. Quando un client fa richiesta di un post, oltre alla foto viene inviato anche il numero di like e commenti, timestap e caption 
-            la lista di commenti e like viene inviata dopo a richieste esplicite. \
-            _es.click sul numero di like e click sull'icona dei commenti_
-            (potrei fare anche double click) \
 ***#DONE*** sistemare i response \
 ***#DONE*** sistemare getuserprofile, non ritorna tutti i psot, aggiungere query. lista follower lista following vanno dopo, va ritornata la propic. \
 ***#DONE*** set array min adn max \
+***#DONE*** ripensare a feed
 ***#DONE*** potrei raggruppare le description  \
+***#DONE*** non mi convince setMyUsername path
+***#DONE*** l'idea adesso è quella di aggiungere a tutti il profiles, quindi users è inutile? \
 ***#DONE*** getMyStream add query range \
 ***#DONE*** getMyStream \
 ***#DONE*** get comments list and likes list \    
 ***#DONE*** gestire l'errore dei query range, in caso lo start sia out of index. \
 ***#DONE*** creare component: followers, followings, bio, profilePic \
 ***#DONE*** controllare le descriptions per limit\
+***#DONE*** aggiungere 404 per quando manca la risorsa \
 ***#DONE*** add 401 Unauthorized \
 ***#DONE*** Sistemare tutte le regex \
 **#TODO** fix schema description and schema property description \
-***#DONE*** aggiungere 404 per quando manca la risorsa \
-***#DONE*** ripensare a feed
-**#TODO** non mi convince setMyUsername path
-**#TODO** l'idea adesso è quella di aggiungere a tutti il profiles, quindi users è inutile? \
-            perché in questo caso usando users sempre, mi si rompe search.
 **#TODO** dovrei sistemare tutti i uniquePostID ora dovrebbe essere inutile
+**#TODO** cambiare l'id in int32 lungo 6 da adesso.
 
