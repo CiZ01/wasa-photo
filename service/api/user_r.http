@@ -1,6 +1,6 @@
-POST http://localhost:3000/login HTTP/1.1
+POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "username": "harucat"
+    "username": "ciaoneeeeee"
 }

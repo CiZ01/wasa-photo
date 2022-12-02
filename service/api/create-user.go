@@ -1,46 +1,20 @@
 package api
 
-import (
-	"encoding/json"
-	"net/http"
-
-	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
-	"github.com/julienschmidt/httprouter"
-)
-
 /*
-createUser read the request body and create a new account.
-The request body must be a JSON object with the following fields:
-- username: string
+CreateUser function is used to create a new user.
+It takes the user object from the doLogin function and returns the user object with
+the userID and the userPropicURL set.
 */
-func (rt *_router) createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var user User
-
-	//teoricamente così carica anche json fatti male, basta che ci sia username
-	err := json.NewDecoder(r.Body).Decode(&user)
+func (rt *_router) CreateUser(u User) (User, error) {
+	//Return the user object with the userID and the userPropicURL set.
+	dbUser, err := rt.db.CreateUser(u.ToDatabase())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return u, err
 	}
 
-	if !user.IsValid() {
-		//manca l'header
-		http.Error(w, "invalid username", http.StatusBadRequest)
-		return
-	}
+	//Convert the database user object to the user object and return it.
+	u.FromDatabase(dbUser)
 
-	dbUser, err := rt.db.CreateUser(user.ToDatabase())
-	if err != nil {
-		//forse qua devo cambiare la head perché su api ho messo che ritorno plain/text
-		ctx.Logger.WithError(err).Error("can't create the user")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	return u, nil
 
-	//carico lo user con l'id che mi ha dato il db
-	var currentUser User
-	currentUser.FromDatabase(dbUser)
-
-	w.Header().Set("content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(currentUser)
 }

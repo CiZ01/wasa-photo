@@ -43,6 +43,10 @@ type appdbimpl struct {
 type AppDatabase interface {
 	CreateUser(u User) (User, error)
 
+	GetUser(username string) (User, error)
+
+	ExistsName(username string) bool
+
 	Ping() error
 }
 
