@@ -2,3 +2,4 @@
 **#TODO** aggiungere la propic quando si crea l'utente \
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
 **#TODO** potrei fare tutta la funzione createUser dentro database \
+**#TODO** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.

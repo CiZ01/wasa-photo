@@ -2,6 +2,10 @@ package database
 
 var query_GETUSERBYID = `SELECT userID, username, userPropicURL FROM User WHERE userID = ?;`
 
+/*
+GetUserByID returns a user with the given userID
+If no user is found, an user object with userID = 0 is returned
+*/
 func (db *appdbimpl) GetUserByID(userID uint32) (User, error) {
 	var user User
 
@@ -10,5 +14,4 @@ func (db *appdbimpl) GetUserByID(userID uint32) (User, error) {
 		return user, err
 	}
 	return user, nil
-
 }

@@ -9,7 +9,7 @@ import (
 )
 
 /*
-doLogin function is used to login the user.
+doLogin is the handler for the API endpoint POST /session.
 It takes the username from the request body and returns the user object and the authoization token in a JSON object.
 If the user does not exist, it creates a new user.
 The request body must be a JSON object with the following fields:
