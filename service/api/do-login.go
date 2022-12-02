@@ -26,7 +26,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// Check if the username is valid
-	if !user.IsValid() {
+	if !IsValid(user.Username) {
 		w.Header().Set("content-type", "plain/text")
 		http.Error(w, "invalid username", http.StatusBadRequest)
 		return
@@ -41,7 +41,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		user, err = rt.CreateUser(user)
 		w.WriteHeader(201)
 	} else {
-		dbUser, _ := rt.db.GetUser(user.Username)
+		dbUser, _ := rt.db.GetUserByName(user.Username)
 		user.FromDatabase(dbUser)
 		w.WriteHeader(200)
 	}

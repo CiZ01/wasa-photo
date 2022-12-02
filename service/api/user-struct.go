@@ -30,7 +30,7 @@ func (u *User) FromDatabase(User database.User) {
 	u.UserPropicURL = User.UserPropicURL
 }
 
-func (u User) IsValid() bool {
+func IsValid(username string) bool {
 	validUser := regexp.MustCompile(`^[a-z_]{1}[a-z0-9][a-z0-9_]{1,13}$`)
-	return validUser.MatchString(u.Username)
+	return validUser.MatchString(username)
 }

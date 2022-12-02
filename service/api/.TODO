@@ -1,3 +1,4 @@
 **#TODO** add auth checker. \
 **#TODO** aggiungere la propic quando si crea l'utente \
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
+**#TODO** potrei fare tutta la funzione createUser dentro database \

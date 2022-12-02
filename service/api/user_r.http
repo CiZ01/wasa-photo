@@ -4,3 +4,13 @@ content-type: application/json
 {
     "username": "ciaoneeeeee"
 }
+
+###
+
+PUT http://localhost:3000/profiles/6/username HTTP/1.1
+Authorization: 6
+content-type: application/json
+
+{
+    "username": "mariokkkk"
+}

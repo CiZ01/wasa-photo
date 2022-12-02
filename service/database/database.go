@@ -43,7 +43,11 @@ type appdbimpl struct {
 type AppDatabase interface {
 	CreateUser(u User) (User, error)
 
-	GetUser(username string) (User, error)
+	GetUserByName(username string) (User, error)
+
+	GetUserByID(userID uint32) (User, error)
+
+	ChangeUsername(userID uint32, newUsername string) error
 
 	ExistsName(username string) bool
 
