@@ -36,38 +36,24 @@ import (
 	"fmt"
 )
 
-// ATTENTO A QUESTA
-var ErrFountainDoesNotExist = errors.New("fountain does not exist")
-
-type User struct {
-	UserID        uint32
-	Username      string
-	UserPropicURL string
-}
-
 type appdbimpl struct {
 	c *sql.DB
 }
 
 type AppDatabase interface {
 	CreateUser(u User) (User, error)
-	// Ping checks whether the database is available or not (in that case, an error will be returned)
+
 	Ping() error
 }
 
 var sqlStmt = `CREATE TABLE User 
 			(
-				userID INTEGER NOT NULL PRIMARY KEY, 
-				username STRING NOT NULL,
+				userID INTEGER NOT NULL, 
+				username STRING NOT NULL UNIQUE,
 				userPropicURL BLOB NOT NULL,
 				bio TEXT,
-				timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-				CHECK(
-					length(username) > 13 OR
-					length(username) < 3 OR
-					length(bio) > 64 OR
-					length(userID) > 5
-				)
+				timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+				PRIMARY KEY(userID)
 			);`
 
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
@@ -84,6 +70,11 @@ func New(db *sql.DB) (AppDatabase, error) {
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+		_, err = db.Exec(`INSERT INTO User (userID, username, userPropicURL)
+						VALUES ("0", "haru", "NULL");`)
+		if err != nil {
+			return nil, err
 		}
 	}
 

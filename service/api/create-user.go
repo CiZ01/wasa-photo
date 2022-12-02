@@ -14,24 +14,33 @@ The request body must be a JSON object with the following fields:
 - username: string
 */
 func (rt *_router) createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	w.Header().Set("content-type", "application/json")
 	var user User
+
+	//teoricamente così carica anche json fatti male, basta che ci sia username
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	dbfountain, err := rt.db.CreateUser(user.ToDatabase())
+	if !user.IsValid() {
+		//manca l'header
+		http.Error(w, "invalid username", http.StatusBadRequest)
+		return
+	}
+
+	dbUser, err := rt.db.CreateUser(user.ToDatabase())
 	if err != nil {
-		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user
-		// Note: we are using the "logger" inside the "ctx" (context) because the scope of this issue is the request.
+		//forse qua devo cambiare la head perché su api ho messo che ritorno plain/text
 		ctx.Logger.WithError(err).Error("can't create the user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// Here we can re-use `fountain` as FromDatabase is overwriting every variabile in the structure.
-	user.FromDatabase(dbfountain)
+	//carico lo user con l'id che mi ha dato il db
+	var currentUser User
+	currentUser.FromDatabase(dbUser)
 
+	w.Header().Set("content-type", "application/json")
+	_ = json.NewEncoder(w).Encode(currentUser)
 }
