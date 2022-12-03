@@ -14,7 +14,6 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/username", rt.wrap(rt.SetMyUsername))
 	//---------------------------------//
 
-	
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

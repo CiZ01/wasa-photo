@@ -3,3 +3,7 @@
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
 **#TODO** potrei fare tutta la funzione createUser dentro database \
 **#TODO** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
+**#TODO** fare backup database, vedere dove salvarlo.
+**#TODO** se manca qualche tabella, cancella tutto il db e lo rifà, l'unico caso in cui mancano tabelle è perché si è interrotto
+            durante la creazione.
+**#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag????

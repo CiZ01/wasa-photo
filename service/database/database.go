@@ -41,28 +41,23 @@ type appdbimpl struct {
 }
 
 type AppDatabase interface {
+	// Create a new user
 	CreateUser(u User) (User, error)
 
-	GetUserByName(username string) (User, error)
-
-	GetUserByID(userID uint32) (User, error)
-
+	// Change the username of a user
 	ChangeUsername(userID uint32, newUsername string) error
 
+	// Get a user by its username
+	GetUserByName(username string) (User, error)
+
+	// Get a user by its ID
+	GetUserByID(userID uint32) (User, error)
+
+	// Return true if a username already exists, false otherwise
 	ExistsName(username string) bool
 
 	Ping() error
 }
-
-var sqlStmt = `CREATE TABLE User 
-			(
-				userID INTEGER NOT NULL, 
-				username STRING NOT NULL UNIQUE,
-				userPropicURL BLOB NOT NULL,
-				bio TEXT,
-				timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-				PRIMARY KEY(userID)
-			);`
 
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
 // `db` is required - an error will be returned if `db` is `nil`.
@@ -71,11 +66,17 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 
-	// Check if table exists. If not, the database is empty, and we need to create the structure
-	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='User';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
-		_, err = db.Exec(sqlStmt)
+	// Check if tables exists. If not, the database is empty or not exists all tables, and we need to create them.
+	var tableCount uint8
+	err := db.QueryRow(`SELECT count(name) FROM sqlite_master WHERE type='table';`).Scan(&tableCount)
+	if err != nil {
+		return nil, fmt.Errorf("error checking if database is empty: %w", err)
+	}
+	// The tables are seven (7) in total, so if the count is less than 7, we need to create them.
+	if tableCount != 7 {
+
+		//----CREATE USER TABLE----//
+		_, err = db.Exec(sql_TABLEUSER)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
@@ -84,6 +85,37 @@ func New(db *sql.DB) (AppDatabase, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		//----CREATE POST TABLE----//
+		_, err = db.Exec(sql_TABLEPOST)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		//----CREATE LIKE TABLE----//
+		_, err = db.Exec(sql_TABLELIKE)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		//----CREATE COMMENT TABLE----//
+		_, err = db.Exec(sql_TABLECOMMENT)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		//----CREATE FOLLOW TABLE----//
+		_, err = db.Exec(sql_TABLEFOLLOW)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		//----CREATE BAN TABLE----//
+		_, err = db.Exec(sql_TABLEBAN)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
 	}
 
 	return &appdbimpl{

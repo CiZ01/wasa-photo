@@ -742,7 +742,7 @@ components:
           example: "0001011"
           minLength: 7
           maxLength: 7
-        text:
+        comment:
           type: string
           description: Text of the comment
           example: "Bella foto!"
