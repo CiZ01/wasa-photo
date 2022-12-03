@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -25,10 +24,8 @@ func (rt *_router) SetMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	paramUserID, _ := strconv.Atoi(ps.ByName("profileUserID"))
 	userID := uint32(paramUserID)
 
-	// Get the header with the authorization token
-	header := strings.Split(r.Header.Get("Authorization"), "")
 	// Check if the user is authorized
-	if !isAuthorized(userID, header) {
+	if !isAuthorized(userID, r.Header) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

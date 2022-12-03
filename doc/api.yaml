@@ -140,8 +140,8 @@ paths:
             Follow user successful. <br>
             Return the user ID and username of the followed user.
           content:
-            application/json:
-              schema: { $ref: "#/components/schemas/User" }
+            plain/text:
+              schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }

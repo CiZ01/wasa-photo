@@ -14,3 +14,8 @@ content-type: application/json
 {
     "username": "mariokkkk"
 }
+
+###
+
+PUT http://localhost:3000/profiles/7/followings/6 HTTP/1.1
+Authorization: 7

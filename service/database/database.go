@@ -50,8 +50,17 @@ type AppDatabase interface {
 	// Get a user by its username
 	GetUserByName(username string) (User, error)
 
+	// Add a follow relationship between two users
+	CreateFollow(followerID uint32, followedID uint32) error
+
 	// Get a user by its ID
 	GetUserByID(userID uint32) (User, error)
+
+	// Return true if the banned has been banned by the banner, false otherwise
+	IsBanned(bannerID uint32, bannedID uint32) (bool, error)
+
+	// Return true if the user is following the other user, false otherwise
+	IsFollowing(followerID uint32, followedID uint32) (bool, error)
 
 	// Return true if a username already exists, false otherwise
 	ExistsName(username string) bool
@@ -72,8 +81,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error checking if database is empty: %w", err)
 	}
-	// The tables are seven (7) in total, so if the count is less than 7, we need to create them.
-	if tableCount != 7 {
+	// The tables are six in total, so if the count is less than 6, we need to create them.
+	if tableCount != 6 {
 
 		//----CREATE USER TABLE----//
 		_, err = db.Exec(sql_TABLEUSER)
