@@ -17,6 +17,9 @@ func (rt *_router) Handler() http.Handler {
 	//-----------FOLLOW USER-----------//
 	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.FollowUser))
 	//---------------------------------//
+
+	//---------UNFOLLOW USER-----------//
+	rt.router.DELETE("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.UnfollowUser))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

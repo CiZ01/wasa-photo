@@ -17,5 +17,12 @@ content-type: application/json
 
 ###
 
-PUT http://localhost:3000/profiles/7/followings/6 HTTP/1.1
-Authorization: 7
+PUT http://localhost:3000/profiles/6/followings/8 HTTP/1.1
+Authorization: 6
+
+###
+
+DELETE http://localhost:3000/profiles/6/followings/8 HTTP/1.1
+Authorization: 6
+
+###

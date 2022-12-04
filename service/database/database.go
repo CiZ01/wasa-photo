@@ -40,6 +40,8 @@ type appdbimpl struct {
 	c *sql.DB
 }
 
+
+
 type AppDatabase interface {
 	// Create a new user
 	CreateUser(u User) (User, error)
@@ -52,6 +54,9 @@ type AppDatabase interface {
 
 	// Add a follow relationship between two users
 	CreateFollow(followerID uint32, followedID uint32) error
+
+	// Remove a follow relationship between two users
+	DeleteFollow(followerID uint32, followedID uint32) error
 
 	// Get a user by its ID
 	GetUserByID(userID uint32) (User, error)
