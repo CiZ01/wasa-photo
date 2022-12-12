@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 /*
@@ -13,11 +12,6 @@ The auth token must be in the format "Bearer and must be equal to userID to be v
 If the user is authorized, the function returns true, otherwise it returns false.
 */
 func isAuthorized(userID uint32, header http.Header) bool {
-	headerToList := strings.Split(header.Get("Authorization"), "")
-
-	if len(headerToList) == 0 {
-		return false
-	}
-	autToken, _ := strconv.Atoi(headerToList[0])
+	autToken, _ := strconv.Atoi(header.Get("Authorization"))
 	return uint32(autToken) == userID
 }

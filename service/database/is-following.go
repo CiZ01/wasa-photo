@@ -1,7 +1,5 @@
 package database
 
-import "fmt"
-
 var query_ISFOLLOWING = `SELECT followerID FROM Follow WHERE followerID = ? AND followedID = ?`
 
 func (db *appdbimpl) IsFollowing(followerID uint32, followedID uint32) (bool, error) {
@@ -15,6 +13,5 @@ func (db *appdbimpl) IsFollowing(followerID uint32, followedID uint32) (bool, er
 	for rows.Next() {
 		rows.Scan(&isFollowing)
 	}
-	fmt.Printf("isFollowing: %s", isFollowing)
 	return isFollowing != "", nil
 }

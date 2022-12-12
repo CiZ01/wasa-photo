@@ -28,12 +28,12 @@ var sql_TABLEUSER = `CREATE TABLE User
 */
 var sql_TABLEPOST = `CREATE TABLE Post
 (
-	postID INTEGER NOT NULL UNIQUE,
+	postID INTEGER NOT NULL,
 	userID INTEGER NOT NULL,
-	postImageURL STRING NOT NULL,
+	postImageURL STRING NOT NULL UNIQUE,
 	caption TEXT,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY(postID),
+	PRIMARY KEY(postID, userID),
 	FOREIGN KEY(userID) REFERENCES User(userID)
 );`
 
@@ -62,6 +62,7 @@ var sql_TABLELIKE = `CREATE TABLE Like
 	- userID: the userID of the user who created the comment
 	- postID: the postID of the post that the user commented
 	- commentText: the text of the comment. Max length is 100 characters.
+	- hidden: if the comment is hidden or not. Default value is false.
 	- timestamp: the timestamp of the comment's creation. It's is assigned automatically by the database.
 */
 var sql_TABLECOMMENT = `CREATE TABLE Comment
@@ -70,6 +71,7 @@ var sql_TABLECOMMENT = `CREATE TABLE Comment
 	userID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
 	commentText TEXT NOT NULL,
+	hidden BOOLEAN DEFAULT FALSE,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(commentID),
 	FOREIGN KEY(userID) REFERENCES User(userID),

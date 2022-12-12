@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
@@ -35,31 +35,20 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error checking if the user is following the target user")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if !isFollowing {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
 	isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	if isBanned {
+	if !isBanned {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.DeleteFollow(profileUserID, targetUserID)
+	err = rt.db.DeleteBan(profileUserID, targetUserID)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Error deleting follow")
+		ctx.Logger.WithError(err).Error("Error deleting ban")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

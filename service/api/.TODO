@@ -8,3 +8,10 @@
             durante la creazione.
 **#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
 ***#DONE*** sistemare se l'utente è bannato non inviare la richiesta, non funziona, penso il problema sia la stringa della query \
+**#TODO** non so se il create ban deve avere il controllo se è bannato. \
+**#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
+***#DONE*** fix the ban, it doesn't work i commenti. \
+**#TODO** eliminare tutti i prepare statement, non sono necessari. \
+**#TODO** vanno gestiti tutti i rollback in caso di errori. \
+**#TODO** implementare l'upload dei post.\
+**#TODO** sostituire i * con i nomi delle tabelle. \

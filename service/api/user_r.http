@@ -2,27 +2,55 @@ POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "username": "ciaoneeeeee"
+    "username": "silviharu090"
 }
 
 ###
 
-PUT http://localhost:3000/profiles/6/username HTTP/1.1
-Authorization: 6
+PUT http://localhost:3000/profiles/3/username HTTP/1.1
+Authorization: 3
 content-type: application/json
 
 {
-    "username": "mariokkkk"
+    "username": "asdasdsadsadsadas"
 }
 
 ###
 
-PUT http://localhost:3000/profiles/6/followings/8 HTTP/1.1
-Authorization: 6
+PUT http://localhost:3000/profiles/3/followings/38 HTTP/1.1
+Authorization: 3
 
 ###
 
-DELETE http://localhost:3000/profiles/6/followings/8 HTTP/1.1
-Authorization: 6
+DELETE http://localhost:3000/profiles/3/followings/38 HTTP/1.1
+Authorization: 3
 
 ###
+PUT http://localhost:3000/profiles/10/bans/8 HTTP/1.1
+Authorization: 10
+
+###
+DELETE http://localhost:3000/profiles/36/bans/10 HTTP/1.1
+Authorization: 36
+
+###
+
+GET http://localhost:3000/profiles/10/posts HTTP/1.1
+Authorization: 10
+
+###
+
+POST http://localhost:3000/profiles/40/posts HTTP/1.1
+Authorization: 40
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="caption"
+
+Ciao mi chiamo Haru e sono un gatto!
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="image.jpg"
+Content-Type: image/png
+
+< ./1.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

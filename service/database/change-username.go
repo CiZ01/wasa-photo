@@ -3,9 +3,8 @@ package database
 var query_CHANGEUSERNAME = `UPDATE User SET username = ? WHERE userID = ?;`
 
 func (db *appdbimpl) ChangeUsername(userID uint32, newUsername string) error {
-	_, err := db.c.Exec(query_CHANGEUSERNAME, newUsername, userID)
-	if err != nil {
-		return err
-	}
-	return nil
+	statement, err := db.c.Prepare(query_CHANGEUSERNAME)
+	statement.Exec(newUsername, userID)
+	statement.Close()
+	return err
 }

@@ -228,7 +228,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{profile_user_id}/banneds/{target_user_id}:
+  /profile/{profile_user_id}/bans/{target_user_id}:
     parameters:
       - name: target_user_id
         in: path
@@ -282,7 +282,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/banneds:
+  /profiles/{profile_user_id}/bans:
     parameters:
       - name: profile_user_id
         in: path
@@ -762,7 +762,6 @@ components:
       description: The post is a collection of post, like count and comment cou. Contain a timestamp.
       type: object
       properties:
-        unique_post_id: { $ref: "#/components/schemas/UniquePostID" }
         photo_url: { $ref: "#/components/schemas/ImgURL" }
         caption:
           type: string

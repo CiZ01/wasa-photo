@@ -1,8 +1,9 @@
 package database
 
-var query_CREATEFOLLOW = `INSERT INTO Follow (followerID, followedID) VALUES (?, ?)`
+var query_CREATEFOLLOW = `INSERT INTO Follow VALUES (?, ?)`
 
 func (db *appdbimpl) CreateFollow(followerID uint32, followedID uint32) error {
-	_, err := db.c.Exec(query_CREATEFOLLOW, followerID, followedID)
+	statement, err := db.c.Prepare(query_CREATEFOLLOW)
+	statement.Exec(followerID, followedID)
 	return err
 }

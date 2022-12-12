@@ -40,11 +40,12 @@ type appdbimpl struct {
 	c *sql.DB
 }
 
-
-
 type AppDatabase interface {
 	// Create a new user
 	CreateUser(u User) (User, error)
+
+	// Delete a user
+	DeleteUser(userID uint32) error
 
 	// Change the username of a user
 	ChangeUsername(userID uint32, newUsername string) error
@@ -52,11 +53,27 @@ type AppDatabase interface {
 	// Get a user by its username
 	GetUserByName(username string) (User, error)
 
+	// Create a new post in the database
+	CreatePost(p Post) (Post, error)
+
+	// Get a list of post from a user. The list is ordered by timestamp, descending.
+	// The list is limited to `limit` elements, and the first element is the `offset`-th element.
+	GetPosts(profileUserID uint32, offset uint32, limit uint32) ([]Post, error)
+
+	// Get the last postID in the database
+	GetLastPostID(userID uint32) (uint32, error)
+
 	// Add a follow relationship between two users
 	CreateFollow(followerID uint32, followedID uint32) error
 
 	// Remove a follow relationship between two users
 	DeleteFollow(followerID uint32, followedID uint32) error
+
+	// Add a ban relationship between two users
+	CreateBan(bannerID uint32, bannedID uint32) error
+
+	// Remove a ban relationship between two users
+	DeleteBan(bannerID uint32, bannedID uint32) error
 
 	// Get a user by its ID
 	GetUserByID(userID uint32) (User, error)
@@ -89,7 +106,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	// The tables are six in total, so if the count is less than 6, we need to create them.
 	if tableCount != 6 {
 
-		//----CREATE USER TABLE----//
+		// ---CREATE USER TABLE----//
 		_, err = db.Exec(sql_TABLEUSER)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
@@ -100,31 +117,31 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, err
 		}
 
-		//----CREATE POST TABLE----//
+		// ---CREATE POST TABLE----//
 		_, err = db.Exec(sql_TABLEPOST)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 
-		//----CREATE LIKE TABLE----//
+		// ---CREATE LIKE TABLE----//
 		_, err = db.Exec(sql_TABLELIKE)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 
-		//----CREATE COMMENT TABLE----//
+		// ---CREATE COMMENT TABLE----//
 		_, err = db.Exec(sql_TABLECOMMENT)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 
-		//----CREATE FOLLOW TABLE----//
+		// ---CREATE FOLLOW TABLE----//
 		_, err = db.Exec(sql_TABLEFOLLOW)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 
-		//----CREATE BAN TABLE----//
+		// ---CREATE BAN TABLE----//
 		_, err = db.Exec(sql_TABLEBAN)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)

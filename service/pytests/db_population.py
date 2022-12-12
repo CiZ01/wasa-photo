@@ -157,9 +157,9 @@ def main():
         #populateUser(conn)
         #populatePost(conn)
         #populateLike(conn)
-        #populateComment(conn)
+        populateComment(conn)
         #populateBan(conn)
-        populateFollow(conn)
+        #populateFollow(conn)
         #clear_table(conn, tables_names[0])
         print_table(conn, tables_names[0])
     return 0
