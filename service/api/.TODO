@@ -1,19 +1,29 @@
-***#DONE*** add auth checker. \
-**#TODO** aggiungere la propic quando si crea l'utente \
-**#TODO** sistemare la regex per lo username sia dal backend che dall'api \
-**#TODO** potrei fare tutta la funzione createUser dentro database \
-**#TODO** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
-**#TODO** fare backup database, vedere dove salvarlo.
-**#TODO** se manca qualche tabella, cancella tutto il db e lo rifà, l'unico caso in cui mancano tabelle è perché si è interrotto
-            durante la creazione.
-**#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
+***#DONE*** sostituire i * con i nomi delle tabelle. \
 ***#DONE*** sistemare se l'utente è bannato non inviare la richiesta, non funziona, penso il problema sia la stringa della query \
-**#TODO** non so se il create ban deve avere il controllo se è bannato. \
-**#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
 ***#DONE*** fix the ban, it doesn't work i commenti. \
 ***#DONE*** eliminare tutti i prepare statement, non sono necessari. \
+***#DONE*** add auth checker. \
 **#TODO** vanno gestiti tutti i rollback in caso di errori. \
+**#TODO** sistemare la regex per lo username sia dal backend che dall'api \
+**#TODO** se manca qualche tabella, cancella tutto il db e lo rifà, l'unico caso in cui mancano tabelle è perché si è interrotto
+**#TODO** potrei fare tutta la funzione createUser dentro database \
+**#TODO** non so se il create ban deve avere il controllo se è bannato. \
+**#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
 **#TODO** implementare l'upload dei post.\
-**#TODO** sostituire i * con i nomi delle tabelle. \
-**#TODO** Controllare se esiste l'utente nel get posts. \
+**#TODO** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
+**#TODO** fare backup database, vedere dove salvarlo.
+**#TODO** aggiungere la propic quando si crea l'utente \
 **#TODO** Se l'utente è eliminato, eliminare anchel sua dir in storage. \
+**#TODO** Controllare se esiste l'utente nel get posts. \
+**#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
+            durante la creazione.
+**#TODO** check erros in json response. \
+**#TODO** controllare tutti gli status code e response code. \
+**#TODO** aggiornare tutti i limit and offset. \
+**#TODO** potrei sostituire tutti gli rows.Next con quello che faccio in getmaxcommentid, ho riscontrato questo problema in isFollowing, e in un altro che non ricordo .\
+**#TODO** commentare, commentare e commentare, così ricontrollo errori. \
+**#TODO** quando c'è qualche error ritornare nil come obj e non un oggetto vuoto. \
+**#TODO** controllare che non abbia invertito limit and offset da nessuna parte. \
+**#TODO** probabilmente nei likes o commenti non controllo se sono bannati pd.\
+**#TODO** controllare che non ci siano errori nei parametri. \
+**#TODO** controllare che non manchino log. \

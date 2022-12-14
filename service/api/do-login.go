@@ -51,7 +51,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	//This struct contain the User object and the authorization token.
+	// This struct contain the User object and the authorization token.
 	type AuthUser struct {
 		User User
 		Auth uint32

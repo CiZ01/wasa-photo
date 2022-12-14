@@ -11,7 +11,7 @@ type Comment struct {
 	User      User      `json:"user"`
 	Text      string    `json:"text"`
 	Timestamp time.Time `json:"timestamp"`
-	//non so se sia il massimo usare time visto che
-	//il timestamp lo gestirò lato frontend e comunque
-	//quando gli arriva è una stringa
+	// non so se sia il massimo usare time visto che
+	// il timestamp lo gestirò lato frontend e comunque
+	// quando gli arriva è una stringa
 }

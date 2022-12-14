@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -8,21 +9,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	_targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
-	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
 	profileUserID := uint32(_profileUserID)
-	targetUserID := uint32(_targetUserID)
 
 	// Check if the user is authorized
 	if !isAuthorized(profileUserID, r.Header) {
@@ -30,33 +24,26 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	if profileUserID == targetUserID {
+	// Get limit and offset from the queries
+	limit, offset, err := getLimitAndOffset(ps)
+	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
+	bans, err := rt.db.GetBans(profileUserID, limit, offset)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Error getting bans")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	if isFollowing {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
 
-	isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
+	// Write the response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(bans)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if isBanned {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
-	err = rt.db.CreateFollow(profileUserID, targetUserID)
-	if err != nil {
+		ctx.Logger.WithError(err).Error("Error encoding bans")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

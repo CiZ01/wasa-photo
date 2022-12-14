@@ -19,7 +19,7 @@ If the new username is already taken, the request will fail.
 If the user is not authorized, the request will fail.
 If the username is not valid, the request will fail.
 */
-func (rt *_router) SetMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the userID from the URL
 	paramUserID, _ := strconv.Atoi(ps.ByName("profileUserID"))
 	userID := uint32(paramUserID)

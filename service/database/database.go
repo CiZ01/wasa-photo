@@ -87,11 +87,20 @@ type AppDatabase interface {
 	// Remove a follow relationship between two users
 	DeleteFollow(followerID uint32, followedID uint32) error
 
+	// Get all users followed by the user "followerID"
+	GetFollowings(followerID uint32, offset uint32, limit uint32) ([]User, error)
+
+	// Get all users following the user "followedID"
+	GetFollowers(followedID uint32, offset uint32, limit uint32) ([]User, error)
+
 	// Add a ban relationship between two users
 	CreateBan(bannerID uint32, bannedID uint32) error
 
 	// Remove a ban relationship between two users
 	DeleteBan(bannerID uint32, bannedID uint32) error
+
+	// Get all users banned from the user "bannerID"
+	GetBans(bannerID uint32, offset uint32, limit uint32) ([]User, error)
 
 	// Get a user by its ID
 	GetUserByID(userID uint32) (User, error)

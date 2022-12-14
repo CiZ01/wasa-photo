@@ -35,9 +35,15 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 
 	for _, postID := range allPosts {
 		// Hide comments
-		hideComments.Exec(bannedID, postID)
+		_, err := hideComments.Exec(bannedID, postID)
+		if err != nil {
+			return err
+		}
 		// Delete likes
-		deleteLikes.Exec(bannedID, postID)
+		_, err = deleteLikes.Exec(bannedID, postID)
+		if err != nil {
+			return err
+		}
 	}
 	deleteLikes.Close()
 	hideComments.Close()

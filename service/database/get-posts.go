@@ -1,12 +1,12 @@
 package database
 
-var query_GETPOSTS = `SELECT postID, userID, postImageURL, caption, timestamp FROM Post WHERE userID=? ORDER BY timestamp DESC LIMIT ? OFFSET ?`
+var query_GETPOSTS = `SELECT postID, userID, postImageURL, caption, timestamp FROM Post WHERE userID=? ORDER BY timestamp DESC LIMIT ?, ?`
 var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=?`
 var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=?`
 
 func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit uint32) ([]Post, error) {
 	// Get the posts from the database
-	rows, err := db.c.Query(query_GETPOSTS, profileUserID, limit, offset)
+	rows, err := db.c.Query(query_GETPOSTS, profileUserID, offset, limit)
 	if err != nil {
 		return nil, err
 	}

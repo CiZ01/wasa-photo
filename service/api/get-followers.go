@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -8,8 +9,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	// Get the profileUserID and photoID from the URL
+// MISSING LOGGER ERRORS
+func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
@@ -17,31 +19,31 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	profileUserID := uint32(_profileUserID)
 
+	// Check if the user is authorized
 	if !isAuthorized(profileUserID, r.Header) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	_postID, err := strconv.Atoi(ps.ByName("postID"))
+	limit, offset, err := getLimitAndOffset(ps)
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	photoID := uint32(_postID)
 
-	_commentID, err := strconv.Atoi(ps.ByName("commentID"))
+	// Get the followers
+	followers, err := rt.db.GetFollowers(profileUserID, offset, limit)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-	commentID := uint32(_commentID)
-
-	err = rt.db.DeleteComment(commentID, profileUserID, photoID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Error uncommenting photo")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	// Write the response
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(followers)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }
