@@ -9,7 +9,7 @@ import (
 )
 
 func (rt *_router) DeleteUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	_userID, err := strconv.Atoi(ps.ByName("userID"))
+	_userID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

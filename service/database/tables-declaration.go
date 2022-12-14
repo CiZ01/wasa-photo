@@ -43,16 +43,19 @@ var sql_TABLEPOST = `CREATE TABLE Post
 // --------LIKE TABLE--------//
 /*
 	- userID: the ID of the user who liked the post. It's the primary key of the table
+	- ownerID: the ID of the user who owns the post that the user liked.
 	- postID: the ID of the post that the user liked. It's the primary key of the table
 	- timestamp: the timestamp of the like's creation. It's is assigned automatically by the database.
 */
 var sql_TABLELIKE = `CREATE TABLE Like
 (
 	userID INTEGER NOT NULL,
+	ownerID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY(userID, postID),
+	PRIMARY KEY(userID, ownerID, postID),
 	FOREIGN KEY(userID) REFERENCES User(userID),
+	FOREIGN KEY(ownerID) REFERENCES User(userID),
 	FOREIGN KEY(postID) REFERENCES Post(postID)
 );`
 
@@ -60,6 +63,7 @@ var sql_TABLELIKE = `CREATE TABLE Like
 /*
 	- commentID: the unique ID of the comment, is the primary key of the table
 	- userID: the userID of the user who created the comment
+	- ownerID: the userID of the user who owns the post that the user commented.
 	- postID: the postID of the post that the user commented
 	- commentText: the text of the comment. Max length is 100 characters.
 	- hidden: if the comment is hidden or not. Default value is false.
@@ -69,12 +73,14 @@ var sql_TABLECOMMENT = `CREATE TABLE Comment
 (
 	commentID INTEGER NOT NULL UNIQUE,
 	userID INTEGER NOT NULL,
+	ownerID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
 	commentText TEXT NOT NULL,
 	hidden BOOLEAN DEFAULT FALSE,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY(commentID),
+	PRIMARY KEY(commentID, ownerID, postID),
 	FOREIGN KEY(userID) REFERENCES User(userID),
+	FOREIGN KEY(ownerID) REFERENCES User(userID),
 	FOREIGN KEY(postID) REFERENCES Post(postID)
 );`
 

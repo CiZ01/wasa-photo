@@ -63,6 +63,24 @@ type AppDatabase interface {
 	// Get the last postID in the database
 	GetLastPostID(userID uint32) (uint32, error)
 
+	// Create a new like in the database. The user "userID" likes the post "postID".
+	CreateLike(ownerID uint32, userID uint32, postID uint32) error
+
+	// Delete a like from the database. The user "userID" unlikes the post "postID".
+	DeleteLike(ownerID uint32, postID uint32, userID uint32) error
+
+	// Get
+	GetLikes(ownerID uint32, postID uint32, offset uint32, limit uint32) ([]User, error)
+
+	// Create a new comment in the database. The user "userID" comments the post "postID".
+	CreateComment(ownerID uint32, userID uint32, postID uint32, text string) (Comment, error)
+
+	// Delete a comment from the database. The user "ownerID" deletes the comment "commentID".
+	DeleteComment(commentID uint32, ownerID uint32, postID uint32) error
+
+	// Get all comments from a post. The list is ordered by timestamp, descending.
+	GetComments(ownerID uint32, postID uint32, offset uint32, limit uint32) ([]Comment, error)
+
 	// Add a follow relationship between two users
 	CreateFollow(followerID uint32, followedID uint32) error
 
@@ -112,7 +130,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 		_, err = db.Exec(`INSERT INTO User (userID, username, userPropicURL)
-						VALUES ("0", "haru", "NULL");`)
+						VALUES ("0", "NULL", "NULL");`)
 		if err != nil {
 			return nil, err
 		}

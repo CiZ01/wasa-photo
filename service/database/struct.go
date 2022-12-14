@@ -21,3 +21,17 @@ type Post struct {
 	CommentCount int       `json:"commentCount"`
 	Timestamp    time.Time `json:"timestamp"`
 }
+
+/*
+This struct rappresents the Comment object.
+The post is identified by the CommentID, which is the primary key.
+*/
+type Comment struct {
+	CommentID uint32    `json:"commentID"`
+	User      User      `json:"userID"`
+	Text      string    `json:"text"`
+	Timestamp time.Time `json:"timestamp"`
+	//non so se sia il massimo usare time visto che
+	//il timestamp lo gestirò lato frontend e comunque
+	//quando gli arriva è una stringa
+}

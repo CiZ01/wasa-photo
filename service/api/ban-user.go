@@ -35,21 +35,21 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	// Check if the user is banned
 	isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	if isBanned {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	isBanner, err := rt.db.IsBanned(profileUserID, targetUserID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error checking if the user is banner")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
-	err = rt.db.DeleteFollow(profileUserID, targetUserID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Error deleting follow")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	if isBanned || isBanner {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
@@ -60,5 +60,5 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusCreated)
 }

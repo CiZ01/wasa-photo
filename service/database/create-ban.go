@@ -42,6 +42,13 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 	deleteLikes.Close()
 	hideComments.Close()
 
+	// Delete follow
+	// If the user dont follow the banned user, it will return an error
+	err = db.DeleteFollow(bannerID, bannedID)
+	if err != nil {
+		return err
+	}
+
 	_, err = db.c.Exec(query_CREATEBAN, bannerID, bannedID)
 	if err != nil {
 		return err

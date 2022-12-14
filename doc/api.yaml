@@ -410,7 +410,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{unique_post_id}:
+  /profiles/{profile_user_id}/posts/{post_id}:
     parameters:
       - name: profile_user_id
         in: path
@@ -418,10 +418,10 @@ paths:
           The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: unique_post_id
+      - name: post_id
         in: path
-        description: The unique post Id of the post to delete
-        schema: { $ref: "#/components/schemas/UniquePostID" }
+        description: The post Id of the post to delete
+        schema: { $ref: "#/components/schemas/PostID" }
         required: true
 
     delete:
@@ -429,7 +429,7 @@ paths:
       operationId: deletePhoto
       summary: Delete post
       description: |-
-        Delete the specified post by unique post id from the storage server, 
+        Delete the specified post by post id from the storage server, 
         delete the post from user profile and delete all like and comment related to it.
       security:
         - bearerAuth: []
@@ -444,7 +444,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{unique_post_id}/likes/{user_id}:
+  /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
     parameters:
       - name: user_id
         in: path
@@ -456,10 +456,10 @@ paths:
         description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: unique_post_id
+      - name: post_id
         in: path
-        description: The unique post id of the post to (un)like
-        schema: { $ref: "#/components/schemas/UniquePostID" }
+        description: The post id of the post to (un)like
+        schema: { $ref: "#/components/schemas/PostID" }
         required: true
 
     put:
@@ -500,17 +500,17 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{unique_post_id}/likes:
+  /profiles/{profile_user_id}/posts/{post_id}/likes:
     parameters:
       - name: profile_user_id
         in: path
         description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: unique_post_id
+      - name: post_id
         in: path
-        description: The unique post id of the post to see the list of users who liked it
-        schema: { $ref: "#/components/schemas/UniquePostID" }
+        description: The post id of the post to see the list of users who liked it
+        schema: { $ref: "#/components/schemas/PostID" }
         required: true
 
       - { $ref: "#/components/parameters/Offset" }
@@ -536,7 +536,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{unique_post_id}/comments/{user_id}:
+  /profiles/{profile_user_id}/posts/{post_id}/comments/{user_id}:
     parameters:
       - name: user_id
         in: path
@@ -548,10 +548,10 @@ paths:
         description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: unique_post_id
+      - name: post_id
         in: path
-        description: The unique post Id of the post to comment
-        schema: { $ref: "#/components/schemas/UniquePostID" }
+        description: The post Id of the post to comment
+        schema: { $ref: "#/components/schemas/PostID" }
         required: true
 
     post:
@@ -596,17 +596,17 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{unique_post_id}/comments:
+  /profiles/{profile_user_id}/posts/{post_id}/comments:
     parameters:
       - name: profile_user_id
         in: path
         description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: unique_post_id
+      - name: post_id
         in: path
-        description: The unique post Id of the post to get the comments
-        schema: { $ref: "#/components/schemas/UniquePostID" }
+        description: The post Id of the post to get the comments
+        schema: { $ref: "#/components/schemas/PostID" }
         required: true
       - { $ref: "#/components/parameters/Offset" }
       - { $ref: "#/components/parameters/Limit" }
@@ -697,6 +697,7 @@ components:
       properties:
         user_id: { $ref: "#/components/schemas/UserID" }
         username: { $ref: "#/components/schemas/Username" }
+        propic_url: { $ref: "#/components/schemas/ImgURL" }
     Profile:
       title: Profile
       description: Profile of the user
@@ -715,32 +716,29 @@ components:
           example: 10
         #non ritorna posts, i posts verrano ritornati con un'altra chiamata
         #forse si potrebbe usare link nei responses.
-    UniquePostID:
-      title: UniquePostID
+    PostID:
+      title: PostID
       description: |-
-        The unique post id is used to identify a post.
-        The unique post id is the combination of the user id and post id.
-        The post id is generated by the server and it's unique for each user.
-      type: string
-      pattern: ^[0-9]{5}[a-zA-Z]{3}$
-      example: "00010aAz"
-      minLength: 8
-      maxLength: 8
+        The post id is used to identify a post.
+        The post id is generated by the server and it's for each user.
+      type: integer
+      pattern: ^[0-9]{1,6}$
+      example: 100
+      minLength: 1
+      maxLength: 6
     Comment:
       title: Comment
       description: Comment of the post
       type: object
       properties:
         user: { $ref: "#/components/schemas/User" }
-        userProPic: { $ref: "#/components/schemas/ImgURL" }
         comment_id:
-          type: string
+          type: integer
           description: |-
-            The comment id is the combination of the user id and a numeric id.
-            The numeric id is generated by the server and it's unique for each user.
-          pattern: "^[0-9]{5}[0-9]{2}$"
+            The numeric id is generated by the server and it's for each user.
+          pattern: "[0-9]{1,6}"
           example: "0001011"
-          minLength: 7
+          minLength: 1
           maxLength: 7
         comment:
           type: string

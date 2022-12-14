@@ -2,7 +2,7 @@ POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "username": "silviharu090"
+    "username": "qqqq111111"
 }
 
 ###
@@ -17,8 +17,8 @@ content-type: application/json
 
 ###
 
-PUT http://localhost:3000/profiles/3/followings/38 HTTP/1.1
-Authorization: 3
+PUT http://localhost:3000/profiles/1/followings/4 HTTP/1.1
+Authorization: 1
 
 ###
 
@@ -26,8 +26,8 @@ DELETE http://localhost:3000/profiles/3/followings/38 HTTP/1.1
 Authorization: 3
 
 ###
-PUT http://localhost:3000/profiles/10/bans/8 HTTP/1.1
-Authorization: 10
+PUT http://localhost:3000/profiles/1/bans/3 HTTP/1.1
+Authorization: 1
 
 ###
 DELETE http://localhost:3000/profiles/36/bans/10 HTTP/1.1
@@ -40,17 +40,40 @@ Authorization: 10
 
 ###
 
-POST http://localhost:3000/profiles/40/posts HTTP/1.1
-Authorization: 40
+POST http://localhost:3000/profiles/2/posts HTTP/1.1
+Authorization: 2
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="caption"
 
-Ciao mi chiamo Haru e sono un gatto!
+Ciao sono iol 2
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="image"; filename="image.jpg"
 Content-Type: image/png
 
 < ./1.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+PUT http://localhost:3000/profiles/2/posts/2/likes/4 HTTP/1.1
+Authorization: 4
+
+###
+POST http://localhost:3000/profiles/2/posts/2/comments/4 HTTP/1.1
+Authorization: 4
+content-type: application/json
+
+{
+    "text": "terzo ciao bello!"
+}
+
+###
+
+GET http://localhost:3000/profiles/2/posts/2/likes HTTP/1.1
+Authorization: 2
+
+###
+
+

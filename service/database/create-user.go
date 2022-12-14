@@ -23,10 +23,7 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 		return user, err
 	}
 	// ------------INSERT USER--------------//
-	statement, err := db.c.Prepare(query_ADDUSER)
-	statement.Exec(maxID+1, user.Username, user.UserPropicURL)
-	statement.Close()
-
+	_, err = db.c.Exec(query_ADDUSER, maxID+1, user.Username, user.UserPropicURL)
 	if err != nil {
 		return user, err
 	}
@@ -35,7 +32,7 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 	user.UserID = maxID + 1
 
 	// --------CREATE USER FOLDER------------//
-	path := "./wasa_photo/storage/" + fmt.Sprint(user.UserID) + "/posts"
+	path := "./storage/" + fmt.Sprint(user.UserID) + "/posts"
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return user, err
 	}

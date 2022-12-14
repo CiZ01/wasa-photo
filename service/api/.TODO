@@ -1,4 +1,4 @@
-**#TODO** add auth checker. \
+***#DONE*** add auth checker. \
 **#TODO** aggiungere la propic quando si crea l'utente \
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
 **#TODO** potrei fare tutta la funzione createUser dentro database \
@@ -11,7 +11,9 @@
 **#TODO** non so se il create ban deve avere il controllo se è bannato. \
 **#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
 ***#DONE*** fix the ban, it doesn't work i commenti. \
-**#TODO** eliminare tutti i prepare statement, non sono necessari. \
+***#DONE*** eliminare tutti i prepare statement, non sono necessari. \
 **#TODO** vanno gestiti tutti i rollback in caso di errori. \
 **#TODO** implementare l'upload dei post.\
 **#TODO** sostituire i * con i nomi delle tabelle. \
+**#TODO** Controllare se esiste l'utente nel get posts. \
+**#TODO** Se l'utente è eliminato, eliminare anchel sua dir in storage. \
