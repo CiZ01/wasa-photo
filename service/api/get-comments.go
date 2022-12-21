@@ -13,7 +13,7 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	// Get the profileUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -22,7 +22,7 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	// Get the postID from the URL
 	_postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	postID := uint32(_postID)
@@ -32,7 +32,7 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 
 	userID, err := strconv.Atoi(_userID)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -54,9 +54,9 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Get limit and offset from the queries
-	offset, limit, err := getLimitAndOffset(ps)
+	limit, offset, err := getLimitAndOffset(r.URL.Query())
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -69,10 +69,9 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Write the comments
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(comments)
-	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(comments); err != nil {
 		ctx.Logger.WithError(err).Error("Error encoding comments")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

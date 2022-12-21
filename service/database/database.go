@@ -50,11 +50,23 @@ type AppDatabase interface {
 	// Change the username of a user
 	ChangeUsername(userID uint32, newUsername string) error
 
+	// Set/Change the bio of a user
+	SetBio(userID uint32, bio string) error
+
+	// Change the profile picture of a user
+	// ChangeProfilePic(userID uint32, newProfilePicURL string) error
+
+	// Get a user profile
+	GetUserProfile(userID uint32) (Profile, error)
+
 	// Get a user by its username
 	GetUserByName(username string) (User, error)
 
 	// Create a new post in the database
 	CreatePost(p Post) (Post, error)
+
+	// Delete a post from the database
+	DeletePost(ownerID uint32, postID uint32) error
 
 	// Get a list of post from a user. The list is ordered by timestamp, descending.
 	// The list is limited to `limit` elements, and the first element is the `offset`-th element.

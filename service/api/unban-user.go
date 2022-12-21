@@ -12,12 +12,12 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	_targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -31,7 +31,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	if profileUserID == targetUserID {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -43,7 +43,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	// 	return
 	// }
 	// if !isBanned {
-	// 	http.Error(w, "Bad Request", http.StatusBadRequest)
+	// 	http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 	// 	return
 	// }
 

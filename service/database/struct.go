@@ -35,3 +35,14 @@ type Comment struct {
 	// il timestamp lo gestirò lato frontend e comunque
 	// quando gli arriva è una stringa
 }
+
+/*
+This struct rappresents the Profile object.
+The profile is identified by the User.UserID, which is the primary key.
+*/
+type Profile struct {
+	User            User   `json:"user"`
+	Bio             string `json:"bio"`
+	FollowersCount  uint32 `json:"followerCount"`
+	FollowingsCount uint32 `json:"followingsCount"`
+}

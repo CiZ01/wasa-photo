@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var query_ADDUSER = `INSERT INTO User (userID, username, userPropicURL)
+var query_ADDUSER = `INSERT INTO User (userID, username, bio, userPropicURL)
 					 VALUES (?, ?, ?);`
 var query_MAXID = `SELECT MAX(userID) FROM User`
 
@@ -23,7 +23,8 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 		return user, err
 	}
 	// ------------INSERT USER--------------//
-	_, err = db.c.Exec(query_ADDUSER, maxID+1, user.Username, user.UserPropicURL)
+	bio := ""
+	_, err = db.c.Exec(query_ADDUSER, maxID+1, user.Username, bio, user.UserPropicURL)
 	if err != nil {
 		return user, err
 	}

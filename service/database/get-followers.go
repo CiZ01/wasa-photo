@@ -1,6 +1,8 @@
 package database
 
-var query_GETFOLLOWERS = `SELECT userID, username, profileImageURL FROM User WHERE userID IN (SELECT followerID FROM Follow WHERE followerID=?) LIMIT ?, ?`
+import "fmt"
+
+var query_GETFOLLOWERS = `SELECT userID, username, userPropicURL FROM User WHERE userID IN (SELECT followerID FROM Follow WHERE followedID=? LIMIT ?, ?)`
 
 func (db *appdbimpl) GetFollowers(followedID uint32, offset uint32, limit uint32) ([]User, error) {
 	// Get the followers from the database
@@ -20,6 +22,7 @@ func (db *appdbimpl) GetFollowers(followedID uint32, offset uint32, limit uint32
 		if err != nil {
 			return nil, err
 		}
+		fmt.Printf("%+v", follower)
 		followers = append(followers, follower)
 	}
 

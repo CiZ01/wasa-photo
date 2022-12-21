@@ -6,24 +6,27 @@
 **#TODO** vanno gestiti tutti i rollback in caso di errori. \
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
 **#TODO** se manca qualche tabella, cancella tutto il db e lo rifà, l'unico caso in cui mancano tabelle è perché si è interrotto
+**#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
+            durante la creazione.
+**#TODO** potrei sostituire tutti gli rows.Next con quello che faccio in getmaxcommentid, ho riscontrato questo problema in isFollowing, e in un altro che non ricordo .\
+**#TODO** probabilmente nei likes o commenti non controllo se sono bannati pd.\
 **#TODO** potrei fare tutta la funzione createUser dentro database \
+**#TODO** possibile che ci siano delle struct lato api che sono di tipo database, correggere .\ 
 **#TODO** non so se il create ban deve avere il controllo se è bannato. \
 **#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
 **#TODO** implementare l'upload dei post.\
-**#TODO** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
+***#DONE*** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
 **#TODO** fare backup database, vedere dove salvarlo.
+**#TODO** controllare tutti gli status code e response code. \
+**#TODO** controllare che non manchino log. \
+**#TODO** controllare che non ci siano errori nei parametri. \
+**#TODO** controllare che non abbia invertito limit and offset da nessuna parte. \
+**#TODO** commentare, commentare e commentare, così ricontrollo errori. \
+**#TODO** check erros in json response. \
 **#TODO** aggiungere la propic quando si crea l'utente \
+**#TODO** aggiornare tutti i limit and offset. \
 **#TODO** Se l'utente è eliminato, eliminare anchel sua dir in storage. \
 **#TODO** Controllare se esiste l'utente nel get posts. \
-**#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
-            durante la creazione.
-**#TODO** check erros in json response. \
-**#TODO** controllare tutti gli status code e response code. \
-**#TODO** aggiornare tutti i limit and offset. \
-**#TODO** potrei sostituire tutti gli rows.Next con quello che faccio in getmaxcommentid, ho riscontrato questo problema in isFollowing, e in un altro che non ricordo .\
-**#TODO** commentare, commentare e commentare, così ricontrollo errori. \
-**#TODO** quando c'è qualche error ritornare nil come obj e non un oggetto vuoto. \
-**#TODO** controllare che non abbia invertito limit and offset da nessuna parte. \
-**#TODO** probabilmente nei likes o commenti non controllo se sono bannati pd.\
-**#TODO** controllare che non ci siano errori nei parametri. \
-**#TODO** controllare che non manchino log. \
+**#TODO** errore nel commentID .\
+**#TODO** se mando due volte la follow si rompe il server.\
+**#TODO** fare il parse da db a api in followings e bans e tutto le altr.\

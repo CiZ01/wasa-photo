@@ -61,10 +61,10 @@ var sql_TABLELIKE = `CREATE TABLE Like
 
 // --------COMMENT TABLE--------//
 /*
-	- commentID: the unique ID of the comment, is the primary key of the table
-	- userID: the userID of the user who created the comment
-	- ownerID: the userID of the user who owns the post that the user commented.
-	- postID: the postID of the post that the user commented
+	- commentID: the unique ID of the comment, is one of the primary keys of the table
+	- userID: the userID of the user who created the comment.
+	- ownerID: the userID of the user who owns the post that the user commented, is one of the primary keys of the table
+	- postID: the postID of the post that the user commented, is one of the primary keys of the table
 	- commentText: the text of the comment. Max length is 100 characters.
 	- hidden: if the comment is hidden or not. Default value is false.
 	- timestamp: the timestamp of the comment's creation. It's is assigned automatically by the database.

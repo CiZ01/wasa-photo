@@ -12,4 +12,6 @@ docker-compose.log
 /doc/json
 /doc/markdown
 /doc/out.txt
+.vscode/
+./webapi
 

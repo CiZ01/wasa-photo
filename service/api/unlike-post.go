@@ -12,21 +12,21 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// Get the profileUserID and photoID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	profileUserID := uint32(_profileUserID)
 
 	_postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	postID := uint32(_postID)
 
 	_userID, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	userID := uint32(_userID)

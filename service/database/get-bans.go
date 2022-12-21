@@ -1,6 +1,6 @@
 package database
 
-var query_GETBANS = `SELECT bannedID FROM Ban WHERE bannerID = ? LIMIT ?,?`
+var query_GETBANS = `SELECT bannedID FROM Ban WHERE userID = ? LIMIT ?,?`
 
 func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit uint32) ([]User, error) {
 	var bans []User

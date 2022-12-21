@@ -11,7 +11,7 @@ import (
 func (rt *_router) deleteUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	_userID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !isAuthorized(uint32(_userID), r.Header) {
@@ -21,7 +21,8 @@ func (rt *_router) deleteUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	err = rt.db.DeleteUser(uint32(_userID))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("Error while deleting the user")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

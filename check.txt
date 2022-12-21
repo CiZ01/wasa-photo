@@ -1,0 +1,24 @@
+doLogin [x]
+deleteUser []
+setMyUsername [x]
+setMyBio [] __missing__
+setMyProfilePic [] __missing__
+followUser [x]
+unfollowUser [x]
+getMyFollowers [x]
+getMyFollowing [x]
+banUser [x]
+unbanUser [x]
+getMyBans []
+getMyProfile []
+uploadPhoto [x] 
+getPosts [x]
+deletePhoto []
+likePhoto [x]
+unlikePhoto [x]
+getLikes [x]
+commentPhoto [x]
+deleteComment [x]
+getComments [x]
+getMyStream [] __missing__
+search [] __missing__

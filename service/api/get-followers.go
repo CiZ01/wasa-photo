@@ -14,7 +14,7 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	profileUserID := uint32(_profileUserID)
@@ -25,17 +25,26 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	limit, offset, err := getLimitAndOffset(ps)
+	limit, offset, err := getLimitAndOffset(r.URL.Query())
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Get the followers
-	followers, err := rt.db.GetFollowers(profileUserID, offset, limit)
+	dbFollowers, err := rt.db.GetFollowers(profileUserID, offset, limit)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Error while getting the followers")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	// Convert the database followers to the API followers
+	var followers []User
+	for _, dbUser := range dbFollowers {
+		var user User
+		user.FromDatabase(dbUser)
+		followers = append(followers, user)
 	}
 
 	// Write the response
@@ -43,6 +52,7 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(followers)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Error while encoding the response")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

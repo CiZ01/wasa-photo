@@ -1,10 +1,10 @@
 package database
 
-var query_GETFOLLOWINGS = `SELECT userID, username, profileImageURL FROM User WHERE userID IN (SELECT followingID FROM Follow WHERE followerID=?) LIMIT ?, ?`
+var query_GETFOLLOWINGS = `SELECT userID, username, userPropicURL FROM User WHERE userID IN (SELECT followedID FROM Follow WHERE followerID=? LIMIT ?, ?)`
 
-func (db *appdbimpl) GetFollowings(userID uint32, limit uint32, offset uint32) ([]User, error) {
+func (db *appdbimpl) GetFollowings(followerID uint32, offset uint32, limit uint32) ([]User, error) {
 	// Get the followings from the database
-	rows, err := db.c.Query(query_GETFOLLOWINGS, userID, offset, limit)
+	rows, err := db.c.Query(query_GETFOLLOWINGS, followerID, offset, limit)
 	if err != nil {
 		return nil, err
 	}

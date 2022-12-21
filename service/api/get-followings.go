@@ -14,7 +14,7 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	profileUserID := uint32(_profileUserID)
@@ -25,15 +25,16 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	limit, offset, err := getLimitAndOffset(ps)
+	limit, offset, err := getLimitAndOffset(r.URL.Query())
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Get the followings
 	followings, err := rt.db.GetFollowings(profileUserID, offset, limit)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Error while getting the followings")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -43,6 +44,7 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(followings)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("Error while encoding the response")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

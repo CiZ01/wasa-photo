@@ -13,14 +13,14 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	// Get the profileUserID and photoID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	profileUserID := uint32(_profileUserID)
 
 	_postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 	photoID := uint32(_postID)
@@ -29,7 +29,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 
 	userID, err := strconv.Atoi(_userID)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	// Get limit and offset from the queries
-	offset, limit, err := getLimitAndOffset(ps)
+	limit, offset, err := getLimitAndOffset(r.URL.Query())
 
 	likes, err := rt.db.GetLikes(photoID, profileUserID, offset, limit)
 	if err != nil {

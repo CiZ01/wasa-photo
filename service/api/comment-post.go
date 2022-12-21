@@ -16,26 +16,32 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		http.Error(w, "Invalid profileUserID", http.StatusBadRequest)
 		return
 	}
+	profileUserID := uint32(_profileUserID)
+
+	// Get the post ID from the request
 	_postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
 		http.Error(w, "Invalid postID", http.StatusBadRequest)
 		return
 	}
+	postID := uint32(_postID)
+
 	// Get the user ID from the request
 	_userID, err := strconv.Atoi(ps.ByName("userID"))
 	if err != nil {
 		http.Error(w, "Invalid userID", http.StatusBadRequest)
 		return
 	}
+	userID := uint32(_userID)
 
 	if !isAuthorized(uint32(_userID), r.Header) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	isBanned, err := rt.db.IsBanned(uint32(_profileUserID), uint32(_userID))
+	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Error checking if user is banned")
+		ctx.Logger.WithError(err).Error("Error while checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -52,9 +58,10 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	comment, err := rt.db.CreateComment(uint32(_profileUserID), uint32(_userID), uint32(_postID), tmpComment.Text)
+	comment, err := rt.db.CreateComment(userID, profileUserID, postID, tmpComment.Text)
 	if err != nil {
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("Error creating comment")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

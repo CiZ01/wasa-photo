@@ -1,3 +1,5 @@
+
+# DO LOGIN #
 POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
@@ -7,6 +9,7 @@ content-type: application/json
 
 ###
 
+# CHANGE USERNAME #
 PUT http://localhost:3000/profiles/3/username HTTP/1.1
 Authorization: 3
 content-type: application/json
@@ -17,31 +20,39 @@ content-type: application/json
 
 ###
 
-PUT http://localhost:3000/profiles/1/followings/4 HTTP/1.1
-Authorization: 1
+# FOLLOW #
+PUT http://localhost:3000/profiles/5/followings/2 HTTP/1.1
+Authorization: 5
 
 ###
 
+# UNFOLLOW #
 DELETE http://localhost:3000/profiles/3/followings/38 HTTP/1.1
 Authorization: 3
 
 ###
+
+# BAN #
 PUT http://localhost:3000/profiles/1/bans/3 HTTP/1.1
 Authorization: 1
 
 ###
+
+# UNBAN #
 DELETE http://localhost:3000/profiles/36/bans/10 HTTP/1.1
 Authorization: 36
 
 ###
 
-GET http://localhost:3000/profiles/10/posts HTTP/1.1
-Authorization: 10
+# GET POSTS #
+GET http://localhost:3000/profiles/2/posts HTTP/1.1
+Authorization: 2
 
 ###
 
-POST http://localhost:3000/profiles/2/posts HTTP/1.1
-Authorization: 2
+# UPLOAD POSTS #
+POST http://localhost:3000/profiles/5/posts HTTP/1.1
+Authorization: 5
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -57,23 +68,66 @@ Content-Type: image/png
 
 ###
 
-PUT http://localhost:3000/profiles/2/posts/2/likes/4 HTTP/1.1
-Authorization: 4
-
-###
-POST http://localhost:3000/profiles/2/posts/2/comments/4 HTTP/1.1
-Authorization: 4
-content-type: application/json
-
-{
-    "text": "terzo ciao bello!"
-}
+# LIKE #
+PUT http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
+Authorization: 5
 
 ###
 
+# UNLIKE #
+DELETE http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
+Authorization: 5
+
+###
+
+# GET LIKES #
 GET http://localhost:3000/profiles/2/posts/2/likes HTTP/1.1
 Authorization: 2
 
 ###
+
+# COMMENT #
+POST http://localhost:3000/profiles/2/posts/4/comments/4 HTTP/1.1
+Authorization: 4
+content-type: application/json
+
+{
+    "text": "onee piecee is reaall!!!"
+}
+
+###
+
+# UNCOMMENT #
+DELETE http://localhost:3000/profiles/2/posts/2/comments/4 HTTP/1.1
+Authorization: 2
+
+###
+
+# GET COMMENTS #
+GET http://localhost:3000/profiles/2/posts/2/comments
+?limit=100
+&offset=0
+Authorization: 2
+
+###
+
+# GET PROFILE #
+GET http://localhost:3000/profiles/2 HTTP/1.1
+Authorization: 2
+
+###
+
+# GET FOLLOWINGS #
+GET http://localhost:3000/profiles/1/followings HTTP/1.1
+Authorization: 1
+
+###
+
+# GET FOLLOWERS #
+GET http://localhost:3000/profiles/2/followers HTTP/1.1
+    ?offset=1
+    &limit=10
+Authorization: 2
+
 
 

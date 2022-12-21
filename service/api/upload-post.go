@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -12,80 +11,103 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+UploadPhoto is the handler for the POST /users/:profileUserID/posts endpoint.
+It creates a new post and returns a JSON representation of the new post and 201 response.
+The JSON response body is of the form:
+- User: the user who created the post, represented as a JSON object, with the following fields:
+  - ID: the user ID
+  - Username: the username
+  - profilePicURL: the URL of the profile picture
+
+- Caption: the caption of the post
+*/
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	_profileUserID := ps.ByName("profileUserID")
-	profileUserID, err := strconv.Atoi(_profileUserID)
+	// Get the profileUserID from the URL
+	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
+	profileUserID := uint32(_profileUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(uint32(profileUserID), r.Header) {
+	if !isAuthorized(profileUserID, r.Header) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
+	// Parse the multipart form
 	err = r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error parsing multipart form")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	//Access the photo key - First Approach
+
+	// Access the photo key
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error getting photo")
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	defer file.Close()
 
+	// Get the user from the database
 	dbuser, err := rt.db.GetUserByID(uint32(profileUserID))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error getting user")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	// Parse the user from the database to the User struct in the api package
 	var user User
 	user.FromDatabase(dbuser)
 
-	// Create the post
+	// Create the new post
 	var newPost = Post{
 		User:    user,
 		Caption: string(r.FormValue("caption")),
 	}
 
+	// Parse the new post from api package to the Post struct in the database package
 	dbPost := newPost.ToDatabase(user)
 
 	dbNewPost, err := rt.db.CreatePost(dbPost)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error creating post")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	// Parse the new post from the database package to the Post struct in the api package
 	newPost = newPost.FromDatabase(dbNewPost, dbuser)
 
+	// Create the file
 	tmpfile, err := os.Create(newPost.ImageURL)
-	fmt.Printf("path: %s \n", newPost.ImageURL)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error creating file")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	defer tmpfile.Close()
 
+	// Copy the uploaded file to the created file
 	_, err = io.Copy(tmpfile, file)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error copying file")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
+	// Return the new post
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newPost)
+	err = json.NewEncoder(w).Encode(newPost)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error while encoding the response")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }

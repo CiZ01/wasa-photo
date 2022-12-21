@@ -8,17 +8,21 @@ import (
 func (rt *_router) Handler() http.Handler {
 	// -------LOGIN AND REGISTER--------//
 	rt.router.POST("/session", rt.wrap(rt.doLogin))
-	// --------------------------------//
 
 	// ----------DELETE USER-------------//
 	rt.router.DELETE("/profiles/:profileUserID", rt.wrap(rt.deleteUser))
 
 	// --------GET USER PROFILE----------//
-	// rt.router.GET("/profiles/:profileUserID", rt.wrap(rt.getMyUserProfile))
+	rt.router.GET("/profiles/:profileUserID", rt.wrap(rt.getMyUserProfile))
 
 	// --------CHANGE USERNAME---------//
 	rt.router.PUT("/profiles/:profileUserID/username", rt.wrap(rt.setMyUsername))
-	// --------------------------------//
+
+	// --------CHANGE BIO---------------//
+	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
+
+	// --------CHANGE PROFILE PIC-------//
+	//rt.router.PUT("/profiles/:profileUserID/profilePic", rt.wrap(rt.setMyProfilePic))
 
 	// ----------FOLLOW USER-----------//
 	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser))
@@ -49,7 +53,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/profiles/:profileUserID/posts", rt.wrap(rt.getPosts))
 
 	// ----------DELETE POST-----------//
-	// rt.router.DELETE("/profiles/:profileUserID/posts/:postID", rt.wrap(rt.deletePhoto))
+	rt.router.DELETE("/profiles/:profileUserID/posts/:postID", rt.wrap(rt.deletePhoto))
 
 	// ----------LIKE POST-------------//
 	rt.router.PUT("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.likePhoto))

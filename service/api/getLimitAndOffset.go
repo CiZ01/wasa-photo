@@ -1,28 +1,35 @@
 package api
 
 import (
+	"net/url"
 	"strconv"
-
-	"github.com/julienschmidt/httprouter"
 )
 
-func getLimitAndOffset(ps httprouter.Params) (uint32, uint32, error) {
+/*
+getLimitAndOffset returns the limit and offset from the queries.
+If the queries are not present or not valid, it returns the default values.
+The default values are 10 for limit and 0 for offset.
+*/
+func getLimitAndOffset(query url.Values) (uint32, uint32, error) {
 	// Get limit and offset from the queries
-	offset, limit := uint32(0), uint32(10)
-	if ps.ByName("offset") != "" {
-		_offset, err := strconv.Atoi(ps.ByName("offset"))
+	limit, offset := uint32(10), uint32(0)
+
+	// Check if the offset is valid
+	if query.Has("offset") {
+		_offset, err := strconv.Atoi(query.Get("offset"))
 		if err != nil {
 			return 0, 0, err
 		}
 		offset = uint32(_offset)
 	}
 
-	if ps.ByName("limit") != "" {
-		_limit, err := strconv.Atoi(ps.ByName("limit"))
+	// Check if the limit is valid
+	if query.Has("limit") {
+		_limit, err := strconv.Atoi(query.Get("limit"))
 		if err != nil {
 			return 0, 0, err
 		}
 		limit = uint32(_limit)
 	}
-	return offset, limit, nil
+	return limit, offset, nil
 }
