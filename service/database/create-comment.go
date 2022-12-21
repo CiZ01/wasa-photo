@@ -1,6 +1,9 @@
 package database
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 var query_CREATECOMMENT = `INSERT INTO Comment (commentID, userID, ownerID, postID, commentText) VALUES (?, ?, ?, ?, ?);`
 
@@ -14,8 +17,21 @@ func (db *appdbimpl) CreateComment(userID uint32, ownerID uint32, postID uint32,
 		return comment, err
 	}
 
+	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return comment, err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
 	// Create the comment
-	_, err = db.c.Exec(query_CREATECOMMENT, lastCommentID+1, userID, ownerID, postID, commentText)
+	_, err = tx.Exec(query_CREATECOMMENT, lastCommentID+1, userID, ownerID, postID, commentText)
 	if err != nil {
 		return comment, err
 	}

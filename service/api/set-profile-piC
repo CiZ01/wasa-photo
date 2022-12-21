@@ -1,0 +1,16 @@
+package api
+
+func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	// Get the user ID from the URL
+	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	if err != nil {
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Check if the user is authorized
+	if !isAuthorized(uint32(_profileUserID), r.Header) {
+		rt.writeError(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	// Da IMPLEMENTARE			

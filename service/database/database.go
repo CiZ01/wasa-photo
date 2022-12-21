@@ -31,13 +31,15 @@ Then you can initialize the AppDatabase and pass it to the api package.
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 )
 
 type appdbimpl struct {
-	c *sql.DB
+	c   *sql.DB
+	ctx context.Context
 }
 
 type AppDatabase interface {
@@ -189,7 +191,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	return &appdbimpl{
-		c: db,
+		c:   db,
+		ctx: context.Background(),
 	}, nil
 }
 

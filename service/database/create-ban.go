@@ -1,5 +1,9 @@
 package database
 
+import (
+	"database/sql"
+)
+
 var query_CREATEBAN = `INSERT INTO Ban VALUES (?, ?)`
 var query_GETALLPOST = `SELECT postID FROM Post WHERE userID=?`
 var query_HIDECOMMENTS = `UPDATE Comment SET hidden = "1" WHERE userID=? AND postID=?`
@@ -23,12 +27,25 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 	}
 	rows.Close()
 
-	hideComments, err := db.c.Prepare(query_HIDECOMMENTS)
+	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err
 	}
 
-	deleteLikes, err := db.c.Prepare(query_DELETEALLLIKES)
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	hideComments, err := tx.Prepare(query_HIDECOMMENTS)
+	if err != nil {
+		return err
+	}
+
+	deleteLikes, err := tx.Prepare(query_DELETEALLLIKES)
 	if err != nil {
 		return err
 	}
@@ -55,7 +72,7 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 		return err
 	}
 
-	_, err = db.c.Exec(query_CREATEBAN, bannerID, bannedID)
+	_, err = tx.Exec(query_CREATEBAN, bannerID, bannedID)
 	if err != nil {
 		return err
 	}
