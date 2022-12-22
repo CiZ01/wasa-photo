@@ -1,5 +1,7 @@
 package database
 
+import "database/sql"
+
 var query_DELETEALLLIKE = `DELETE FROM Like WHERE userID = ?`
 var query_DELETEALLCOMMENT = `DELETE FROM Comment WHERE userID = ?`
 var query_DELETEALLFOLLOW = `DELETE FROM Follow WHERE userID = ? OR targetUserID = ?`
@@ -8,27 +10,41 @@ var query_DELETEALLPOSTS = `DELETE FROM Post WHERE userID = ?`
 var query_DELETEUSER = `DELETE FROM User WHERE userID = ?`
 
 func (db *appdbimpl) DeleteUser(userID uint32) error {
-	_, err := db.c.Exec(query_DELETEALLPOSTS, userID)
+
+	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return err
 	}
-	_, err = db.c.Exec(query_DELETEALLBAN, userID, userID)
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	_, err = tx.Exec(query_DELETEALLPOSTS, userID)
 	if err != nil {
 		return err
 	}
-	_, err = db.c.Exec(query_DELETEALLFOLLOW, userID, userID)
+	_, err = tx.Exec(query_DELETEALLBAN, userID, userID)
 	if err != nil {
 		return err
 	}
-	_, err = db.c.Exec(query_DELETEALLCOMMENT, userID)
+	_, err = tx.Exec(query_DELETEALLFOLLOW, userID, userID)
 	if err != nil {
 		return err
 	}
-	_, err = db.c.Exec(query_DELETEALLLIKE, userID)
+	_, err = tx.Exec(query_DELETEALLCOMMENT, userID)
 	if err != nil {
 		return err
 	}
-	_, err = db.c.Exec(query_DELETEUSER, userID)
+	_, err = tx.Exec(query_DELETEALLLIKE, userID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(query_DELETEUSER, userID)
 	if err != nil {
 		return err
 	}
