@@ -42,8 +42,7 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 	// Write the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(followings)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(followings); err != nil {
 		ctx.Logger.WithError(err).Error("Error while encoding the response")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

@@ -49,6 +49,9 @@ type AppDatabase interface {
 	// Delete a user
 	DeleteUser(userID uint32) error
 
+	// Get the user's stream. The list is ordered by timestamp, descending.
+	GetStream(userID uint32, offset uint32, limit int32) ([]Post, error)
+
 	// Change the username of a user
 	ChangeUsername(userID uint32, newUsername string) error
 
@@ -72,7 +75,7 @@ type AppDatabase interface {
 
 	// Get a list of post from a user. The list is ordered by timestamp, descending.
 	// The list is limited to `limit` elements, and the first element is the `offset`-th element.
-	GetPosts(profileUserID uint32, offset uint32, limit uint32) ([]Post, error)
+	GetPosts(profileUserID uint32, offset uint32, limit int32) ([]Post, error)
 
 	// Get the last postID in the database
 	GetLastPostID(userID uint32) (uint32, error)
@@ -84,7 +87,7 @@ type AppDatabase interface {
 	DeleteLike(ownerID uint32, postID uint32, userID uint32) error
 
 	// Get
-	GetLikes(ownerID uint32, postID uint32, offset uint32, limit uint32) ([]User, error)
+	GetLikes(ownerID uint32, postID uint32, offset uint32, limit int32) ([]User, error)
 
 	// Create a new comment in the database. The user "userID" comments the post "postID".
 	CreateComment(ownerID uint32, userID uint32, postID uint32, text string) (Comment, error)
@@ -93,7 +96,7 @@ type AppDatabase interface {
 	DeleteComment(commentID uint32, ownerID uint32, postID uint32) error
 
 	// Get all comments from a post. The list is ordered by timestamp, descending.
-	GetComments(ownerID uint32, postID uint32, offset uint32, limit uint32) ([]Comment, error)
+	GetComments(ownerID uint32, postID uint32, offset uint32, limit int32) ([]Comment, error)
 
 	// Add a follow relationship between two users
 	CreateFollow(followerID uint32, followedID uint32) error
@@ -102,10 +105,10 @@ type AppDatabase interface {
 	DeleteFollow(followerID uint32, followedID uint32) error
 
 	// Get all users followed by the user "followerID"
-	GetFollowings(followerID uint32, offset uint32, limit uint32) ([]User, error)
+	GetFollowings(followerID uint32, offset uint32, limit int32) ([]User, error)
 
 	// Get all users following the user "followedID"
-	GetFollowers(followedID uint32, offset uint32, limit uint32) ([]User, error)
+	GetFollowers(followedID uint32, offset uint32, limit int32) ([]User, error)
 
 	// Add a ban relationship between two users
 	CreateBan(bannerID uint32, bannedID uint32) error
@@ -114,7 +117,7 @@ type AppDatabase interface {
 	DeleteBan(bannerID uint32, bannedID uint32) error
 
 	// Get all users banned from the user "bannerID"
-	GetBans(bannerID uint32, offset uint32, limit uint32) ([]User, error)
+	GetBans(bannerID uint32, offset uint32, limit int32) ([]User, error)
 
 	// Get a user by its ID
 	GetUserByID(userID uint32) (User, error)
@@ -124,6 +127,8 @@ type AppDatabase interface {
 
 	// Return true if the user is following the other user, false otherwise
 	IsFollowing(followerID uint32, followedID uint32) (bool, error)
+
+	SearchUsers(userID uint32, search string, from_follow bool, offset uint32, limit int32) ([]User, error)
 
 	// Return true if a username already exists, false otherwise
 	ExistsName(username string) bool

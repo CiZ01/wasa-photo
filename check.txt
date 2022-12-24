@@ -1,7 +1,7 @@
 doLogin [x]
 deleteUser []
 setMyUsername [x]
-setMyBio [] __missing__
+setMyBio [x]
 setMyProfilePic [] __missing__
 followUser [x]
 unfollowUser [x]
@@ -9,8 +9,8 @@ getMyFollowers [x]
 getMyFollowing [x]
 banUser [x]
 unbanUser [x]
-getMyBans []
-getMyProfile []
+getMyBans [x]
+getMyProfile [x]
 uploadPhoto [x] 
 getPosts [x]
 deletePhoto []
@@ -20,5 +20,5 @@ getLikes [x]
 commentPhoto [x]
 deleteComment [x]
 getComments [x]
-getMyStream [] __missing__
+getMyStream [x] 
 search [] __missing__

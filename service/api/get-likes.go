@@ -51,6 +51,10 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 
 	// Get limit and offset from the queries
 	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	if err != nil {
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	likes, err := rt.db.GetLikes(photoID, profileUserID, offset, limit)
 	if err != nil {
@@ -62,5 +66,9 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	// Send the response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(likes)
+	if err := json.NewEncoder(w).Encode(likes); err != nil {
+		ctx.Logger.WithError(err).Error("Error encoding likes")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }

@@ -1,14 +1,17 @@
 package database
 
-var query_GETBANS = `SELECT bannedID FROM Ban WHERE userID = ? LIMIT ?,?`
+var query_GETBANS = `SELECT bannedID FROM Ban WHERE bannerID = ? LIMIT ?,?`
 
-func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit uint32) ([]User, error) {
+/*
+GetBans returns a list of users that have been banned by the user with the given ID.
+*/
+func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit int32) ([]User, error) {
 	var bans []User
 	rows, err := db.c.Query(query_GETBANS, bannerID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
 		var bannedID uint32
@@ -23,5 +26,6 @@ func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit uint32) ([]Us
 		}
 		bans = append(bans, user)
 	}
-	return bans, nil
+
+	return bans, err
 }

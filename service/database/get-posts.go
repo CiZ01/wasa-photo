@@ -4,13 +4,14 @@ var query_GETPOSTS = `SELECT postID, userID, postImageURL, caption, timestamp FR
 var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=?`
 var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=?`
 
-func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit uint32) ([]Post, error) {
+func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit int32) ([]Post, error) {
 	// Get the posts from the database
 	rows, err := db.c.Query(query_GETPOSTS, profileUserID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { err = rows.Close() }()
+
 	// Create the slice of posts
 	posts := make([]Post, 0)
 
@@ -46,5 +47,5 @@ func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit uint32)
 		posts = append(posts, post)
 
 	}
-	return posts, nil
+	return posts, err
 }

@@ -18,8 +18,7 @@ func (db *appdbimpl) DeleteUser(userID uint32) error {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
-			return
+			err = tx.Rollback()
 		}
 		err = tx.Commit()
 	}()

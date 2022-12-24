@@ -176,7 +176,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }    
+      - { $ref: "#/components/parameters/Limit" }
 
     get:
       tags: ["User"]
@@ -290,7 +290,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }    
+      - { $ref: "#/components/parameters/Limit" }
 
     get:
       tags: ["User"]
@@ -631,12 +631,12 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /search:
+  /profiles:
     parameters:
-      - name: pattern
+      - name: search
         in: query
         description: The username (or a part of it) to search.
-        schema: 
+        schema:
           type: string
           minLength: 1
           maxLength: 13
@@ -645,7 +645,7 @@ paths:
       - name: from_follows
         in: query
         description: The search is limited to followers and followings.
-        schema: 
+        schema:
           type: boolean
           default: false
         required: false
@@ -654,7 +654,7 @@ paths:
     get:
       tags: ["User"]
       operationId: searchUsers
-      summary: Get the list of profiles 
+      summary: Get the list of profiles
       description: |-
         Get the list of Users that match with the username specified in the query.
       security:
@@ -706,7 +706,7 @@ components:
         user: { $ref: "#/components/schemas/User" }
         bio: { $ref: "#/components/schemas/Bio" }
         profilePic: { $ref: "#/components/schemas/ImgURL" }
-        followers: 
+        followers:
           type: integer
           description: Number of followers
           example: 10

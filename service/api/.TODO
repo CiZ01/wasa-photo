@@ -30,3 +30,6 @@
 **#TODO** errore nel commentID .\
 **#TODO** se mando due volte la follow si rompe il server.\
 **#TODO** fare il parse da db a api in followings e bans e tutto le altr.\
+**#TODO** usare gli sql datatypes per i dati che possono ritornarmi null. \
+**#TODO** manca il check dei commenti e delle bio e chissa quanto altro per vedere se sono validi secondo il patter.\
+**#TODO** fare una funzione che usa l'indirizzo ip come auth. \

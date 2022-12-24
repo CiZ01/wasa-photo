@@ -48,11 +48,10 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// Write the response
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(followers)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Error while encoding the response")
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(followers); err != nil {
+		ctx.Logger.WithError(err).Error("Error while encoding the followers")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

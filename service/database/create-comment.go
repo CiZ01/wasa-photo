@@ -24,8 +24,7 @@ func (db *appdbimpl) CreateComment(userID uint32, ownerID uint32, postID uint32,
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
-			return
+			err = tx.Rollback()
 		}
 		err = tx.Commit()
 	}()

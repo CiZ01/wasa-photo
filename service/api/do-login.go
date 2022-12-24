@@ -64,6 +64,11 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	authUser := AuthUser{user, user.UserID}
 
 	// Encode the AuthUser object in JSON and send it to the client.
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(authUser)
+	if err := json.NewEncoder(w).Encode(authUser); err != nil {
+		ctx.Logger.WithError(err).Error("can't encode the response")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }

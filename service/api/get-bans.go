@@ -31,7 +31,7 @@ func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	bans, err := rt.db.GetBans(profileUserID, limit, offset)
+	bans, err := rt.db.GetBans(profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting bans")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -39,10 +39,9 @@ func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	// Write the response
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(bans)
-	if err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(bans); err != nil {
 		ctx.Logger.WithError(err).Error("Error encoding bans")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

@@ -13,16 +13,16 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/profiles/:profileUserID", rt.wrap(rt.deleteUser))
 
 	// --------GET USER PROFILE----------//
-	rt.router.GET("/profiles/:profileUserID", rt.wrap(rt.getMyUserProfile))
+	rt.router.GET("/profiles/:profileUserID", rt.wrap(rt.getUserProfile))
 
 	// --------CHANGE USERNAME---------//
-	rt.router.PUT("/profiles/:profileUserID/username", rt.wrap(rt.setMyUsername))
+	rt.router.PUT("/profiles/:profileUserID/username", rt.wrap(rt.setMyUserName))
 
 	// --------CHANGE BIO---------------//
-	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
+	rt.router.POST("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
 
 	// --------CHANGE PROFILE PIC-------//
-	//rt.router.PUT("/profiles/:profileUserID/profilePic", rt.wrap(rt.setMyProfilePic))
+	// rt.router.PUT("/profiles/:profileUserID/profilePic", rt.wrap(rt.setMyProfilePic))
 
 	// ----------FOLLOW USER-----------//
 	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser))
@@ -74,10 +74,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/profiles/:profileUserID/posts/:postID/comments", rt.wrap(rt.getComments))
 
 	// ---------GET FEED--------------//
-	// rt.router.GET("/profiles/:profileUserID/feed", rt.wrap(rt.getMyStream))
+	rt.router.GET("/profiles/:profileUserID/feed", rt.wrap(rt.getMyStream))
 
-	// -----------GET USERS------------//
-	// the search function is still under development, however, it will be called `searchUsers`
+	// -----------SEARCH------------//
+	rt.router.GET("/profiles", rt.wrap(rt.searchUsers))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)

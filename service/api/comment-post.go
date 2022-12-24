@@ -65,7 +65,11 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(comment)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(comment); err != nil {
+		ctx.Logger.WithError(err).Error("Error encoding comment")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }

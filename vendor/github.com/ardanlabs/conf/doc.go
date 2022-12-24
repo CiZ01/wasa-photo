@@ -46,17 +46,18 @@ Would produce the following usage output:
 Usage: conf.test [options] [arguments]
 
 OPTIONS
-  --an-int/$CRUD_AN_INT         <int>       (default: 9)
-  --a-string/-s/$CRUD_A_STRING  <string>    (default: B)
-  --bool/$CRUD_BOOL             <bool>
-  --ip-name/$CRUD_IP_NAME_VAR   <string>    (default: localhost)
-  --ip-ip/$CRUD_IP_IP           <string>    (default: 127.0.0.0)
-  --name/$CRUD_NAME             <string>    (default: bill)
-  --e-dur/-d/$CRUD_DURATION     <duration>  (default: 1s)
-  --help/-h
-  display this help message
-  --version/-v
-  display version information
+
+	--an-int/$CRUD_AN_INT         <int>       (default: 9)
+	--a-string/-s/$CRUD_A_STRING  <string>    (default: B)
+	--bool/$CRUD_BOOL             <bool>
+	--ip-name/$CRUD_IP_NAME_VAR   <string>    (default: localhost)
+	--ip-ip/$CRUD_IP_IP           <string>    (default: 127.0.0.0)
+	--name/$CRUD_NAME             <string>    (default: bill)
+	--e-dur/-d/$CRUD_DURATION     <duration>  (default: 1s)
+	--help/-h
+	display this help message
+	--version/-v
+	display version information
 
 The API is a single call to Parse
 

@@ -2,13 +2,13 @@ package database
 
 var query_GETFOLLOWINGS = `SELECT userID, username, userPropicURL FROM User WHERE userID IN (SELECT followedID FROM Follow WHERE followerID=? LIMIT ?, ?)`
 
-func (db *appdbimpl) GetFollowings(followerID uint32, offset uint32, limit uint32) ([]User, error) {
+func (db *appdbimpl) GetFollowings(followerID uint32, offset uint32, limit int32) ([]User, error) {
 	// Get the followings from the database
 	rows, err := db.c.Query(query_GETFOLLOWINGS, followerID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { err = rows.Close() }()
 
 	var followings []User
 
@@ -23,5 +23,5 @@ func (db *appdbimpl) GetFollowings(followerID uint32, offset uint32, limit uint3
 		followings = append(followings, following)
 	}
 
-	return followings, nil
+	return followings, err
 }

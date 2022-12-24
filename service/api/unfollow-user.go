@@ -8,9 +8,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-
 /*
-unfollowUser unfollows the user `` followed by .
+unfollowUser unfollows the user “ followed by .
 */
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL

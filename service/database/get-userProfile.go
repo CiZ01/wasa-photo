@@ -11,7 +11,7 @@ func (db *appdbimpl) GetUserProfile(userID uint32) (Profile, error) {
 	if err != nil {
 		return profile, err
 	}
-	defer rows.Close()
+	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
 		var user User
@@ -32,5 +32,5 @@ func (db *appdbimpl) GetUserProfile(userID uint32) (Profile, error) {
 		return profile, err
 	}
 
-	return profile, nil
+	return profile, err
 }

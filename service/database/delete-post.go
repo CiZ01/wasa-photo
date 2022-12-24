@@ -20,8 +20,7 @@ func (db *appdbimpl) DeletePost(ownerID uint32, postID uint32) error {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
-			return
+			err = tx.Rollback()
 		}
 		err = tx.Commit()
 	}()

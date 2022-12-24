@@ -104,9 +104,8 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Return the new post
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(newPost)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Error while encoding the response")
+	if err := json.NewEncoder(w).Encode(newPost); err != nil {
+		ctx.Logger.WithError(err).Error("Error while encoding the post")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

@@ -19,7 +19,7 @@ If the new username is already taken, the request will fail.
 If the user is not authorized, the request will fail.
 If the username is not valid, the request will fail.
 */
-func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the userID from the URL
 	paramUserID, _ := strconv.Atoi(ps.ByName("profileUserID"))
 	userID := uint32(paramUserID)
@@ -37,9 +37,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	var newUsernameBody NewUsernameBody
 
-	err := json.NewDecoder(r.Body).Decode(&newUsernameBody)
-
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&newUsernameBody); err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -53,13 +51,17 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	// Change the username, if the new username is already taken, the request will fail
-	err = rt.db.ChangeUsername(userID, newUsername)
-	if err != nil {
+	if err := rt.db.ChangeUsername(userID, newUsername); err != nil {
 		http.Error(w, "Username already taken. Username must be unique", http.StatusBadRequest)
 		return
 	}
 
 	// Return a success message
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "plain/text")
-	json.NewEncoder(w).Encode("Username changed")
+	if err := json.NewEncoder(w).Encode("Username changed"); err != nil {
+		ctx.Logger.WithError(err).Error("can't encode the response")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }

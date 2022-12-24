@@ -21,10 +21,7 @@ func (db *appdbimpl) DeleteBan(bannerID uint32, bannedID uint32) error {
 		}
 		posts = append(posts, postID)
 	}
-	err = rows.Close()
-	if err != nil {
-		return err
-	}
+	defer func() { err = rows.Close() }()
 
 	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
@@ -33,8 +30,7 @@ func (db *appdbimpl) DeleteBan(bannerID uint32, bannedID uint32) error {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
-			return
+			err = tx.Rollback()
 		}
 		err = tx.Commit()
 	}()
@@ -54,5 +50,5 @@ func (db *appdbimpl) DeleteBan(bannerID uint32, bannedID uint32) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return err
 }

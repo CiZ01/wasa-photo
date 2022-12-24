@@ -10,9 +10,9 @@ getLimitAndOffset returns the limit and offset from the queries.
 If the queries are not present or not valid, it returns the default values.
 The default values are 10 for limit and 0 for offset.
 */
-func getLimitAndOffset(query url.Values) (uint32, uint32, error) {
+func getLimitAndOffset(query url.Values) (int32, uint32, error) {
 	// Get limit and offset from the queries
-	limit, offset := uint32(10), uint32(0)
+	limit, offset := int32(10), uint32(0)
 
 	// Check if the offset is valid
 	if query.Has("offset") {
@@ -29,7 +29,7 @@ func getLimitAndOffset(query url.Values) (uint32, uint32, error) {
 		if err != nil {
 			return 0, 0, err
 		}
-		limit = uint32(_limit)
+		limit = int32(_limit)
 	}
 	return limit, offset, nil
 }
