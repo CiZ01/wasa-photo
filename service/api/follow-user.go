@@ -57,10 +57,10 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err = rt.db.CreateFollow(profileUserID, targetUserID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Error while creating the follow")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	// err = rt.db.CreateFollow(profileUserID, targetUserID)
+	// if err != nil {
+	// 	ctx.Logger.WithError(err).Error("Error while creating the follow")
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// 	return
+	// }
 }

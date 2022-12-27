@@ -6,7 +6,7 @@ import (
 )
 
 var query_ADDUSER = `INSERT INTO User (userID, username, bio, userPropicURL)
-					 VALUES (?, ?, ?);`
+					 VALUES (?, ?, ?, ?);`
 var query_MAXID = `SELECT MAX(userID) FROM User`
 
 func (db *appdbimpl) CreateUser(u User) (User, error) {

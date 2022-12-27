@@ -1,5 +1,6 @@
 {
     "yaml.schemas": {
-        "openapi:v3": "file:///home/ciz/Scrivania/Programmazione%20Web/wasa_photo/doc/api.yaml"
+        "openapi:v3": "file:///home/ciz/Scrivania/Programmazione%20Web/wasa_photo/doc/api.yaml",
+        "swaggerviewer:openapi": "file:///home/ciz/Scrivania/wasa_photo/doc/api.yaml"
     }
 }

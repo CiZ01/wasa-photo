@@ -21,14 +21,13 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	// Read the request body
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Check if the username is valid
 	if !IsValid(user.Username) {
-		w.Header().Set("content-type", "plain/text")
-		http.Error(w, "invalid username", http.StatusBadRequest)
+		http.Error(w, "Bad reequest invalid username", http.StatusBadRequest)
 		return
 	}
 
@@ -39,16 +38,21 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	*/
 	if !rt.db.ExistsName(user.Username) {
 		user, err = rt.CreateUser(user)
-		w.WriteHeader(201)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("can't create the user")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
 	} else {
-		dbUser, _ := rt.db.GetUserByName(user.Username)
+		dbUser, err := rt.db.GetUserByName(user.Username)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("can't load the user")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		user.FromDatabase(dbUser)
-		w.WriteHeader(200)
-	}
-	if err != nil {
-		ctx.Logger.WithError(err).Error("can't load or create the user")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		w.WriteHeader(http.StatusOK)
 	}
 
 	// This struct contain the User object and the authorization token.
@@ -64,7 +68,6 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	authUser := AuthUser{user, user.UserID}
 
 	// Encode the AuthUser object in JSON and send it to the client.
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "application/json")
 	if err := json.NewEncoder(w).Encode(authUser); err != nil {
 		ctx.Logger.WithError(err).Error("can't encode the response")

@@ -1,6 +1,10 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"os"
+)
 
 var query_DELETEALLLIKE = `DELETE FROM Like WHERE userID = ?`
 var query_DELETEALLCOMMENT = `DELETE FROM Comment WHERE userID = ?`
@@ -47,5 +51,11 @@ func (db *appdbimpl) DeleteUser(userID uint32) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	err = os.RemoveAll("./storage/" + fmt.Sprint(userID) + "/")
+	if err != nil {
+		return err
+	}
+
+	return err
 }

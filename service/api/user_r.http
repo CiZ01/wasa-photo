@@ -4,7 +4,7 @@ POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "username": "qqqq111111"
+    "username": "wewewe"
 }
 
 ###
@@ -21,19 +21,19 @@ content-type: application/json
 ###
 
 # FOLLOW #
-PUT http://localhost:3000/profiles/5/followings/2 HTTP/1.1
+POST http://localhost:3000/profiles/5/followings/2 HTTP/1.1
 Authorization: 5
 
 ###
 
 # UNFOLLOW #
-DELETE http://localhost:3000/profiles/3/followings/38 HTTP/1.1
-Authorization: 3
+DELETE http://localhost:3000/profiles/5/followings/2 HTTP/1.1
+Authorization: 5
 
 ###
 
 # BAN #
-PUT http://localhost:3000/profiles/1/bans/3 HTTP/1.1
+POST http://localhost:3000/profiles/1/bans/3 HTTP/1.1
 Authorization: 1
 
 ###
@@ -75,7 +75,7 @@ Content-Type: image/png
 ###
 
 # LIKE #
-PUT http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
+POST http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
 Authorization: 5
 
 ###
@@ -93,8 +93,8 @@ Authorization: 2
 ###
 
 # COMMENT #
-POST http://localhost:3000/profiles/2/posts/4/comments/4 HTTP/1.1
-Authorization: 4
+POST http://localhost:3000/profiles/2/posts/4/comments/5 HTTP/1.1
+Authorization: 5
 content-type: application/json
 
 {

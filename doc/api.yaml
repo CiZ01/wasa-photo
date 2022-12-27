@@ -43,12 +43,14 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
+              example: { $ref: "#/components/schemas/AuthUser" }
         "200":
           description: |-
             Log-in succesfull.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
+              example: { $ref: "#/components/schemas/AuthUser" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
@@ -113,7 +115,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/followings/{target_user_id}:
+  /profiles/{profile_user_id}/followings:
     parameters:
       - name: target_user_id
         in: path
@@ -126,7 +128,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
-    put:
+    post:
       tags: ["User"]
       operationId: followUser
       summary: Follow user
@@ -168,6 +170,26 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+    get:
+      tags: ["User"]
+      operationId: getMyFollowings
+      summary: Get my followings
+      description: |-
+        Get the followings of the user with the given user ID.
+        Return a list of users. See User for more details.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Get followings successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
   /profiles/{profile_user_id}/followers:
     parameters:
       - name: profile_user_id
@@ -198,36 +220,6 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{profile_user_id}/followings:
-    parameters:
-      - name: profile_user_id
-        in: path
-        description: The user Id of the user who want to get his followings.
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
-
-    get:
-      tags: ["User"]
-      operationId: getMyFollowings
-      summary: Get my followings
-      description: |-
-        Get the followings of the user with the given user ID.
-        Return a list of users. See User for more details.
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Get followings successful
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/UsersList" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
   /profile/{profile_user_id}/bans/{target_user_id}:
     parameters:
       - name: target_user_id
@@ -241,7 +233,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
-    put:
+    post:
       tags: ["User"]
       operationId: banUser
       summary: Ban user
@@ -462,7 +454,7 @@ paths:
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
 
-    put:
+    post:
       tags: ["Post"]
       operationId: likePhoto
       summary: Like the post and add the user to the likes list of the post.
@@ -536,13 +528,8 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{post_id}/comments/{user_id}:
+  /profiles/{profile_user_id}/posts/{post_id}/comments:
     parameters:
-      - name: user_id
-        in: path
-        description: The user Id of the user who wants to (un)comment the post
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
       - name: profile_user_id
         in: path
         description: The user Id of the owner of the post.
@@ -577,40 +564,6 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-    delete:
-      tags: ["Post"]
-      operationId: uncommentPhoto
-      summary: Delete a comment from a post
-      description: |-
-        Delete the comment specified by ID in path from the post.
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Comment deleted successful
-          content:
-            text/plain:
-              schema: { $ref: "#/components/schemas/OK" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
-  /profiles/{profile_user_id}/posts/{post_id}/comments:
-    parameters:
-      - name: profile_user_id
-        in: path
-        description: The user Id of the owner of the post.
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - name: post_id
-        in: path
-        description: The post Id of the post to get the comments
-        schema: { $ref: "#/components/schemas/PostID" }
-        required: true
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
-
     get:
       tags: ["Post"]
       operationId: getComments
@@ -631,6 +584,43 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /profiles/{profile_user_id}/posts/{post_id}/comments/{comment_id}:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post Id of the post to comment
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+      - name: comment_id
+        in: path
+        description: The comment Id of the comment to delete
+        schema: { $ref: "#/components/schemas/CommentID" }
+        required: true
+
+    delete:
+      tags: ["Post"]
+      operationId: uncommentPhoto
+      summary: Delete a comment from a post
+      description: |-
+        Delete the comment specified by ID in path from the post.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Comment deleted successful
+          content:
+            text/plain:
+              schema: { $ref: "#/components/schemas/OK" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
   /profiles:
     parameters:
       - name: search
@@ -640,7 +630,7 @@ paths:
           type: string
           minLength: 1
           maxLength: 13
-          pattern: ^[a-zA-Z0-9_]{1,13}$
+          pattern: ^[a-z0-9_]{1,13}$
         required: true
       - name: from_follows
         in: query
@@ -670,6 +660,37 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /profiles/{profile_user_id}/bio:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+
+    put:
+      tags: ["User"]
+      operationId: setMyBio
+      summary: Set the bio of the user
+      description: |-
+        Set the bio of the user
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Bio" }
+      responses:
+        "201":
+          description: Bio setted successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Bio" }
+              example: { $ref: "#/components/schemas/Bio" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
 #---------------------------COMPONENTS--------------------------#
 
 components:
@@ -677,11 +698,9 @@ components:
     UserID:
       title: User id
       description: Numeric id of the user
-      type: string
-      pattern: ^[0-9]{5}$
-      example: "00010"
-      minLength: 5
-      maxLength: 5
+      type: integer
+      example: 10
+      minimum: 1
     Username:
       title: Username
       description: Username of the user, not accepted upper case characters
@@ -710,10 +729,12 @@ components:
           type: integer
           description: Number of followers
           example: 10
+          minimum: 0
         followings:
           type: integer
           description: Number of followings
           example: 10
+          minimum: 0
         #non ritorna posts, i posts verrano ritornati con un'altra chiamata
         #forse si potrebbe usare link nei responses.
     PostID:
@@ -722,24 +743,23 @@ components:
         The post id is used to identify a post.
         The post id is generated by the server and it's for each user.
       type: integer
-      pattern: ^[0-9]{1,6}$
       example: 100
-      minLength: 1
-      maxLength: 6
+      minimum: 1
+
+    CommentID:
+      title: CommentID
+      description: |-
+        The numeric id is generated by the server and it's unique for each comments in a post.
+      type: integer
+      example: 15
+      minimum: 1
     Comment:
       title: Comment
       description: Comment of the post
       type: object
       properties:
         user: { $ref: "#/components/schemas/User" }
-        comment_id:
-          type: integer
-          description: |-
-            The numeric id is generated by the server and it's for each user.
-          pattern: "[0-9]{1,6}"
-          example: "0001011"
-          minLength: 1
-          maxLength: 7
+        comment_id: { $ref: "#/components/schemas/CommentID" }
         comment:
           type: string
           description: Text of the comment

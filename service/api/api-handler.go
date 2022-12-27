@@ -19,13 +19,13 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/username", rt.wrap(rt.setMyUserName))
 
 	// --------CHANGE BIO---------------//
-	rt.router.POST("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
+	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
 
 	// --------CHANGE PROFILE PIC-------//
 	// rt.router.PUT("/profiles/:profileUserID/profilePic", rt.wrap(rt.setMyProfilePic))
 
 	// ----------FOLLOW USER-----------//
-	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser))
+	rt.router.POST("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser))
 	// --------------------------------//
 
 	// --------UNFOLLOW USER-----------//
@@ -38,7 +38,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/profiles/:profileUserID/followers", rt.wrap(rt.getMyFollowers))
 
 	// ----------BAN USER--------------//
-	rt.router.PUT("/profiles/:profileUserID/bans/:targetUserID", rt.wrap(rt.banUser))
+	rt.router.POST("/profiles/:profileUserID/bans/:targetUserID", rt.wrap(rt.banUser))
 
 	// --------UNBAN USER--------------//
 	rt.router.DELETE("/profiles/:profileUserID/bans/:targetUserID", rt.wrap(rt.unbanUser))
@@ -56,7 +56,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/profiles/:profileUserID/posts/:postID", rt.wrap(rt.deletePhoto))
 
 	// ----------LIKE POST-------------//
-	rt.router.PUT("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.likePhoto))
+	rt.router.POST("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.likePhoto))
 
 	// --------UNLIKE POST-------------//
 	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.unlikePhoto))
