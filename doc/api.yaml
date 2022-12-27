@@ -117,14 +117,9 @@ paths:
 
   /profiles/{profile_user_id}/followings:
     parameters:
-      - name: target_user_id
-        in: path
-        description: The user Id of the user to (un)follow.
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
       - name: profile_user_id
         in: path
-        description: The user Id of the user who wants to (un)follow
+        description: The user Id of the followed user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
