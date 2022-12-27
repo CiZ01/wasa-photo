@@ -816,11 +816,14 @@ components:
     Bio:
       title: Bio
       description: Bio of the user
-      type: string
-      example: "Io sono Haru, ho 1 anno e sono un gatto 🐱"
-      pattern: '^[^\/\\]{1,64}$'
-      minLength: 1
-      maxLength: 64
+      type: object
+      properties:
+        text:
+          type: string
+          example: "Io sono Haru, ho 1 anno e sono un gatto 🐱"
+          pattern: '^[^\/\\]{1,64}$'
+          minLength: 1
+          maxLength: 64
     Auth:
       title: Auth
       description: The authorization code is the user_id.
