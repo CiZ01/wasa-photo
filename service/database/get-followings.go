@@ -13,6 +13,9 @@ func (db *appdbimpl) GetFollowings(followerID uint32, offset uint32, limit int32
 	var followings []User
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var following User
 
 		// Get following data

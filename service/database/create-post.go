@@ -1,6 +1,8 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var query_CREATEPOST = `INSERT INTO Post (postID, userID, postImageURL, caption) VALUES (?, ?, ?, ?)`
 
@@ -22,7 +24,10 @@ func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 		return p, err
 	}
 
-	p.ImageURL = path
+	newPost, err := db.GetPosts(p.User.UserID, 0, 1)
+	if err != nil {
+		return p, err
+	}
 
-	return p, nil
+	return newPost[0], nil
 }

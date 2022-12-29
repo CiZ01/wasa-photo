@@ -14,6 +14,9 @@ func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit int32) ([]Use
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var bannedID uint32
 		err = rows.Scan(&bannedID)
 		if err != nil {

@@ -14,6 +14,9 @@ func (db *appdbimpl) DeleteBan(bannerID uint32, bannedID uint32) error {
 
 	var posts []uint32
 	for rows.Next() {
+		if rows.Err() != nil {
+			return err
+		}
 		var postID uint32
 		err = rows.Scan(&postID)
 		if err != nil {

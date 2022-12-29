@@ -21,14 +21,14 @@ content-type: application/json
 ###
 
 # FOLLOW #
-POST http://localhost:3000/profiles/5/followings/2 HTTP/1.1
-Authorization: 5
+POST http://localhost:3000/profiles/5/followings HTTP/1.1
+Authorization: 3
 
 ###
 
 # UNFOLLOW #
 DELETE http://localhost:3000/profiles/5/followings/2 HTTP/1.1
-Authorization: 5
+Authorization: 3
 
 ###
 

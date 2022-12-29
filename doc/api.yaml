@@ -215,16 +215,11 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{profile_user_id}/bans/{target_user_id}:
+  /profile/{profile_user_id}/bans:
     parameters:
-      - name: target_user_id
-        in: path
-        description: The user Id of the user to (un)ban
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
       - name: profile_user_id
         in: path
-        description: The user Id of the user who wants to (un)ban
+        description: The user Id of the banned user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
@@ -269,16 +264,6 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/bans:
-    parameters:
-      - name: profile_user_id
-        in: path
-        description: The user Id of the user who want to get his bans
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
-
     get:
       tags: ["User"]
       operationId: getMyBans
@@ -288,6 +273,11 @@ paths:
         Return a list of users. See User for more details.
       security:
         - bearerAuth: []
+
+      parameters:
+        - { $ref: "#/components/parameters/Offset" }
+        - { $ref: "#/components/parameters/Limit" }
+
       responses:
         "200":
           description: Get bans successful
@@ -315,6 +305,11 @@ paths:
         Get user profile
       security:
         - bearerAuth: []
+
+      parameters:
+        - { $ref: "#/components/parameters/Offset" }
+        - { $ref: "#/components/parameters/Limit" }
+
       responses:
         "200":
           description: |-
@@ -386,6 +381,10 @@ paths:
         Get the posts of the user with the given user ID
       security:
         - bearerAuth: []
+      parameters:
+        - { $ref: "#/components/parameters/Offset" }
+        - { $ref: "#/components/parameters/Limit" }
+
       responses:
         "200":
           description: Get posts list successful
@@ -431,13 +430,8 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
+  /profiles/{profile_user_id}/posts/{post_id}/like:
     parameters:
-      - name: user_id
-        in: path
-        description: The user Id of the user who wants to (un)like the post
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
       - name: profile_user_id
         in: path
         description: The user Id of the owner of the post.
@@ -686,6 +680,44 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /profiles/{profile_user_id}/profile_pic:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      tags: ["User"]
+      operationId: setMyProfilePic
+      summary: Set the profile picture of the user
+      description: |-
+        Set the profile picture of the user
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: The photo to upload.
+                  type: string
+                  format: binary
+                  minLength: 1
+                  maxLength: 1000000
+      responses:
+        "201":
+          description: Profile picture setted successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ImgURL" }
+              example: { $ref: "#/components/schemas/ImgURL" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
 #---------------------------COMPONENTS--------------------------#
 
 components:
@@ -700,7 +732,7 @@ components:
       title: Username
       description: Username of the user, not accepted upper case characters
       type: string
-      pattern: ^[a-z0-9._]{3,13}$
+      pattern: ^[a-z][a-z0-9_]{2,13}$
       example: "haru_22"
       minLength: 3
       maxLength: 13

@@ -1,6 +1,8 @@
 # github.com/ardanlabs/conf v1.5.0
 ## explicit; go 1.13
 github.com/ardanlabs/conf
+# github.com/disintegration/imaging v1.6.2
+## explicit
 # github.com/felixge/httpsnoop v1.0.1
 ## explicit; go 1.13
 github.com/felixge/httpsnoop
@@ -25,7 +27,9 @@ github.com/mattn/go-sqlite3
 # github.com/sirupsen/logrus v1.9.0
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664
+# golang.org/x/image v0.2.0
+## explicit; go 1.12
+# golang.org/x/sys v0.3.0
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

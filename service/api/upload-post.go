@@ -32,7 +32,11 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	profileUserID := uint32(_profileUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	} else if userID != profileUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -45,6 +49,8 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Access the photo key
+	// The photo key is the name of the file input in the HTML form
+	// If the key is not present an error is returned
 	file, _, err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
@@ -54,7 +60,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	defer file.Close()
 
 	// Get the user from the database
-	dbuser, err := rt.db.GetUserByID(uint32(profileUserID))
+	dbuser, err := rt.db.GetUserByID(profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error getting user")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -66,14 +72,17 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	user.FromDatabase(dbuser)
 
 	// Create the new post
+	// The caption is taken from the form, the FormValue function returns an empty string if the key is not present
 	var newPost = Post{
 		User:    user,
 		Caption: string(r.FormValue("caption")),
 	}
 
-	// Parse the new post from api package to the Post struct in the database package
-	dbPost := newPost.ToDatabase(user)
+	// Parse the new post from the api package to the Post struct in the database package
+	dbPost := newPost.ToDatabase()
 
+	// Create the post in the database
+	// Here the new post is returned from the database package
 	dbNewPost, err := rt.db.CreatePost(dbPost)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error creating post")
@@ -82,7 +91,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Parse the new post from the database package to the Post struct in the api package
-	newPost = newPost.FromDatabase(dbNewPost, dbuser)
+	newPost = newPost.FromDatabase(dbNewPost)
 
 	// Create the file
 	tmpfile, err := os.Create(newPost.ImageURL)

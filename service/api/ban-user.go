@@ -12,48 +12,43 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	// Get the profileUserID and targetUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error()+err.Error(), http.StatusBadRequest)
-		return
-	}
-	_targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
-	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	profileUserID := uint32(_profileUserID)
-	targetUserID := uint32(_targetUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	if profileUserID == targetUserID {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+	if profileUserID == userID {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
 	// Check if the user is banned
-	isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
+	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	isBanner, err := rt.db.IsBanned(profileUserID, targetUserID)
+	isBanner, err := rt.db.IsBanned(userID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banner")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if isBanned || isBanner {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.CreateBan(profileUserID, targetUserID)
+	err = rt.db.CreateBan(userID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error creating ban")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

@@ -19,7 +19,11 @@ func (rt *_router) setMyBio(w http.ResponseWriter, r *http.Request, ps httproute
 	profileUserID := uint32(_profileUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	} else if userID != profileUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -39,7 +43,7 @@ func (rt *_router) setMyBio(w http.ResponseWriter, r *http.Request, ps httproute
 	// Set the bio
 	if err := rt.db.SetBio(profileUserID, bio.Text); err != nil {
 		ctx.Logger.WithError(err).Error("error setting bio")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -48,7 +52,7 @@ func (rt *_router) setMyBio(w http.ResponseWriter, r *http.Request, ps httproute
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(bio); err != nil {
 		ctx.Logger.WithError(err).Error("error encoding bio")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 }

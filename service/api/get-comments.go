@@ -27,22 +27,15 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	postID := uint32(_postID)
 
-	// Get the userID from the Authorization header
-	_userID := r.Header.Get("Authorization")
-
-	userID, err := strconv.Atoi(_userID)
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if _userID == "" {
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	// Check if the user is banned
-	isBanned, err := rt.db.IsBanned(profileUserID, uint32(userID))
+	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

@@ -31,6 +31,9 @@ func (db *appdbimpl) SearchUsers(userID uint32, search string, from_follow bool,
 	}
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var u User
 		if err := rows.Scan(&u.UserID, &u.Username, &u.UserPropicURL); err != nil {
 			return nil, err

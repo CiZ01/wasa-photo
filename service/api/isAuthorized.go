@@ -11,7 +11,10 @@ The auth token must be the first element of the Authorization header.
 The auth token must be in the format "Bearer and must be equal to userID to be valid.
 If the user is authorized, the function returns true, otherwise it returns false.
 */
-func isAuthorized(userID uint32, header http.Header) bool {
-	autToken, _ := strconv.Atoi(header.Get("Authorization"))
-	return uint32(autToken) == userID
+func isAuthorized(header http.Header) uint32 {
+	autToken, err := strconv.Atoi(header.Get("Authorization"))
+	if err != nil {
+		return 0
+	}
+	return uint32(autToken)
 }

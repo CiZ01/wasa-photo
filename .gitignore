@@ -16,3 +16,4 @@ docker-compose.log
 webapi
 *.json
 *.txt
+/storage/

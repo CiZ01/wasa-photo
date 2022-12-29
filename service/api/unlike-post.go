@@ -24,14 +24,12 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	postID := uint32(_postID)
 
-	_userID, err := strconv.Atoi(ps.ByName("userID"))
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
-	}
-	userID := uint32(_userID)
-
-	if !isAuthorized(profileUserID, r.Header) {
+	} else if userID != profileUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

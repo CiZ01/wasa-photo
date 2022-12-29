@@ -20,10 +20,13 @@ type Post struct {
 	Timestamp    time.Time `json:"timestamp"`
 }
 
-func (p *Post) ToDatabase(user User) database.Post {
-	return database.Post{
+/*
+This function add the user api struct to the post api struct.
+*/
+func (p *Post) AddUser(user User) Post {
+	return Post{
 		PostID:       p.PostID,
-		User:         database.User{UserID: user.UserID, Username: user.Username, UserPropicURL: user.UserPropicURL},
+		User:         User{UserID: user.UserID, Username: user.Username, UserPropicURL: user.UserPropicURL},
 		ImageURL:     p.ImageURL,
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
@@ -32,10 +35,26 @@ func (p *Post) ToDatabase(user User) database.Post {
 	}
 }
 
-func (p *Post) FromDatabase(dbPost database.Post, dbUser database.User) Post {
+/*
+This function parse the post api struct to the post database struct.
+Also the user api struct is parsed to the user database struct.
+*/
+func (p *Post) ToDatabase() database.Post {
+	return database.Post{
+		PostID:       p.PostID,
+		User:         database.User{UserID: p.User.UserID, Username: p.User.Username, UserPropicURL: p.User.UserPropicURL},
+		ImageURL:     p.ImageURL,
+		Caption:      p.Caption,
+		LikeCount:    p.LikeCount,
+		CommentCount: p.CommentCount,
+		Timestamp:    p.Timestamp,
+	}
+}
+
+func (p *Post) FromDatabase(dbPost database.Post) Post {
 	return Post{
 		PostID:       dbPost.PostID,
-		User:         User{UserID: dbUser.UserID, Username: dbUser.Username, UserPropicURL: dbUser.UserPropicURL},
+		User:         User{UserID: dbPost.User.UserID, Username: dbPost.User.Username, UserPropicURL: dbPost.User.UserPropicURL},
 		ImageURL:     dbPost.ImageURL,
 		Caption:      dbPost.Caption,
 		LikeCount:    dbPost.LikeCount,

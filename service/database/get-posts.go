@@ -16,6 +16,9 @@ func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit int32) 
 	posts := make([]Post, 0)
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var post Post
 		var user User
 		// Get post data

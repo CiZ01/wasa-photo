@@ -13,6 +13,9 @@ func (db *appdbimpl) IsBanned(bannedID uint32, bannerID uint32) (bool, error) {
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return false, err
+		}
 		err := rows.Scan(&isBanned)
 		if err != nil {
 			return false, err

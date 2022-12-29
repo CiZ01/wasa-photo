@@ -12,6 +12,9 @@ func (db *appdbimpl) IsFollowing(followerID uint32, followedID uint32) (bool, er
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return false, err
+		}
 		err := rows.Scan(&isFollowing)
 		if err != nil {
 			return false, err

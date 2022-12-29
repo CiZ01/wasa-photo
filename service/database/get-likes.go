@@ -11,6 +11,9 @@ func (db *appdbimpl) GetLikes(ownerID uint32, postID uint32, offset uint32, limi
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var userID uint32
 		err = rows.Scan(&userID)
 		if err != nil {

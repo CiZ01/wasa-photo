@@ -26,15 +26,9 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	postID := uint32(_postID)
 
-	// Get the user ID from the request
-	_userID, err := strconv.Atoi(ps.ByName("userID"))
-	if err != nil {
-		http.Error(w, "Invalid userID", http.StatusBadRequest)
-		return
-	}
-	userID := uint32(_userID)
-
-	if !isAuthorized(uint32(_userID), r.Header) {
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

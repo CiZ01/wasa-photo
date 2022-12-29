@@ -18,49 +18,44 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	_targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
 
 	profileUserID := uint32(_profileUserID)
-	targetUserID := uint32(_targetUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	if profileUserID == targetUserID {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+	if profileUserID == userID {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
+	isFollowing, err := rt.db.IsFollowing(userID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if the user is following the target user")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if !isFollowing {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
+	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if isBanned {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.DeleteFollow(profileUserID, targetUserID)
+	err = rt.db.DeleteFollow(userID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting follow")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

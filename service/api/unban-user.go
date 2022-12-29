@@ -15,23 +15,18 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	_targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
 
 	profileUserID := uint32(_profileUserID)
-	targetUserID := uint32(_targetUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	if profileUserID == targetUserID {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+	if profileUserID == userID {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
@@ -47,7 +42,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	// 	return
 	// }
 
-	err = rt.db.DeleteBan(profileUserID, targetUserID)
+	err = rt.db.DeleteBan(userID, profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting ban")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

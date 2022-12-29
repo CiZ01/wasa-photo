@@ -18,15 +18,12 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	profileUserID := uint32(_profileUserID)
 
-	if !isAuthorized(profileUserID, r.Header) {
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-
-	// Get the user ID from the header, convert it to uint32.
-	// I don't check for errors because the isAuthorized function already did it.
-	_userID, _ := strconv.Atoi(r.Header["Authorization"][0])
-	userID := uint32(_userID)
 
 	// Check if the user is banned
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)

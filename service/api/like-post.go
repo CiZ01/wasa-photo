@@ -16,26 +16,20 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	_userID := ps.ByName("userID")
-	userID, err := strconv.Atoi(_userID)
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	// Check if the user is authorized
-	if !isAuthorized(uint32(userID), r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	isBanned, err := rt.db.IsBanned(uint32(profileUserID), uint32(userID))
+	isBanned, err := rt.db.IsBanned(uint32(profileUserID), userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if user is banned")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	isBanner, err := rt.db.IsBanned(uint32(userID), uint32(profileUserID))
+	isBanner, err := rt.db.IsBanned(userID, uint32(profileUserID))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if user is banner")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -54,7 +48,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	err = rt.db.CreateLike(uint32(userID), uint32(profileUserID), uint32(postID))
+	err = rt.db.CreateLike(userID, uint32(profileUserID), uint32(postID))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error liking post")
 		w.WriteHeader(http.StatusInternalServerError)

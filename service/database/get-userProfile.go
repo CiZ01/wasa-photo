@@ -14,6 +14,9 @@ func (db *appdbimpl) GetUserProfile(userID uint32) (Profile, error) {
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return profile, err
+		}
 		var user User
 		err := rows.Scan(&user.UserID, &user.Username, &profile.Bio, &user.UserPropicURL)
 		if err != nil {

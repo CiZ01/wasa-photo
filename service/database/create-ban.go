@@ -18,6 +18,9 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 	var allPosts []uint32
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return err
+		}
 		postID := uint32(0)
 		err = rows.Scan(&postID)
 		if err != nil {

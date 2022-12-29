@@ -25,7 +25,12 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	profileUserID := uint32(_profileUserID)
 
-	if !isAuthorized(profileUserID, r.Header) {
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	} else if userID != profileUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

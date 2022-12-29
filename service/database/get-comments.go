@@ -12,6 +12,9 @@ func (db *appdbimpl) GetComments(ownerID uint32, postID uint32, offset uint32, l
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.Err() != nil {
+			return nil, err
+		}
 		var comment Comment
 		var userID uint32
 		err = rows.Scan(&comment.CommentID, &userID, &comment.Text, &comment.Timestamp)

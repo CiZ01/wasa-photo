@@ -19,7 +19,11 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	profileUserID := uint32(_profileUserID)
 
 	// Check if the user is authorized
-	if !isAuthorized(profileUserID, r.Header) {
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	} else if userID != profileUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

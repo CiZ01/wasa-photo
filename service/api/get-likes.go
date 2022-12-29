@@ -25,15 +25,9 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 	photoID := uint32(_postID)
 
-	_userID := r.Header.Get("Authorization")
-
-	userID, err := strconv.Atoi(_userID)
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if _userID == "" {
+	// Check if the user is authorized
+	userID := isAuthorized(r.Header)
+	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
