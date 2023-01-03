@@ -1,15 +1,13 @@
 package api
 
 import (
-	"bufio"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
-
-	"github.com/disintegration/imaging"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -37,75 +35,56 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	// Parse the multipart form
-	err = r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	// Access the photo key
-	// The photo key is the name of the file input in the HTML form
-	// If the key is not present an error is returned
-	file, _, err := r.FormFile("image")
+	// Decodifica l'immagine in base64
+	image, err := base64.StdEncoding.DecodeString(string(body))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	defer file.Close()
-
-	reader := bufio.NewReader(file)
-
-	// utilizza la funzione Decode per decodificare l'immagine dal reader
-	img, _, err := imaging.Decode(reader)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error decoding image")
-		http.Error(w, "Interal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	img = imaging.Resize(img, WIDTH, HEIGHT, imaging.Lanczos)
-
-	// salva l'immagine downscalata in un nuovo file
-	err = imaging.Save(img, "immagine_downscaled.jpg")
-	if err != nil {
-		// gestisci l'errore
 	}
 
 	// Create the file
-	path := "storage/" + fmt.Sprint(profileUserID) + "/profile_pic.jpg"
-	tmpfile, err := os.Create(path)
+	path := "storage/" + fmt.Sprint(profileUserID) + "/tmp_profile_pic.jpeg"
+	err = os.WriteFile(path, image, 0644)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error creating file")
+		ctx.Logger.WithError(err).Error("error saving image")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	defer tmpfile.Close()
-
-	// Copy the uploaded file to the created file
-	_, err = io.Copy(tmpfile, file)
+	// Crop the image
+	newPath, err := saveAndCrop(path, 250, 250)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error copying file")
+		ctx.Logger.WithError(err).Error("error saving or cropping image")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	type profilePic struct {
-		path string `json:"path"`
+	// Delete tmp file
+	err = os.Remove(path)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error deleting tmp file")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
-	pic := profilePic{path: path}
+	// Prepare the response
+	type ProfilePic struct {
+		Path string `json:"path"`
+	}
+
+	pic := ProfilePic{Path: newPath}
 
 	// Return the new post
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(pic); err != nil {
-		ctx.Logger.WithError(err).Error("Error while encoding the post")
+		ctx.Logger.WithError(err).Error("error encoding proPic path")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 }
-
-// Da IMPLEMENTARE

@@ -57,7 +57,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	defer file.Close()
+	defer func() { err = file.Close() }()
 
 	// Get the user from the database
 	dbuser, err := rt.db.GetUserByID(profileUserID)
@@ -101,7 +101,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	defer tmpfile.Close()
+	defer func() { err = tmpfile.Close() }()
 
 	// Copy the uploaded file to the created file
 	_, err = io.Copy(tmpfile, file)

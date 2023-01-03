@@ -22,7 +22,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
 
 	// --------CHANGE PROFILE PIC-------//
-	rt.router.PUT("/profiles/:profileUserID/profilePic", rt.wrap(rt.setMyProfilePic))
+	rt.router.PUT("/profiles/:profileUserID/propic", rt.wrap(rt.setMyProfilePic))
 
 	// ----------FOLLOW USER-----------//
 	rt.router.POST("/profiles/:profileUserID/followings", rt.wrap(rt.followUser))
