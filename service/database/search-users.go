@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -38,7 +37,6 @@ func (db *appdbimpl) SearchUsers(userID uint32, search string, from_follow bool,
 		if err := rows.Scan(&u.UserID, &u.Username, &u.UserPropicURL); err != nil {
 			return nil, err
 		}
-		fmt.Printf("User: %v", u)
 		users = append(users, u)
 	}
 	defer func() { err = rows.Close() }()

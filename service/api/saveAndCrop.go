@@ -31,7 +31,9 @@ func saveAndCrop(filename string, w int, h int) (string, error) {
 		return "", err
 	}
 	defer func() { err = out.Close() }()
-	jpeg.Encode(out, resizedImg, nil)
+	if err := jpeg.Encode(out, resizedImg, nil); err != nil {
+		return "", err
+	}
 
 	return newFilename, err
 }

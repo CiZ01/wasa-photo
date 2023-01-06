@@ -10,7 +10,7 @@ import (
 )
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	//Get the profileUserID from the URL
+	// Get the profileUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)

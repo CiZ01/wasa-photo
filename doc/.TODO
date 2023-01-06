@@ -17,8 +17,9 @@
 ***#DONE*** aggiungere 404 per quando manca la risorsa \
 ***#DONE*** add 401 Unauthorized \
 ***#DONE*** Sistemare tutte le regex \
-**#TODO** fix schema description and schema property description \
-**#TODO** dovrei sistemare tutti i uniquePostID ora dovrebbe essere inutile \
+***#DONE*** fix schema description and schema property description \
+***#DONE*** dovrei sistemare tutti i uniquePostID ora dovrebbe essere inutile \
 **#TODO** cambiare l'id in int32 lungo 6 da adesso. \ 
 **#TODO** inviare sempre un object per i response quando si scambiano dati e non text \ 
 **#TODO** sistemare gli id dei commenti, e foto. \
+**#TODO** aggiungere example a tutti i respones. \

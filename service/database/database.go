@@ -131,7 +131,7 @@ type AppDatabase interface {
 	SearchUsers(userID uint32, search string, from_follow bool, offset uint32, limit int32) ([]User, error)
 
 	// Return true if a username already exists, false otherwise
-	ExistsName(username string) bool
+	ExistsName(username string) (bool, error)
 
 	Ping() error
 }

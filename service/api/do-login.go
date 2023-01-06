@@ -36,7 +36,14 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		If the user does not exist, create a new user
 		else return the user object
 	*/
-	if !rt.db.ExistsName(user.Username) {
+	exist, err := rt.db.ExistsName(user.Username)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("can't check if the user exists")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if exist {
 		user, err = rt.CreateUser(user)
 		if err != nil {
 			ctx.Logger.WithError(err).Error("can't create the user")

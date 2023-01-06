@@ -1,12 +1,12 @@
 openapi: 3.0.3
-servers:
-  - url: "http://localhost:3000"
 info:
   title: Wasa Photo
   description: |-
     Wasa Photo is a photo sharing platform. It allows users to upload photo of their best moment.
-
   version: 1.0.0
+
+servers:
+  - url: "http://localhost:3000"
 
 tags:
   - name: "Login"
@@ -19,7 +19,7 @@ tags:
 paths:
   /session:
     post:
-      tags: ["Login"]
+      tags: [Login]
       summary: Logs in the user
       description: |-
         If the user does not exist, it will be created
@@ -43,14 +43,14 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
-              example: { $ref: "#/components/schemas/AuthUser" }
+              example: { "user_id" : 10 , "auth" : 10 }
         "200":
           description: |-
             Log-in succesfull.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
-              example: { $ref: "#/components/schemas/AuthUser" }
+              example: { "user_id" : 10 , "auth" : 10 }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
@@ -63,11 +63,11 @@ paths:
         required: true
 
     put:
-      tags: ["User"]
-      operationId: setMyUserName
+      tags: [User]
       summary: Set my new username
       description: |-
         Set new my username
+      operationId: setMyUserName
       security:
         - bearerAuth: []
       requestBody:
@@ -91,11 +91,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  #non mi convince
-  /feed:
+  /profiles/{profile_user_id}/feed:
     parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the user who want to change username
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
       - { $ref: "#/components/parameters/Offset" }
       - { $ref: "#/components/parameters/Limit" }
+
     get:
       tags: ["User"]
       operationId: getMyStream
@@ -174,6 +179,11 @@ paths:
         Return a list of users. See User for more details.
       security:
         - bearerAuth: []
+
+      parameters:
+        - { $ref: "#/components/parameters/Offset" }
+        - { $ref: "#/components/parameters/Limit" }
+
       responses:
         "200":
           description: Get followings successful
@@ -215,7 +225,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profile/{profile_user_id}/bans:
+  /profiles/{profile_user_id}/bans:
     parameters:
       - name: profile_user_id
         in: path
@@ -288,6 +298,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+
 
   /profiles/{profile_user_id}:
     parameters:
@@ -568,6 +579,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CommentsList" }
+              
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -670,12 +682,12 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/Bio" }
       responses:
-        "201":
+        "200":
           description: Bio setted successful
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Bio" }
-              example: { $ref: "#/components/schemas/Bio" }
+              example: { "bio": "Io sono Haru, ho 1 anno e sono un gatto 🐱" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -697,9 +709,10 @@ paths:
         - bearerAuth: []
       requestBody:
         content:
-          multipart/form-data:
+          image/jpeg:
             schema:
               type: object
+              description: The photo to upload.
               properties:
                 file:
                   description: The photo to upload.
@@ -708,12 +721,16 @@ paths:
                   minLength: 1
                   maxLength: 1000000
       responses:
-        "201":
+        "200":
           description: Profile picture setted successful
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ImgURL" }
-              example: { $ref: "#/components/schemas/ImgURL" }
+              schema: 
+                type: object
+                description: The url of the profile picture
+                properties:
+                  schema: { $ref: "#/components/schemas/ImgURL" }
+                example: { "img_url": "https://www.example.com/storage/2/profile_pic_250x250.jpeg" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -852,6 +869,7 @@ components:
       properties:
         text:
           type: string
+          description: Text of the bio
           example: "Io sono Haru, ho 1 anno e sono un gatto 🐱"
           pattern: '^[^\/\\]{1,64}$'
           minLength: 1
@@ -859,11 +877,9 @@ components:
     Auth:
       title: Auth
       description: The authorization code is the user_id.
-      type: string
-      pattern: "^[0-9]{5}$"
-      example: "00010"
-      minLength: 5
-      maxLength: 5
+      type: integer
+      example: 10
+      minimum: 1
     AuthUser:
       title: AuthUser
       description: The authorization code is the user_id.
@@ -871,6 +887,7 @@ components:
       properties:
         user_id: { $ref: "#/components/schemas/UserID" }
         auth: { $ref: "#/components/schemas/Auth" }
+      example: { "user_id": 10, "auth": 10 }
     OK:
       title: OK
       description: The succesfull response from server.

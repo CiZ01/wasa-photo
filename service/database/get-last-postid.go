@@ -8,7 +8,7 @@ func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer res.Close()
+	defer func() { err = res.Close() }()
 
 	for res.Next() {
 		err = res.Scan(&postID)
@@ -22,5 +22,5 @@ func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
 		}
 	}
 
-	return *postID, nil
+	return *postID, err
 }
