@@ -14,6 +14,9 @@ func (db *appdbimpl) GetStream(userID uint32, offeset uint32, limit int32) ([]Po
 	defer func() { err = res.Close() }()
 
 	for res.Next() {
+		if err := res.Err(); err != nil {
+			return nil, err
+		}
 		var user User
 		var post Post
 

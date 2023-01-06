@@ -4,6 +4,7 @@
 .idea/
 *.iml
 *.exe
+*.jpeg
 .DS_Store
 .env
 *.wiki.git
@@ -12,7 +13,7 @@ docker-compose.log
 /doc/json
 /doc/markdown
 /doc/out.txt
-.vscode/
+/.vscode/
 webapi
 *.json
 *.txt
