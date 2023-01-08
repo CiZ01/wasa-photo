@@ -78,8 +78,8 @@ func (rt *_router) Handler() http.Handler {
 	// -----------SEARCH------------//
 	rt.router.GET("/profiles", rt.wrap(rt.searchUsers))
 
-	// Special routes
-	rt.router.GET("/liveness", rt.liveness)
+	// // Special routes
+	// rt.router.GET("/liveness", rt.liveness)
 
 	return rt.router
 }

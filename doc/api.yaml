@@ -333,6 +333,26 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+    
+    delete:
+      tags: ["User"]
+      operationId: deleteUser
+      summary: Delete user
+      description: |-
+        Delete the user with the given user ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: |-
+            Delete user successful
+          content:
+            text/plain:
+              schema: { $ref: "#/components/schemas/OK" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts:
     parameters:

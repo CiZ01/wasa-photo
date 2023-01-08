@@ -1,9 +1,12 @@
 package database
 
+import "database/sql"
+
 var query_GETLASPOSTID = `SELECT MAX(postID) FROM Post WHERE userID= ?;`
 
 func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
-	var postID *uint32 = new(uint32)
+	var _postID sql.NullInt32 = sql.NullInt32{Int32: 0, Valid: false}
+	var postID uint32 = 0
 	res, err := db.c.Query(query_GETLASPOSTID, userID)
 	if err != nil {
 		return 0, err
@@ -14,17 +17,18 @@ func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
 		if err := res.Err(); err != nil {
 			return 0, err
 		}
-		
-		err = res.Scan(&postID)
+
+		err = res.Scan(&_postID)
 		if err != nil {
 			return 0, err
 		}
 
-		if postID == nil {
-			postID = new(uint32)
-			*postID = 1
+		if _postID.Valid == false {
+			postID = 1
+		} else {
+			postID = uint32(_postID.Int32)
 		}
 	}
 
-	return *postID, err
+	return postID, err
 }

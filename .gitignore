@@ -13,8 +13,8 @@ docker-compose.log
 /doc/json
 /doc/markdown
 /doc/out.txt
-/.vscode/
+.vscode/
 webapi
 *.json
 *.txt
-/storage/
+storage/
