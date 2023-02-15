@@ -5,6 +5,7 @@
 *.iml
 *.exe
 *.jpeg
+*.png
 .DS_Store
 .env
 *.wiki.git
@@ -17,4 +18,5 @@ docker-compose.log
 webapi
 *.json
 *.txt
-storage/
+storage
+tmp

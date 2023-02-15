@@ -3,7 +3,7 @@
 ***#DONE*** fix the ban, it doesn't work i commenti. \
 ***#DONE*** eliminare tutti i prepare statement, non sono necessari. \
 ***#DONE*** add auth checker. \
-**#TODO** vanno gestiti tutti i rollback in caso di errori. \
+***#DONE*** vanno gestiti tutti i rollback in caso di errori. \
 **#TODO** sistemare la regex per lo username sia dal backend che dall'api \
 **#TODO** se manca qualche tabella, cancella tutto il db e lo rifà, l'unico caso in cui mancano tabelle è perché si è interrotto
 **#TODO**  \n o \t, come vengono gestiti? Devo controllarli per i commenti, captions, bios, nickname, ricerca utenti, tag???? \
@@ -16,20 +16,22 @@
 **#TODO** non so se fare due ban diversi, mi crea alcuni problemi uno bilaterale. \
 **#TODO** implementare l'upload dei post.\
 ***#DONE*** fare test per vedere come si comportano le funzioni getbyname and getbyid in caso di erorri nei parametri.
-**#TODO** fare backup database, vedere dove salvarlo.
+__#DROPPED__ fare backup database, vedere dove salvarlo.
 **#TODO** controllare tutti gli status code e response code. \
 **#TODO** controllare che non manchino log. \
 **#TODO** controllare che non ci siano errori nei parametri. \
 **#TODO** controllare che non abbia invertito limit and offset da nessuna parte. \
 **#TODO** commentare, commentare e commentare, così ricontrollo errori. \
-**#TODO** check erros in json response. \
+***#DONE*** check erros in json response. \
 **#TODO** aggiungere la propic quando si crea l'utente \
 **#TODO** aggiornare tutti i limit and offset. \
 **#TODO** Se l'utente è eliminato, eliminare anchel sua dir in storage. \
 **#TODO** Controllare se esiste l'utente nel get posts. \
-**#TODO** errore nel commentID .\
-**#TODO** se mando due volte la follow si rompe il server.\
+***#DONE*** errore nel commentID .\
+***#DONE*** se mando due volte la follow si rompe il server.\
 **#TODO** fare il parse da db a api in followings e bans e tutto le altr.\
-**#TODO** usare gli sql datatypes per i dati che possono ritornarmi null. \
+***#DONE*** usare gli sql datatypes per i dati che possono ritornarmi null. \
 **#TODO** manca il check dei commenti e delle bio e chissa quanto altro per vedere se sono validi secondo il patter.\
 **#TODO** fare una funzione che usa l'indirizzo ip come auth. \
+**TODO** il create dei like non controlla se esiste l'utente o il post. \
+**TODO** fare in modo da evitare tutti i formati diversi da jpeg. \

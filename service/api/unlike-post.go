@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
+	"git.francescofazzari.it/wasa_photo/service/database"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -29,11 +30,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	if userID == 0 {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
-	} else if userID != profileUserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
 	}
-
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is banned")
@@ -46,6 +43,10 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	err = rt.db.DeleteLike(profileUserID, postID, userID)
+	if err == database.ErrNoRowsAffected {
+		http.Error(w, "Bad Request "+err.Error(), http.StatusNotFound)
+		return
+	}
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error unliking photo")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

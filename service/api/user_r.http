@@ -4,7 +4,7 @@ POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "username": "wewewe"
+    "username": "lokki"
 }
 
 ###
@@ -57,17 +57,17 @@ Authorization: 2
 ###
 
 # UPLOAD POSTS #
-POST http://localhost:3000/profiles/2/posts HTTP/1.1
-Authorization: 2
+POST http://localhost:3000/profiles/1/posts HTTP/1.1
+Authorization: 1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="caption"
 
-Ciao sono iol 2
+ciao
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="image"; filename="image.jpg"
-Content-Type: image/png
+Content-Disposition: form-data; name="image"; filename="image.jpeg"
+Content-Type: image/jpeg
 
 < ./1.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
@@ -75,30 +75,30 @@ Content-Type: image/png
 ###
 
 # LIKE #
-POST http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
-Authorization: 5
+POST http://localhost:3000/profiles/2/posts/1/like HTTP/1.1
+Authorization: 1
 
 ###
 
 # UNLIKE #
-DELETE http://localhost:3000/profiles/2/posts/2/likes/5 HTTP/1.1
-Authorization: 5
+DELETE http://localhost:3000/profiles/2/posts/1/like HTTP/1.1
+Authorization: 1
 
 ###
 
 # GET LIKES #
-GET http://localhost:3000/profiles/2/posts/2/likes HTTP/1.1
+GET http://localhost:3000/profiles/2/posts/1/likes HTTP/1.1
 Authorization: 2
 
 ###
 
 # COMMENT #
-POST http://localhost:3000/profiles/2/posts/4/comments/5 HTTP/1.1
-Authorization: 5
+POST http://localhost:3000/profiles/2/posts/2/comments HTTP/1.1
+Authorization: 1
 content-type: application/json
 
 {
-    "text": "onee piecee is reaall!!!"
+    "text": "asd"
 }
 
 ###
@@ -138,8 +138,8 @@ Authorization: 2
 ###
 
 # SET BIO #
-POST http://localhost:3000/profiles/1/bio HTTP/1.1
-Authorization: 1
+PUT http://localhost:3000/profiles/100/bio HTTP/1.1
+Authorization: 100
 content-type: application/json
 
 {

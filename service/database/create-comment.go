@@ -13,7 +13,7 @@ func (db *appdbimpl) CreateComment(userID uint32, ownerID uint32, postID uint32,
 	// Get the last commentID
 	var lastCommentID uint32
 	lastCommentID, err := db.GetLastCommentID(ownerID, postID)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return comment, err
 	}
 
@@ -40,19 +40,11 @@ func (db *appdbimpl) CreateComment(userID uint32, ownerID uint32, postID uint32,
 		return comment, err
 	}
 
-	var timestamp time.Time
-	err = db.c.QueryRow(
-		`SELECT timestamp FROM Comment WHERE commentID=? AND ownerID=? AND postID=?;`,
-		lastCommentID+1, ownerID, postID).Scan(&timestamp)
-	if err != nil {
-		return comment, err
-	}
-
 	comment = Comment{
 		CommentID: lastCommentID + 1,
 		User:      user,
 		Text:      commentText,
-		Timestamp: timestamp,
+		Timestamp: time.Time(time.Now()),
 	}
 
 	return comment, nil

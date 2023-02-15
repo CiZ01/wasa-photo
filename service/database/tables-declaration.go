@@ -8,7 +8,7 @@ package database
 	- bio: the bio of the user, is a short description of the user. It's optional. Max length is 64 characters.
 	- timestamp: the timestamp of the user's creation. It's is assigned automatically by the database.
 */
-var sql_TABLEUSER = `CREATE TABLE User
+var sql_TABLEUSER = `CREATE TABLE IF NOT EXISTS User
 (
 	userID INTEGER NOT NULL UNIQUE,
 	username STRING NOT NULL UNIQUE,
@@ -26,7 +26,7 @@ var sql_TABLEUSER = `CREATE TABLE User
 	- caption: the caption of the post, is a short description of the post. It's optional. Max length is 100 characters.
 	- timestamp: the timestamp of the post's creation. It's is assigned automatically by the database.
 */
-var sql_TABLEPOST = `CREATE TABLE Post
+var sql_TABLEPOST = `CREATE TABLE IF NOT EXISTS Post
 (
 	postID INTEGER NOT NULL,
 	userID INTEGER NOT NULL,
@@ -34,7 +34,9 @@ var sql_TABLEPOST = `CREATE TABLE Post
 	caption TEXT,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(postID, userID),
-	FOREIGN KEY(userID) REFERENCES User(userID)
+	CONSTRAINT fk_post
+		FOREIGN KEY (userID) REFERENCES User(userID)
+		ON DELETE CASCADE
 );`
 
 // secondo me non serve salvarsi la preview in db, la previw avrà lo stesso nome del post originale
@@ -47,16 +49,17 @@ var sql_TABLEPOST = `CREATE TABLE Post
 	- postID: the ID of the post that the user liked. It's the primary key of the table
 	- timestamp: the timestamp of the like's creation. It's is assigned automatically by the database.
 */
-var sql_TABLELIKE = `CREATE TABLE Like
+var sql_TABLELIKE = `CREATE TABLE IF NOT EXISTS Like
 (
 	userID INTEGER NOT NULL,
 	ownerID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(userID, ownerID, postID),
-	FOREIGN KEY(userID) REFERENCES User(userID),
-	FOREIGN KEY(ownerID) REFERENCES User(userID),
-	FOREIGN KEY(postID) REFERENCES Post(postID)
+	CONSTRAINT fk_like
+		FOREIGN KEY (ownerID, postID) REFERENCES Post(userID, postID)
+		FOREIGN KEY (userID) REFERENCES User(userID)
+		ON DELETE CASCADE
 );`
 
 // --------COMMENT TABLE--------//
@@ -69,9 +72,9 @@ var sql_TABLELIKE = `CREATE TABLE Like
 	- hidden: if the comment is hidden or not. Default value is false.
 	- timestamp: the timestamp of the comment's creation. It's is assigned automatically by the database.
 */
-var sql_TABLECOMMENT = `CREATE TABLE Comment
+var sql_TABLECOMMENT = `CREATE TABLE IF NOT EXISTS Comment
 (
-	commentID INTEGER NOT NULL UNIQUE,
+	commentID INTEGER NOT NULL,
 	userID INTEGER NOT NULL,
 	ownerID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
@@ -79,9 +82,10 @@ var sql_TABLECOMMENT = `CREATE TABLE Comment
 	hidden BOOLEAN DEFAULT FALSE,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(commentID, ownerID, postID),
-	FOREIGN KEY(userID) REFERENCES User(userID),
-	FOREIGN KEY(ownerID) REFERENCES User(userID),
-	FOREIGN KEY(postID) REFERENCES Post(postID)
+	CONSTRAINT fk_comment
+		FOREIGN KEY (ownerID, postID) REFERENCES Post(userID, postID)
+		FOREIGN KEY (userID) REFERENCES User(userID)
+		ON DELETE CASCADE
 );`
 
 // --------FOLLOW TABLE--------//
@@ -90,13 +94,14 @@ var sql_TABLECOMMENT = `CREATE TABLE Comment
 	- followedID: the userID of the user who is followed by the other user. It's the primary key of the table
 	- timestamp: the timestamp of the follow's creation. It's is assigned automatically by the database.
 */
-var sql_TABLEFOLLOW = `CREATE TABLE Follow
+var sql_TABLEFOLLOW = `CREATE TABLE IF NOT EXISTS Follow
 (
 	followerID INTEGER NOT NULL,
 	followedID INTEGER NOT NULL,
 	PRIMARY KEY(followerID, followedID),
-	FOREIGN KEY(followedID) REFERENCES User(userID),
-	FOREIGN KEY(followerID) REFERENCES User(userID)
+	CONSTRAINT fk_follow
+		FOREIGN KEY (followerID, followedID) REFERENCES User(userID, userID)
+		ON DELETE CASCADE
 );`
 
 // --------BAN TABLE--------//
@@ -104,11 +109,12 @@ var sql_TABLEFOLLOW = `CREATE TABLE Follow
 	- bannerID: the userID of the user who banned the other user. It's the primary key of the table
 	- bannedID: the userID of the user who is banned. It's the primary key of the table
 */
-var sql_TABLEBAN = `CREATE TABLE Ban
+var sql_TABLEBAN = `CREATE TABLE IF NOT EXISTS Ban
 (
 	bannerID INTEGER NOT NULL,
 	bannedID INTEGER NOT NULL,
 	PRIMARY KEY(bannedID, bannerID),
-	FOREIGN KEY(bannedID) REFERENCES User(userID),
-	FOREIGN KEY(bannerID) REFERENCES User(userID)
+	CONSTRAINT fk_ban
+		FOREIGN KEY (bannerID, bannedID) REFERENCES User(userID, userID)
+		ON DELETE CASCADE
 );`

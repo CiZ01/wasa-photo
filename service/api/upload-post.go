@@ -26,7 +26,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// Get the profileUserID from the URL
 	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	profileUserID := uint32(_profileUserID)
@@ -44,7 +44,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// Parse the multipart form
 	err = r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// If the key is not present an error is returned
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -110,6 +110,15 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	filename, err := saveAndCrop(newPost.ImageURL, 720, 720)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error cropping file")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	newPost.ImageURL = filename
 
 	// Return the new post
 	w.WriteHeader(http.StatusCreated)

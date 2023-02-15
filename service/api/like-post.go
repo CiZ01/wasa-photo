@@ -26,18 +26,18 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	isBanned, err := rt.db.IsBanned(uint32(profileUserID), userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if user is banned")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	isBanner, err := rt.db.IsBanned(userID, uint32(profileUserID))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if user is banner")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if isBanned || isBanner {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -50,8 +50,12 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	err = rt.db.CreateLike(userID, uint32(profileUserID), uint32(postID))
 	if err != nil {
+		if err.Error() == "UNIQUE constraint failed: Like.userID, Like.ownerID, Like.postID" {
+			http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+			return
+		}
 		ctx.Logger.WithError(err).Error("error liking post")
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

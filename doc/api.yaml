@@ -461,7 +461,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{post_id}/like:
+  /profiles/{profile_user_id}/posts/{post_id}/likes:
     parameters:
       - name: profile_user_id
         in: path
@@ -512,22 +512,6 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{post_id}/likes:
-    parameters:
-      - name: profile_user_id
-        in: path
-        description: The user Id of the owner of the post.
-        schema: { $ref: "#/components/schemas/UserID" }
-        required: true
-      - name: post_id
-        in: path
-        description: The post id of the post to see the list of users who liked it
-        schema: { $ref: "#/components/schemas/PostID" }
-        required: true
-
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
-
     get:
       tags: ["Post"]
       operationId: getLikes
@@ -537,6 +521,11 @@ paths:
         the users object is composed by the user_id and the username.
       security:
         - bearerAuth: []
+
+      parameters:
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+
       responses:
         "200":
           description: Get the list of users who liked the post

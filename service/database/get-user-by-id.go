@@ -4,7 +4,7 @@ var query_GETUSERBYID = `SELECT userID, username, userPropicURL FROM User WHERE 
 
 /*
 GetUserByID returns a user with the given userID
-If no user is found, an user object with userID = 0 is returned
+If no user is found, it returns an error ErrRowNotFound
 */
 func (db *appdbimpl) GetUserByID(userID uint32) (User, error) {
 	var user User

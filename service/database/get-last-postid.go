@@ -19,12 +19,12 @@ func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
 		}
 
 		err = res.Scan(&_postID)
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
 			return 0, err
 		}
 
-		if _postID.Valid == false {
-			postID = 1
+		if !_postID.Valid {
+			postID = 0
 		} else {
 			postID = uint32(_postID.Int32)
 		}

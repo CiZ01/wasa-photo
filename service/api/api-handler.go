@@ -22,7 +22,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio))
 
 	// --------CHANGE PROFILE PIC-------//
-	rt.router.PUT("/profiles/:profileUserID//profile_pic:", rt.wrap(rt.setMyProfilePic))
+	rt.router.PUT("/profiles/:profileUserID/profile_pic", rt.wrap(rt.setMyProfilePic))
 
 	// ----------FOLLOW USER-----------//
 	rt.router.POST("/profiles/:profileUserID/followings", rt.wrap(rt.followUser))
@@ -55,7 +55,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/profiles/:profileUserID/posts/:postID", rt.wrap(rt.deletePhoto))
 
 	// ----------LIKE POST-------------//
-	rt.router.POST("/profiles/:profileUserID/posts/:postID/like", rt.wrap(rt.likePhoto))
+	rt.router.POST("/profiles/:profileUserID/posts/:postID/likes", rt.wrap(rt.likePhoto))
 
 	// --------UNLIKE POST-------------//
 	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/like", rt.wrap(rt.unlikePhoto))
@@ -78,8 +78,8 @@ func (rt *_router) Handler() http.Handler {
 	// -----------SEARCH------------//
 	rt.router.GET("/profiles", rt.wrap(rt.searchUsers))
 
-	// // Special routes
-	// rt.router.GET("/liveness", rt.liveness)
+	// Special routes
+	rt.router.GET("/liveness", rt.liveness)
 
 	return rt.router
 }

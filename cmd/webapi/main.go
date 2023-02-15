@@ -32,12 +32,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"regexp"
 	"syscall"
 
 	"git.francescofazzari.it/wasa_photo/service/api"
 	"git.francescofazzari.it/wasa_photo/service/database"
 	"git.francescofazzari.it/wasa_photo/service/globaltime"
 	"github.com/ardanlabs/conf"
+	"github.com/mattn/go-sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 )
@@ -81,12 +83,26 @@ func run() error {
 
 	logger.Infof("application initializing")
 
+	var regex = func(re, s string) (bool, error) {
+		return regexp.MatchString(re, s)
+	}
+	sql.Register("sqlite3_extended",
+		&sqlite3.SQLiteDriver{
+			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
+				return conn.RegisterFunc("regexp", regex, true)
+			},
+		})
 	// Start Database
 	logger.Println("initializing database support")
-	dbconn, err := sql.Open("sqlite3", cfg.DB.Filename)
+	dbconn, err := sql.Open("sqlite3_extended", cfg.DB.Filename)
 	if err != nil {
 		logger.WithError(err).Error("error opening SQLite DB")
 		return fmt.Errorf("opening SQLite: %w", err)
+	}
+	_, err = dbconn.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		logger.WithError(err).Error("error enabling foreign keys")
+		return fmt.Errorf("enabling foreign keys: %w", err)
 	}
 	defer func() {
 		logger.Debug("database stopping")
