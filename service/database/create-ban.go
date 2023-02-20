@@ -28,7 +28,7 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 		}
 		allPosts = append(allPosts, postID)
 	}
-	defer func() { err = rows.Close() }()
+
 
 	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
@@ -72,10 +72,15 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 	if err != nil {
 		return err
 	}
+	
+	err = rows.Close()
+	if err != nil {
+		return err
+	}
 
 	// Delete follow
 	// If the user dont follow the banned user, it will return an error
-	err = db.DeleteFollow(bannerID, bannedID)
+	_, err = tx.Exec(query_DELETEFOLLOW, bannerID, bannedID)
 	if err != nil {
 		return err
 	}

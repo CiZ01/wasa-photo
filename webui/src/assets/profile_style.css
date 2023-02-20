@@ -1,0 +1,101 @@
+.top-profile-container{
+    width: 40em;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+    top: 3em;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-profile-picture{
+    width: 10em;
+    height: 10em;
+    border-radius: 100%;
+    border: 1px solid black;
+
+    margin: 0;
+    padding: 0;
+
+    background-color: rgb(220, 220, 220);
+
+    position: relative;
+    top: 5em;
+    z-index: 1;
+}
+
+.top-body-profile-container{
+    background-color: #fff;
+    width: 100%;
+    height: 20em;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+
+    position: relative;
+
+    padding: 0 2.3em 2.3em 2.3em;
+    
+    border-radius: 0.5em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+}
+
+.top-body-profile-username{
+    font-size: 1.8em;
+    font-weight: bold;
+
+    line-height: 0;
+    font-weight: bold;
+
+    margin: 0;
+    padding: 0;
+
+    position: relative;
+    top: 3.5em;
+}
+
+.top-body-profile-stats-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    border: 1px solid black;
+
+    width: auto;
+    height: 4em;
+
+    position: relative;
+    bottom: 0;
+}
+
+.followers-stats{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 18em;
+    height: auto;
+
+    border-right: 1px solid black;
+}
+
+.followers-stats-text{
+    font-size: 1.2em;
+    font-weight: bold;
+
+    color: rgb(0,0,0,0.7);
+
+}
+
+.followers-stats-number{
+    font-size: 1.5em;
+    font-weight: bold;
+
+    color: rgb(0,0,0,0.7);
+}

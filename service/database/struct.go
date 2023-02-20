@@ -19,6 +19,7 @@ type Post struct {
 	Caption      string    `json:"caption"`
 	LikeCount    int       `json:"likeCount"`
 	CommentCount int       `json:"commentCount"`
+	Liked 		 bool	   `json:"liked"`
 	Timestamp    time.Time `json:"timestamp"`
 }
 

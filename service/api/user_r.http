@@ -21,19 +21,19 @@ content-type: application/json
 ###
 
 # FOLLOW #
-POST http://localhost:3000/profiles/5/followings HTTP/1.1
-Authorization: 3
+POST http://localhost:3000/profiles/3/followings HTTP/1.1
+Authorization: 1
 
 ###
 
 # UNFOLLOW #
-DELETE http://localhost:3000/profiles/5/followings/2 HTTP/1.1
+DELETE http://localhost:3000/profiles/5/followings HTTP/1.1
 Authorization: 3
 
 ###
 
 # BAN #
-POST http://localhost:3000/profiles/1/bans/3 HTTP/1.1
+POST http://localhost:3000/profiles/3/bans HTTP/1.1
 Authorization: 1
 
 ###
@@ -149,8 +149,8 @@ content-type: application/json
 ###
 
 # GET FEED #
-GET http://localhost:3000/profiles/1/feed HTTP/1.1
-Authorization: 1
+GET http://localhost:3000/profiles/5/feed HTTP/1.1
+Authorization: 5
 
 ###
 

@@ -92,7 +92,6 @@ var sql_TABLECOMMENT = `CREATE TABLE IF NOT EXISTS Comment
 /*
 	- followerID: the userID of the user who is following the other user. It's the primary key of the table
 	- followedID: the userID of the user who is followed by the other user. It's the primary key of the table
-	- timestamp: the timestamp of the follow's creation. It's is assigned automatically by the database.
 */
 var sql_TABLEFOLLOW = `CREATE TABLE IF NOT EXISTS Follow
 (
@@ -100,7 +99,8 @@ var sql_TABLEFOLLOW = `CREATE TABLE IF NOT EXISTS Follow
 	followedID INTEGER NOT NULL,
 	PRIMARY KEY(followerID, followedID),
 	CONSTRAINT fk_follow
-		FOREIGN KEY (followerID, followedID) REFERENCES User(userID, userID)
+	FOREIGN KEY (followerID) REFERENCES User(userID)
+	FOREIGN KEY (followerID) REFERENCES User(userID)
 		ON DELETE CASCADE
 );`
 
@@ -115,6 +115,7 @@ var sql_TABLEBAN = `CREATE TABLE IF NOT EXISTS Ban
 	bannedID INTEGER NOT NULL,
 	PRIMARY KEY(bannedID, bannerID),
 	CONSTRAINT fk_ban
-		FOREIGN KEY (bannerID, bannedID) REFERENCES User(userID, userID)
+		FOREIGN KEY (bannerID) REFERENCES User(userID)
+		FOREIGN KEY (bannedID) REFERENCES User(userID)
 		ON DELETE CASCADE
 );`

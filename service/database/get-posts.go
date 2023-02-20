@@ -1,10 +1,11 @@
 package database
 
 var query_GETPOSTS = `SELECT postID, userID, postImageURL, caption, timestamp FROM Post WHERE userID=? ORDER BY timestamp DESC LIMIT ?, ?`
-var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=?`
-var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=?`
+var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=?`
+var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=? AND ownerID=?`
+var query_ISLIKED = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=? AND userID=?`
 
-func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit int32) ([]Post, error) {
+func (db *appdbimpl) GetPosts(userID uint32, profileUserID uint32, offset uint32, limit int32) ([]Post, error) {
 	// Get the posts from the database
 	rows, err := db.c.Query(query_GETPOSTS, profileUserID, offset, limit)
 	if err != nil {
@@ -27,18 +28,18 @@ func (db *appdbimpl) GetPosts(profileUserID uint32, offset uint32, limit int32) 
 			return nil, err
 		}
 		// Get like count
-		err = db.c.QueryRow(query_GETLIKECOUNT, post.PostID).Scan(&post.LikeCount)
+		err = db.c.QueryRow(query_GETLIKECOUNT, post.PostID, profileUserID).Scan(&post.LikeCount)
 		if err != nil {
 			return nil, err
 		}
 
 		// Get comment count
-		err = db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID).Scan(&post.CommentCount)
+		err = db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID, profileUserID).Scan(&post.CommentCount)
 		if err != nil {
 			return nil, err
 		}
 
-		// Get user data
+		// Get owner data
 		user, err = db.GetUserByID(user.UserID)
 		if err != nil {
 			return nil, err

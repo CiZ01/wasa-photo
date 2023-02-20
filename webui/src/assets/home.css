@@ -1,0 +1,107 @@
+body{
+    user-select: none;
+}
+
+.bg_pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+    background-color: #dee5eb;
+    opacity: 0.8;
+    z-index: -1;
+  }
+  .Polka {
+    background-image: radial-gradient(#ffc107 2px, #dee5eb 2px);
+    background-size: 1.5em 1.5em;
+  }
+
+.floatting-navbar{
+    background-color: #deefe1;
+    height: 5em;
+    width: 24em;
+    padding: 0;
+    border-radius: 10em;
+
+    box-shadow: 0 0.2em 0 0 rgba(176,179,184,0.50);
+
+    position: fixed;
+    top: 3em;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+    z-index: 3;
+}
+
+.left-profile-navbar{
+    background-color: #ffffff;
+    height: 3em;
+    width: 3em;
+    border-radius: 10em;
+
+    position: fixed;
+    float: left;
+    top: 1.1em;
+    left: 1.7em;
+    
+}
+
+.left-profile-navbar:hover{
+    cursor: pointer;
+}
+
+.right-search-navbar{
+    background-color: #ffffff;
+    height: 3em;
+    width: 12em;
+    border-radius: 10em;
+
+    position: fixed;
+    float: right;
+    top: 1.1em;
+    right: 1.7em;
+}
+
+.right-searchbar-navbar{
+    background-color: #f0f2f5;
+    height: 3em;
+    width: 12em;
+    border-radius: 10em;
+    padding: 1em;
+
+    position: fixed;
+    float: right;
+    top: 1.1em;
+    right: 1.7em;
+
+    box-shadow: none;
+    outline: none;
+    border: none;
+}
+
+.home-background-centered{
+    height: 100vh;
+    width: 30em;
+
+    overflow: auto;
+
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    padding-top: 10em;
+    z-index: 1;
+}
+
+.home-background-centered::-webkit-scrollbar {
+    display: none;
+}
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+.home-background-centered {
+-ms-overflow-style: none;  /* IE and Edge */
+scrollbar-width: none;  /* Firefox */
+}
+

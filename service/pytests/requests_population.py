@@ -48,7 +48,7 @@ def create_likes(count : int) -> None:
         user1, user2 = (random.randint(1,20), random.randint(1,20))
         post_user2 = random.randint(2,5)
         header = {'Authorization': str(user1)}
-        response = r.post(f"http://localhost:3000/profiles/{user2}/posts/{post_user2}/like", headers= header)
+        response = r.post(f"http://localhost:3000/profiles/{user2}/posts/{post_user2}/likes", headers= header)
         if response != '201':
             print(f"Like.{i} non creato!, {user1} and {user2} and {post_user2}")
             print(response.text)
@@ -72,13 +72,38 @@ def create_comments(count):
         else:
             print(f"{i}. Comment succesfull posted!")
     return
-        
+
+def create_follows(count: int):
+    for i in range(1,count):
+        user1, user2 = (random.randint(1,20), random.randint(1,20))
+        header = {'Authorization': str(user1)}
+        response = r.post(f"http://localhost:3000/profiles/{user2}/followings", headers= header)
+        if response != '200':
+            print(f"Follow non creato!, {user1} and {user2}")
+            print(response.text)
+        else:
+            print(f"{i}. {response.text}")
+    return
+
+def create_ban(count: int):
+    for i in range(1,count):
+        user1, user2 = (random.randint(1,20), random.randint(1,20))
+        header = {'Authorization': str(user1)}
+        response = r.post(f"http://localhost:3000/profiles/{user2}/bans", headers= header)
+        if response != '200':
+            print(f"Ban non creato!, {user1} and {user2}")
+            print(response.text)
+        else:
+            print(f"{i}. {response.text}")
+    return
 
 def main():
     #create_users(20)
     #create_posts(20)
-    create_likes(20)
-    create_comments(30)
+    #create_likes(20)
+    #create_comments(30)
+    create_follows(20)
+    create_ban(20)
 
 
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 		return p, err
 	}
 
-	newPost, err := db.GetPosts(p.User.UserID, 0, 1)
+	newPost, err := db.GetPosts(p.User.UserID, p.User.UserID, 0, 1)
 	if err != nil {
 		return p, err
 	}

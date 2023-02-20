@@ -75,7 +75,7 @@ type AppDatabase interface {
 
 	// Get a list of post from a user. The list is ordered by timestamp, descending.
 	// The list is limited to `limit` elements, and the first element is the `offset`-th element.
-	GetPosts(profileUserID uint32, offset uint32, limit int32) ([]Post, error)
+	GetPosts(userID uint32, profileUserID uint32, offset uint32, limit int32) ([]Post, error)
 
 	// Get the last postID in the database
 	GetLastPostID(userID uint32) (uint32, error)
@@ -156,11 +156,6 @@ func New(db *sql.DB) (AppDatabase, error) {
 		_, err = db.Exec(sql_TABLEUSER)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
-		_, err = db.Exec(`INSERT INTO User (userID, username, userPropicURL)
-						VALUES ("0", "NULL", "NULL");`)
-		if err != nil {
-			return nil, err
 		}
 
 		// ---CREATE POST TABLE----//

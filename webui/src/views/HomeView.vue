@@ -1,10 +1,10 @@
 <script>
 export default {
-	data: function() {
+	data: function () {
 		return {
 			errormsg: null,
 			loading: false,
-			some_data: null,
+			posts: [ {postID: '200', imageURL: "http://localhost:3000/wasa_photo/storage/1/posts/6.jpg", liked: false, user: {username: "pippo"}}],
 		}
 	},
 	methods: {
@@ -19,38 +19,48 @@ export default {
 			}
 			this.loading = false;
 		},
-	},
-	mounted() {
-		this.refresh()
+		async getMyStream() {
+			try {
+				let response = await this.$axios.get(`profiles/${localStorage.userID}/feed`, { headers: { 'Authorization': `${localStorage.token}` } });
+				this.posts = response.data;
+				console.log(this.posts);
+
+			} catch (e) {
+				this.errormsg = e.toString();
+				console.log(this.errormsg);
+			}
+		},
+
+		async getMyProfile(){
+			this.$router.push(`/profiles/${localStorage.userID}`);
+		},
+
+		mounted() {
+			this.getMyStream();
+			this.refresh();
+		}
 	}
 }
 </script>
 
+<!--sfondo grigio da social newtork che conterrà i posts-->
 <template>
-	<div>
-		<div
-			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Home page</h1>
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
+	<div class="bg_pattern Polka">
+		<div class="floatting-navbar">
+			<span @click="getMyProfile" class="left-profile-navbar">
+			</span>
+			<span class="right-search-navbar">
+				<input placeholder="Search..." class="right-searchbar-navbar">
+			</span>
+		</div>
+		<div class="home-background-centered">
+			<div class="post">
+				<Post v-for="post in posts" :key="post.postID" :username="post.user.username" :image="post.imageURL"
+					:caption="post.caption" :liked="post.liked"></Post>
 			</div>
 		</div>
-
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 	</div>
-</template>
+<!--ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg--></template>
 
-<style>
-</style>
+
+<style></style>

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
@@ -37,7 +36,6 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		If the user does not exist, create a new user
 		else return the user object
 	*/
-	fmt.Println("username: ", user.Username)
 	exist, err := rt.db.ExistsName(user.Username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't check if the user exists")
@@ -46,7 +44,6 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	if !exist {
-		fmt.Printf("user %s does not exist", user.Username)
 		user, err = rt.CreateUser(user)
 		if err != nil {
 			ctx.Logger.WithError(err).Error("can't create the user")
@@ -55,7 +52,6 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		}
 		w.WriteHeader(http.StatusCreated)
 	} else {
-		fmt.Printf("user %s exists", user.Username)
 		dbUser, err := rt.db.GetUserByName(user.Username)
 		if err != nil {
 			ctx.Logger.WithError(err).Error("can't load the user")
@@ -69,7 +65,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	// This struct contain the User object and the authorization token.
 	type AuthUser struct {
 		User User
-		Auth uint32
+		Token uint32
 	}
 
 	/*
