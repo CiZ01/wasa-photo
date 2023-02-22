@@ -4,7 +4,7 @@ var query_GETUSERINFO = `SELECT userID, username, bio, userPropicURL FROM User W
 var query_GETCOUNTFOLLOWINGS = `SELECT count(followedID) FROM Follow WHERE followerID=?;`
 var query_GETCOUNTFOLLOWERS = `SELECT count(followerID) FROM Follow WHERE followedID=?;`
 
-func (db *appdbimpl) GetUserProfile(userID uint32) (Profile, error) {
+func (db *appdbimpl) GetUserProfile(userID int) (Profile, error) {
 	var profile Profile
 
 	rows, err := db.c.Query(query_GETUSERINFO, userID)

@@ -12,27 +12,20 @@ import (
 
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the request
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Invalid profileUserID", http.StatusBadRequest)
 		return
 	}
-	profileUserID := uint32(_profileUserID)
 
 	// Get the post ID from the request
-	_postID, err := strconv.Atoi(ps.ByName("postID"))
+	postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
 		http.Error(w, "Invalid postID", http.StatusBadRequest)
 		return
 	}
-	postID := uint32(_postID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userID := ctx.UserID
 
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {

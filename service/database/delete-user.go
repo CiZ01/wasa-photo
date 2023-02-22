@@ -13,7 +13,7 @@ var query_DELETEALLBAN = `DELETE FROM Ban WHERE userID = ? OR targetUserID = ?`
 var query_DELETEALLPOSTS = `DELETE FROM Post WHERE userID = ?`
 var query_DELETEUSER = `DELETE FROM User WHERE userID = ?`
 
-func (db *appdbimpl) DeleteUser(userID uint32) error {
+func (db *appdbimpl) DeleteUser(userID int) error {
 
 	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {

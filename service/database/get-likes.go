@@ -2,7 +2,7 @@ package database
 
 var query_GETLIKES = `SELECT userID FROM Like WHERE postID = ? AND ownerID = ? LIMIT ?,?`
 
-func (db *appdbimpl) GetLikes(ownerID uint32, postID uint32, offset uint32, limit int32) ([]User, error) {
+func (db *appdbimpl) GetLikes(ownerID int, postID int, offset int, limit int) ([]User, error) {
 	var likes []User
 	rows, err := db.c.Query(query_GETLIKES, ownerID, postID, offset, limit)
 	if err != nil {
@@ -14,7 +14,7 @@ func (db *appdbimpl) GetLikes(ownerID uint32, postID uint32, offset uint32, limi
 		if rows.Err() != nil {
 			return nil, err
 		}
-		var userID uint32
+		var userID int
 		err = rows.Scan(&userID)
 		if err != nil {
 			return nil, err

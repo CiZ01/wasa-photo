@@ -7,11 +7,11 @@ import (
 
 var query_CREATECOMMENT = `INSERT INTO Comment (commentID, userID, ownerID, postID, commentText) VALUES (?, ?, ?, ?, ?);`
 
-func (db *appdbimpl) CreateComment(userID uint32, ownerID uint32, postID uint32, commentText string) (Comment, error) {
+func (db *appdbimpl) CreateComment(userID int, ownerID int, postID int, commentText string) (Comment, error) {
 	var comment Comment
 
 	// Get the last commentID
-	var lastCommentID uint32
+	var lastCommentID int
 	lastCommentID, err := db.GetLastCommentID(ownerID, postID)
 	if err != nil && err != sql.ErrNoRows {
 		return comment, err

@@ -1,9 +1,11 @@
 package api
 
 import (
-	"time"
-
+	"encoding/base64"
 	"git.francescofazzari.it/wasa_photo/service/database"
+	"io/ioutil"
+	"os"
+	"time"
 )
 
 /*
@@ -13,11 +15,11 @@ The post is identified by the PostID, which is the primary key.
 type Post struct {
 	PostID       string    `json:"postID"`
 	User         User      `json:"user"`
-	ImageURL     string    `json:"imageURL"`
+	Image        string    `json:"image"`
 	Caption      string    `json:"caption"`
 	LikeCount    int       `json:"likeCount"`
 	CommentCount int       `json:"commentCount"`
-	Liked		 bool      `json:"liked"`
+	Liked        bool      `json:"liked"`
 	Timestamp    time.Time `json:"timestamp"`
 }
 
@@ -28,7 +30,7 @@ func (p *Post) AddUser(user User) Post {
 	return Post{
 		PostID:       p.PostID,
 		User:         User{UserID: user.UserID, Username: user.Username, UserPropicURL: user.UserPropicURL},
-		ImageURL:     p.ImageURL,
+		Image:        p.Image,
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
 		CommentCount: p.CommentCount,
@@ -44,7 +46,7 @@ func (p *Post) ToDatabase() database.Post {
 	return database.Post{
 		PostID:       p.PostID,
 		User:         database.User{UserID: p.User.UserID, Username: p.User.Username, UserPropicURL: p.User.UserPropicURL},
-		ImageURL:     p.ImageURL,
+		ImageURL:     "",
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
 		CommentCount: p.CommentCount,
@@ -52,14 +54,32 @@ func (p *Post) ToDatabase() database.Post {
 	}
 }
 
-func (p *Post) FromDatabase(dbPost database.Post) Post {
+func (p *Post) FromDatabase(dbPost database.Post) (Post, error) {
+	image64, err := imageToBase64(dbPost.ImageURL)
+	if err != nil {
+		return Post{}, err
+	}
 	return Post{
 		PostID:       dbPost.PostID,
 		User:         User{UserID: dbPost.User.UserID, Username: dbPost.User.Username, UserPropicURL: dbPost.User.UserPropicURL},
-		ImageURL:     dbPost.ImageURL,
+		Image:        image64,
 		Caption:      dbPost.Caption,
 		LikeCount:    dbPost.LikeCount,
 		CommentCount: dbPost.CommentCount,
 		Timestamp:    dbPost.Timestamp,
+	}, nil
+}
+
+func imageToBase64(filename string) (string, error) {
+	imageFile, err := os.Open(filename)
+	if err != nil {
+		return "", err
 	}
+	defer imageFile.Close()
+
+	imageData, err := ioutil.ReadAll(imageFile)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(imageData), nil
 }

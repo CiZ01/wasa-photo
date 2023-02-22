@@ -8,8 +8,7 @@
 
     position: relative;
     top: 3em;
-    left: 50%;
-    transform: translateX(-50%);
+
 }
 
 .top-profile-picture{
@@ -39,10 +38,6 @@
     padding: 0 2.3em 2.3em 2.3em;
     
     border-radius: 0.5em;
-
-    display: flex;
-    flex-direction: column;
-    align-items: left;
 }
 
 .top-body-profile-username{
@@ -56,7 +51,71 @@
     padding: 0;
 
     position: relative;
-    top: 3.5em;
+    top: 3em;
+
+    outline: none;
+    border: none;
+}
+
+.top-body-profile-bio-container{
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: auto;
+
+    border-top: 1px solid rgb(220, 220, 220);
+
+    position: relative;
+    top: 5.5em;
+}
+
+.top-body-profile-bio-label{
+    font-size: 1.1em;
+    font-weight: bold;
+
+    width: fit-content;
+
+    color: rgb(0,0,0,0.7);
+
+    position: relative;
+    top: -1em;
+}
+
+.top-body-profile-bio-text{
+    font-size: 1em;
+    font-weight: 500;
+
+    width: 100%;
+    
+    color: rgb(0,0,0,0.7);
+
+    margin: 0;
+    
+    cursor: default;
+
+    border: 0;
+    resize: none;
+
+    overflow: hidden;
+    outline: none;
+
+    position: relative;
+    top: -1em;
+
+}
+
+.top-body-profile-bio-text-counter{
+    font-size: 0.8em;
+    font-weight: 500;
+
+    color: #fff;
+
+    position: relative;
+    top: 0.6em;
+    right: 0.6em;
+
+    text-align: right;
 }
 
 .top-body-profile-stats-container{
@@ -64,13 +123,14 @@
     flex-direction: row;
     justify-content: space-between;
 
-    border: 1px solid black;
-
     width: auto;
     height: 4em;
 
+    padding-top: 0.25em;
+    border-top: 1px solid rgb(220, 220, 220);
+
     position: relative;
-    bottom: 0;
+    top: 5em;
 }
 
 .followers-stats{
@@ -80,9 +140,13 @@
     align-items: center;
 
     width: 18em;
-    height: auto;
+    height: 6em;
+    
+    cursor: pointer;
+}
 
-    border-right: 1px solid black;
+.followers-stats:hover{
+    background-color: rgb(220, 220, 220, 0.3);
 }
 
 .followers-stats-text{
@@ -98,4 +162,93 @@
     font-weight: bold;
 
     color: rgb(0,0,0,0.7);
+}
+
+.posts-grid-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+
+    width: 40em;
+    height: fit-content;
+    padding: 2em;
+
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+
+    background-color: #fff;
+
+    border-radius: 0.5em;
+
+    position: relative;
+    top: 5em;
+}
+
+.posts-grid-post{
+    width: 12em;
+    height: 12em;
+
+    border: 1px inset #000;
+
+    background-color: #fff;
+
+    cursor: pointer;
+}
+
+.posts-grid-nopost-text{
+    font-size: 1.5em;
+    font-weight: bold;
+
+    color: rgb(0,0,0,0.7);
+
+    position: relative;
+
+    
+}
+
+.posts-grid-post-image{
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.delete-account-button{
+    width: 12em;
+    height: 3em;
+
+    background-color: rgb(255, 56, 56);
+    border: 1px solid #000;
+
+    border-radius: 0.5em;
+
+    font-size: 1.2em;
+    font-weight: bold;
+
+    color: rgb(0,0,0,0.7);
+
+    position: relative;
+}
+
+.delete-account-button-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 40em;
+    height: 5em;
+
+    position: relative;
+    top: 6em;
+}
+
+.post-view{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }

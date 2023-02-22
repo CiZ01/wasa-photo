@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -17,6 +16,8 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	userID := ctx.UserID
+
 	from_follow := false
 	query_from_follow := r.URL.Query().Get("from_follow")
 	if query_from_follow == "1" {
@@ -27,21 +28,6 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	var userID uint32
-	auth := r.Header["Authorization"][0]
-	if auth == "" {
-		http.Error(w, "Missing Authorization header", http.StatusBadRequest)
-		return
-	} else {
-		_userID, err := strconv.Atoi(auth)
-		if err != nil {
-			http.Error(w, "Bad Request", http.StatusBadRequest)
-			return
-		}
-
-		userID = uint32(_userID)
 	}
 
 	dbUsers, err := rt.db.SearchUsers(userID, query_search, from_follow, offset, limit)

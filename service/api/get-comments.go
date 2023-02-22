@@ -11,28 +11,20 @@ import (
 
 func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	profileUserID := uint32(_profileUserID)
 
 	// Get the postID from the URL
-	_postID, err := strconv.Atoi(ps.ByName("postID"))
+	postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	postID := uint32(_postID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userID := ctx.UserID
 
 	// Check if the user is banned
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)

@@ -11,7 +11,7 @@ var query_GETUSERS_FOLLOW = `SELECT userID, username, userPropicURL
 							AND username REGEXP ? ORDER BY username ASC LIMIT ?, ?`
 var query_GETUSERS = `SELECT userID, username, userPropicURL FROM User WHERE username REGEXP ? ORDER BY username ASC LIMIT ?, ? `
 
-func (db *appdbimpl) SearchUsers(userID uint32, search string, from_follow bool, offset uint32, limit int32) ([]User, error) {
+func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, offset int, limit int) ([]User, error) {
 	var users []User
 
 	var rows *sql.Rows

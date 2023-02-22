@@ -18,13 +18,13 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 	user.UserPropicURL = "./default.png"
 
 	// ------FIND USERID---------//
-	var _maxID sql.NullInt32 = sql.NullInt32{Int32: 0, Valid: false}
+	var _maxID = sql.NullInt64{Int64: 0, Valid: false}
 	row, err := db.c.Query(query_MAXID)
 	if err != nil {
 		return user, err
 	}
 
-	var maxID uint32
+	var maxID int
 	for row.Next() {
 		err = row.Scan(&_maxID)
 		if err != nil && err != sql.ErrNoRows {
@@ -34,7 +34,7 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 		if !_maxID.Valid {
 			maxID = 0
 		} else {
-			maxID = uint32(_maxID.Int32)
+			maxID = int(_maxID.Int64)
 		}
 	}
 

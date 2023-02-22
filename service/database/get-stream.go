@@ -3,7 +3,7 @@ package database
 var join_FOLLOWINGS_POSTS = `SELECT User.userID, User.username, User.userPropicURL, Post.postID, Post.postImageURL, Post.caption, Post.timestamp 
 							FROM (` + query_GETFOLLOWINGS + `) AS User INNER JOIN Post ON User.userID = Post.userID ORDER BY Post.timestamp DESC LIMIT ?, ?`
 
-func (db *appdbimpl) GetStream(userID uint32, offeset uint32, limit int32) ([]Post, error) {
+func (db *appdbimpl) GetStream(userID int, offeset int, limit int) ([]Post, error) {
 	var posts []Post
 
 	// Get the posts from the database

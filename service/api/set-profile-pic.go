@@ -18,20 +18,15 @@ var HEIGHT = 500
 
 func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the URL
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	profileUserID := uint32(_profileUserID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	} else if userID != profileUserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	userID := ctx.UserID
+	if profileUserID != userID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 

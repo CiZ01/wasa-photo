@@ -2,7 +2,7 @@ package database
 
 var query_ISFOLLOWING = `SELECT followerID FROM Follow WHERE followerID = ? AND followedID = ?`
 
-func (db *appdbimpl) IsFollowing(followerID uint32, followedID uint32) (bool, error) {
+func (db *appdbimpl) IsFollowing(followerID int, followedID int) (bool, error) {
 	var isFollowing string
 	rows, err := db.c.Query(query_ISFOLLOWING, followerID, followedID)
 	if err != nil {

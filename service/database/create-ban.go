@@ -9,26 +9,25 @@ var query_GETALLPOST = `SELECT postID FROM Post WHERE userID=?`
 var query_HIDECOMMENTS = `UPDATE Comment SET hidden = "1" WHERE userID=? AND postID=?`
 var query_DELETEALLLIKES = `DELETE FROM Like WHERE userID = ? AND postID = ?`
 
-func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
+func (db *appdbimpl) CreateBan(bannerID int, bannedID int) error {
 	rows, err := db.c.Query(query_GETALLPOST, bannerID)
 	if err != nil {
 		return err
 	}
 
-	var allPosts []uint32
+	var allPosts []int
 
 	for rows.Next() {
 		if rows.Err() != nil {
 			return err
 		}
-		postID := uint32(0)
+		postID := int(0)
 		err = rows.Scan(&postID)
 		if err != nil {
 			return err
 		}
 		allPosts = append(allPosts, postID)
 	}
-
 
 	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
@@ -72,7 +71,7 @@ func (db *appdbimpl) CreateBan(bannerID uint32, bannedID uint32) error {
 	if err != nil {
 		return err
 	}
-	
+
 	err = rows.Close()
 	if err != nil {
 		return err

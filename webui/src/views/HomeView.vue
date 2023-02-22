@@ -4,48 +4,44 @@ export default {
 		return {
 			errormsg: null,
 			loading: false,
-			posts: [ {postID: '200', imageURL: "http://localhost:3000/wasa_photo/storage/1/posts/6.jpg", liked: false, user: {username: "pippo"}}],
+			posts: [],
 		}
 	},
 	methods: {
-		async refresh() {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
 		async getMyStream() {
 			try {
 				let response = await this.$axios.get(`profiles/${localStorage.userID}/feed`, { headers: { 'Authorization': `${localStorage.token}` } });
 				this.posts = response.data;
-				console.log(this.posts);
-
 			} catch (e) {
-				this.errormsg = e.toString();
-				console.log(this.errormsg);
+				this.errormsg = e.response.data();
 			}
 		},
 
-		async getMyProfile(){
+		async getMyProfile() {
 			this.$router.push(`/profiles/${localStorage.userID}`);
 		},
+		getImageSrc(image64) {
+			return 'data:image/jpg;base64,' + btoa(String.fromCharCode.apply(null, image64))
+		},
 
-		mounted() {
+	},
+
+	beforeMount() {
+		this.getMyStream();
+	},
+
+	mounted() {
+		setInterval(() => {
 			this.getMyStream();
-			this.refresh();
-		}
+		}, 5000);
 	}
 }
 </script>
 
-<!--sfondo grigio da social newtork che conterrà i posts-->
 <template>
-	<div class="bg_pattern Polka">
+	<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+
+	<div class="home-background-centered">
 		<div class="floatting-navbar">
 			<span @click="getMyProfile" class="left-profile-navbar">
 			</span>
@@ -53,14 +49,13 @@ export default {
 				<input placeholder="Search..." class="right-searchbar-navbar">
 			</span>
 		</div>
-		<div class="home-background-centered">
-			<div class="post">
-				<Post v-for="post in posts" :key="post.postID" :username="post.user.username" :image="post.imageURL"
-					:caption="post.caption" :liked="post.liked"></Post>
-			</div>
+		<div class="post">
+			<Post v-for="post in posts" :postID="post.postID" :userID="post.user.userID" :username="post.user.username"
+				:image="getImageSrc(post.Image)" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
+			</Post>
 		</div>
 	</div>
-<!--ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg--></template>
+</template>
 
 
 <style></style>

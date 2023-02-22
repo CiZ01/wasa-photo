@@ -16,14 +16,9 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	profileUserID := uint32(_profileUserID)
+	profileUserID := (_profileUserID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userID := ctx.UserID
 
 	if profileUserID == userID {
 		http.Error(w, "Bad Request", http.StatusBadRequest)

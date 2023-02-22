@@ -1,9 +1,8 @@
 package database
 
-
 var query_DELETELIKE = `DELETE FROM Like WHERE userID = ? AND ownerID = ? AND postID = ?`
 
-func (db *appdbimpl) DeleteLike(ownerID uint32, postID uint32, userID uint32) error {
+func (db *appdbimpl) DeleteLike(ownerID int, postID int, userID int) error {
 	res, err := db.c.Exec(query_DELETELIKE, userID, ownerID, postID)
 	if err != nil {
 		return err

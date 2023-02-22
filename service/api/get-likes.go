@@ -10,29 +10,22 @@ import (
 )
 
 func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	// Get the profileUserID and photoID from the URL
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	// Get the profileUserID and postID from the URL
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	profileUserID := uint32(_profileUserID)
 
-	_postID, err := strconv.Atoi(ps.ByName("postID"))
+	postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	photoID := uint32(_postID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userID := ctx.UserID
 
-	isBanned, err := rt.db.IsBanned(profileUserID, uint32(userID))
+	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -50,7 +43,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	likes, err := rt.db.GetLikes(photoID, profileUserID, offset, limit)
+	likes, err := rt.db.GetLikes(postID, profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting likes")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

@@ -5,7 +5,7 @@ var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=? AND owne
 var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=? AND ownerID=?`
 var query_ISLIKED = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=? AND userID=?`
 
-func (db *appdbimpl) GetPosts(userID uint32, profileUserID uint32, offset uint32, limit int32) ([]Post, error) {
+func (db *appdbimpl) GetPosts(userID int, profileUserID int, offset int, limit int) ([]Post, error) {
 	// Get the posts from the database
 	rows, err := db.c.Query(query_GETPOSTS, profileUserID, offset, limit)
 	if err != nil {
@@ -22,6 +22,7 @@ func (db *appdbimpl) GetPosts(userID uint32, profileUserID uint32, offset uint32
 		}
 		var post Post
 		var user User
+
 		// Get post data
 		err = rows.Scan(&post.PostID, &user.UserID, &post.ImageURL, &post.Caption, &post.Timestamp)
 		if err != nil {

@@ -1,21 +1,30 @@
 <script>
+import PostsGrid from '../components/PostsGrid.vue';
 export default {
     data() {
         return {
-            userID: this.$route.params.userID,
-            username: "",
-            followerCount: 0,
-            followingCount: 0,
+            isOwner: false,
             errorMsg: "",
+
+            userID: 0,
+            username : "",
+            followersCount: 0,
+            followingsCount: 0,
+            bio: "This user have notighing to say",
+            proPic: "",
         }
     },
     methods: {
         async getProfile() {
             try {
-                let response = await this.$axios.get(`profiles/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
-                this.username = response.data.username;
-                this.followerCount = response.data.followerCount;
-                this.followingCount = response.data.followingCount;
+                let response = await this.$axios.get(`profiles/${this.$route.params.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.userID = response.data.user.userID;
+                this.username = response.data.user.username;
+                this.followersCount = response.data.followersCount;
+                this.followingsCount = response.data.followingsCount;
+                if (response.data.bio != "")
+                    this.bio = response.data.bio;
+                this.proPic = response.data.user.userPropicURL;
             } catch (e) {
                 this.errorMsg = e.toString();
             }
@@ -24,30 +33,24 @@ export default {
     beforeMount() {
         this.getProfile();
     },
+
+    mounted() {
+        if (this.$route.params.userID == localStorage.userID) {
+            this.isOwner = true;
+        }
+    },
 }
+
 </script>
 
 
 <template>
-    <div class="top-profile-container">
-        <div class="top-profile-picture">
-            <img src="" alt="">
-        </div>
-        <div class="top-body-profile-container">
-            <span class="top-body-profile-username">francesco000000</span>
-            <div class="top-body-profile-bio-container">
-                <span class="top-body-profile-bio">bio</span>
-            </div>
-            <div class="top-body-profile-stats-container">
-                <div class="followers-stats">
-                    <span class="followers-stats-text">followers</span>
-                    <span class="followers-stats-number">0</span>
-                </div>
-                <div class="followers-stats">
-                    <span class="followers-stats-text">following</span>
-                    <span class="followers-stats-number">0</span>
-                </div>
-            </div>
-        </div>
+    <ProfileHeader :userID="userID" :username="username" :followersCount="followersCount" :followingsCount="followingsCount" :bio="bio" :proPic="proPic"> </ProfileHeader>
+
+    <PostsGrid> </PostsGrid>
+
+    <div v-if="isOwner" class="delete-account-button-container">
+        <button class="delete-account-button"> Delete Account </button>
     </div>
 </template>
+

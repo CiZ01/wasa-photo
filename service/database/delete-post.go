@@ -11,7 +11,7 @@ DeletePost deletes a post from the database.
 Delete all the likes and comments associated with the post.
 If the post does not exist, return an error. (?)
 */
-func (db *appdbimpl) DeletePost(ownerID uint32, postID uint32) error {
+func (db *appdbimpl) DeletePost(ownerID int, postID int) error {
 
 	tx, err := db.c.BeginTx(db.ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {

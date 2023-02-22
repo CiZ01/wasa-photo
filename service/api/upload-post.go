@@ -24,20 +24,14 @@ The JSON response body is of the form:
 */
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	profileUserID := uint32(_profileUserID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	} else if userID != profileUserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	if profileUserID != ctx.UserID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -90,11 +84,8 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Parse the new post from the database package to the Post struct in the api package
-	newPost = newPost.FromDatabase(dbNewPost)
-
 	// Create the file
-	tmpfile, err := os.Create(newPost.ImageURL)
+	tmpfile, err := os.Create(dbNewPost.ImageURL)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error creating file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -111,14 +102,22 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	filename, err := saveAndCrop(newPost.ImageURL, 720, 720)
+	filename, err := saveAndCrop(dbNewPost.ImageURL, 720, 720)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error cropping file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	newPost.ImageURL = filename
+	dbNewPost.ImageURL = filename
+
+	// Parse the new post from the database package to the Post struct in the api package
+	newPost, err = newPost.FromDatabase(dbNewPost)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error parsing post")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	// Return the new post
 	w.WriteHeader(http.StatusCreated)

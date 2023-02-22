@@ -2,7 +2,7 @@ package database
 
 var query_GETFOLLOWERS = `SELECT userID, username, userPropicURL FROM User WHERE userID IN (SELECT followerID FROM Follow WHERE followedID=? LIMIT ?, ?)`
 
-func (db *appdbimpl) GetFollowers(followedID uint32, offset uint32, limit int32) ([]User, error) {
+func (db *appdbimpl) GetFollowers(followedID int, offset int, limit int) ([]User, error) {
 	// Get the followers from the database
 	rows, err := db.c.Query(query_GETFOLLOWERS, followedID, offset, limit)
 	if err != nil {

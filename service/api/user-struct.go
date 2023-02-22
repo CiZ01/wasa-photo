@@ -11,7 +11,7 @@ This struct rappresents the User object.
 The user is identified by the username and the userId, which is the primary key.
 */
 type User struct {
-	UserID        uint32 `json:"userID"`
+	UserID        int    `json:"userID"`
 	Username      string `json:"username"`
 	UserPropicURL string `json:"userPropicURL"`
 }

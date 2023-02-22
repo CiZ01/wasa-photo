@@ -17,41 +17,33 @@ The response body is empty, return a 200 OK status code.
 */
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	// Get the profileUserID and photoID from the URL
-	_profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
+	// Get the profileUserID and postID from the URL
+	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	profileUserID := uint32(_profileUserID)
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	} else if userID != profileUserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	_postID, err := strconv.Atoi(ps.ByName("postID"))
+	postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	photoID := uint32(_postID)
+
+	if profileUserID != ctx.UserID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	// Get commentID from query
-	_commentID, err := strconv.Atoi(ps.ByName("commentID"))
+	commentID, err := strconv.Atoi(ps.ByName("commentID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	commentID := uint32(_commentID)
 
 	// Delete the comment
-	err = rt.db.DeleteComment(commentID, profileUserID, photoID)
+	err = rt.db.DeleteComment(commentID, profileUserID, postID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error uncommenting photo")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

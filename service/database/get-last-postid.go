@@ -4,9 +4,9 @@ import "database/sql"
 
 var query_GETLASPOSTID = `SELECT MAX(postID) FROM Post WHERE userID= ?;`
 
-func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
-	var _postID sql.NullInt32 = sql.NullInt32{Int32: 0, Valid: false}
-	var postID uint32 = 0
+func (db *appdbimpl) GetLastPostID(userID int) (int, error) {
+	var _postID = sql.NullInt64{Int64: 0, Valid: false}
+	var postID int = 0
 	res, err := db.c.Query(query_GETLASPOSTID, userID)
 	if err != nil {
 		return 0, err
@@ -26,7 +26,7 @@ func (db *appdbimpl) GetLastPostID(userID uint32) (uint32, error) {
 		if !_postID.Valid {
 			postID = 0
 		} else {
-			postID = uint32(_postID.Int32)
+			postID = int(_postID.Int64)
 		}
 	}
 

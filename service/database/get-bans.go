@@ -5,7 +5,7 @@ var query_GETBANS = `SELECT bannedID FROM Ban WHERE bannerID = ? LIMIT ?,?`
 /*
 GetBans returns a list of users that have been banned by the user with the given ID.
 */
-func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit int32) ([]User, error) {
+func (db *appdbimpl) GetBans(bannerID int, offset int, limit int) ([]User, error) {
 	var bans []User
 	rows, err := db.c.Query(query_GETBANS, bannerID, offset, limit)
 	if err != nil {
@@ -17,7 +17,7 @@ func (db *appdbimpl) GetBans(bannerID uint32, offset uint32, limit int32) ([]Use
 		if rows.Err() != nil {
 			return nil, err
 		}
-		var bannedID uint32
+		var bannedID int
 		err = rows.Scan(&bannedID)
 		if err != nil {
 			return nil, err

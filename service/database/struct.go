@@ -3,7 +3,7 @@ package database
 import "time"
 
 type User struct {
-	UserID        uint32 `json:"userID"`
+	UserID        int    `json:"userID"`
 	Username      string `json:"username"`
 	UserPropicURL string `json:"userPropicURL"`
 }
@@ -19,7 +19,7 @@ type Post struct {
 	Caption      string    `json:"caption"`
 	LikeCount    int       `json:"likeCount"`
 	CommentCount int       `json:"commentCount"`
-	Liked 		 bool	   `json:"liked"`
+	Liked        bool      `json:"liked"`
 	Timestamp    time.Time `json:"timestamp"`
 }
 
@@ -28,7 +28,7 @@ This struct rappresents the Comment object.
 The post is identified by the CommentID, which is the primary key.
 */
 type Comment struct {
-	CommentID uint32    `json:"commentID"`
+	CommentID int       `json:"commentID"`
 	User      User      `json:"userID"`
 	Text      string    `json:"text"`
 	Timestamp time.Time `json:"timestamp"`
@@ -44,6 +44,6 @@ The profile is identified by the User.UserID, which is the primary key.
 type Profile struct {
 	User            User   `json:"user"`
 	Bio             string `json:"bio"`
-	FollowersCount  uint32 `json:"followerCount"`
-	FollowingsCount uint32 `json:"followingsCount"`
+	FollowersCount  int    `json:"followersCount"`
+	FollowingsCount int    `json:"followingsCount"`
 }
