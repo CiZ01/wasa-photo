@@ -5,8 +5,6 @@ import axios from './services/axios.js';
 import ErrorMsg from './components/ErrorMsg.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
 import Post from './components/Post.vue'
-import ProfileHeader from './components/ProfileHeader.vue'
-import PostsGrid from './components/PostsGrid.vue'
 import ProfilesList from './components/ProfilesList.vue'
 
 import './assets/main.css'
@@ -27,8 +25,6 @@ app.config.globalProperties.$axios = axios;
 app.component("ErrorMsg", ErrorMsg);
 app.component("LoadingSpinner", LoadingSpinner);
 app.component("Post", Post);
-app.component("ProfileHeader", ProfileHeader);
-app.component("PostsGrid", PostsGrid);
 app.component("ProfilesList", ProfilesList);
 //---------------//
 

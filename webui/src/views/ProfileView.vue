@@ -1,5 +1,7 @@
 <script>
 import PostsGrid from '../components/PostsGrid.vue';
+import ProfileHeader from '../components/ProfileHeader.vue'
+
 export default {
     data() {
         return {

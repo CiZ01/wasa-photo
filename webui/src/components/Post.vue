@@ -89,6 +89,10 @@ export default {
                 return `${elapsedMinutes}m`;
             }
         },
+        getImageSrc(image64) {
+			return 'data:image/jpg;base64,' + btoa(String.fromCharCode.apply(null, image64))
+		},
+
     },
     beforeMount() {
         if (this.userID == localStorage.userID) {
@@ -113,7 +117,7 @@ export default {
             <span @click="goToProfile" class="post-header-username">{{ username }}</span>
             <span class="post-header-timestamp">{{ calcTimestamp(new Date(timestamp)) }}</span>
         </div>
-        <img class="post-img" :src="image" @dblclick="like" loading="lazy">
+        <img class="post-img" :src="getImageSrc(image)" @dblclick="like" loading="lazy">
         <div class="post-tail">
             <div class="post-tail-like-comment-options">
                 <button class="post-tail-like-button" name="like">

@@ -8,5 +8,6 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "golang.go"
     },
+    "gopls": { "ui.semanticTokens": true },
     
 }

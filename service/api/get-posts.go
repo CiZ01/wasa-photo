@@ -34,11 +34,17 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 	userID := ctx.UserID
 
 	// Get the posts from the database
-	posts, err := rt.db.GetPosts(userID, profileUserID, offset, limit)
+	dbPosts, err := rt.db.GetPosts(userID, profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting posts")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	var posts []Post
+
+	for _, post := range dbPosts {
+		posts = append(posts, post.FromDatabase(dbPosts))
 	}
 
 	// Write the response

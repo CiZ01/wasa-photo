@@ -12,6 +12,7 @@ export default {
 			try {
 				let response = await this.$axios.get(`profiles/${localStorage.userID}/feed`, { headers: { 'Authorization': `${localStorage.token}` } });
 				this.posts = response.data;
+				console.log(this.posts);
 			} catch (e) {
 				this.errormsg = e.response.data();
 			}
@@ -20,20 +21,15 @@ export default {
 		async getMyProfile() {
 			this.$router.push(`/profiles/${localStorage.userID}`);
 		},
-		getImageSrc(image64) {
-			return 'data:image/jpg;base64,' + btoa(String.fromCharCode.apply(null, image64))
-		},
-
 	},
 
 	beforeMount() {
+		if (!localStorage.token)
+			this.$router.push('/login');
 		this.getMyStream();
 	},
 
 	mounted() {
-		setInterval(() => {
-			this.getMyStream();
-		}, 5000);
 	}
 }
 </script>
@@ -51,7 +47,7 @@ export default {
 		</div>
 		<div class="post">
 			<Post v-for="post in posts" :postID="post.postID" :userID="post.user.userID" :username="post.user.username"
-				:image="getImageSrc(post.Image)" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
+				:image="post.Image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
 			</Post>
 		</div>
 	</div>

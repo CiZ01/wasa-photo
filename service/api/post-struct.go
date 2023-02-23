@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/base64"
+	"fmt"
 	"git.francescofazzari.it/wasa_photo/service/database"
 	"io/ioutil"
 	"os"
@@ -81,5 +82,8 @@ func imageToBase64(filename string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(imageData), nil
+
+	base64 := base64.StdEncoding.EncodeToString(imageData)
+	fmt.Println(base64)
+	return base64, nil
 }
