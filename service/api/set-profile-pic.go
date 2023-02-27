@@ -1,10 +1,9 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"io"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,9 +11,6 @@ import (
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
-
-var WIDTH = 500
-var HEIGHT = 500
 
 func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the URL
@@ -30,21 +26,42 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
+	// Parse the multipart form
+	err = r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-		return
-	}
-	// Decodifica l'immagine in base64
-	image, err := base64.StdEncoding.DecodeString(string(body))
-	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	// Access the photo key
+	// The photo key is the name of the file input in the HTML form
+	// If the key is not present an error is returned
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Read the file
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error parse file")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	fileType := http.DetectContentType(data)
+	if fileType != "image/jpeg" {
+		http.Error(w, "Bad Request wrong file type", http.StatusBadRequest)
+		return
+	}
+
+	defer func() { err = file.Close() }()
+
+
 	// Create the file
-	path := "storage/" + fmt.Sprint(profileUserID) + "/tmp_profile_pic.jpeg"
-	err = os.WriteFile(path, image, 0644)
+	path := utils.GetProfilePicPath(userID)
+	err = os.WriteFile(path, data, 0644)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error saving image")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -52,27 +69,20 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 	}
 
 	// Crop the image
-	newPath, err := saveAndCrop(path, 250, 250)
+	err = utils.SaveAndCrop(path, 250, 250)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error saving or cropping image")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	// Delete tmp file
-	err = os.Remove(path)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error deleting tmp file")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
 	// Prepare the response
 	type ProfilePic struct {
-		Path string `json:"path"`
+		ProfilePic64 string `json:"profilePic64"`
 	}
 
-	pic := ProfilePic{Path: newPath}
+	propic64, err := utils.ImageToBase64(path)
+	pic := ProfilePic{ProfilePic64: propic64}
 
 	// Return the new post
 	w.WriteHeader(http.StatusCreated)

@@ -1,11 +1,8 @@
 package api
 
 import (
-	"encoding/base64"
-	"fmt"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"git.francescofazzari.it/wasa_photo/service/database"
-	"io/ioutil"
-	"os"
 	"time"
 )
 
@@ -30,7 +27,7 @@ This function add the user api struct to the post api struct.
 func (p *Post) AddUser(user User) Post {
 	return Post{
 		PostID:       p.PostID,
-		User:         User{UserID: user.UserID, Username: user.Username, UserPropicURL: user.UserPropicURL},
+		User:         User{UserID: user.UserID, Username: user.Username, UserPropic64: user.UserPropic64},
 		Image:        p.Image,
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
@@ -46,44 +43,35 @@ Also the user api struct is parsed to the user database struct.
 func (p *Post) ToDatabase() database.Post {
 	return database.Post{
 		PostID:       p.PostID,
-		User:         database.User{UserID: p.User.UserID, Username: p.User.Username, UserPropicURL: p.User.UserPropicURL},
+		User:         database.User{UserID: p.User.UserID, Username: p.User.Username},
 		ImageURL:     "",
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
 		CommentCount: p.CommentCount,
+		Liked:        p.Liked,
 		Timestamp:    p.Timestamp,
 	}
 }
 
-func (p *Post) FromDatabase(dbPost database.Post) (Post, error) {
-	image64, err := imageToBase64(dbPost.ImageURL)
+func (p *Post) FromDatabase(dbPost database.Post) error {
+	image64, err := utils.ImageToBase64(dbPost.ImageURL)
 	if err != nil {
-		return Post{}, err
-	}
-	return Post{
-		PostID:       dbPost.PostID,
-		User:         User{UserID: dbPost.User.UserID, Username: dbPost.User.Username, UserPropicURL: dbPost.User.UserPropicURL},
-		Image:        image64,
-		Caption:      dbPost.Caption,
-		LikeCount:    dbPost.LikeCount,
-		CommentCount: dbPost.CommentCount,
-		Timestamp:    dbPost.Timestamp,
-	}, nil
-}
-
-func imageToBase64(filename string) (string, error) {
-	imageFile, err := os.Open(filename)
-	if err != nil {
-		return "", err
-	}
-	defer imageFile.Close()
-
-	imageData, err := ioutil.ReadAll(imageFile)
-	if err != nil {
-		return "", err
+		return err
 	}
 
-	base64 := base64.StdEncoding.EncodeToString(imageData)
-	fmt.Println(base64)
-	return base64, nil
+	var apiUser User
+	err = apiUser.FromDatabase(dbPost.User)
+	if err != nil {
+		return err
+	}
+
+	p.PostID = dbPost.PostID
+	p.User = apiUser
+	p.Image = image64
+	p.Caption = dbPost.Caption
+	p.LikeCount = dbPost.LikeCount
+	p.CommentCount = dbPost.CommentCount
+	p.Liked = dbPost.Liked
+	p.Timestamp = dbPost.Timestamp
+	return nil
 }

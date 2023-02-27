@@ -2,11 +2,11 @@ package database
 
 var query_GETBAN = `SELECT bannerID FROM Ban WHERE 
 (bannerID = ? AND bannedID = ?) OR
-(bannerID = ? AND bannedID = ?)`
+(bannedID = ? AND bannerID = ?)`
 
 func (db *appdbimpl) IsBanned(bannedID int, bannerID int) (bool, error) {
 	var isBanned string
-	rows, err := db.c.Query(query_GETBAN, bannerID, bannedID, bannedID, bannerID)
+	rows, err := db.c.Query(query_GETBAN, bannerID, bannedID, bannerID, bannedID)
 	if err != nil {
 		return false, err
 	}

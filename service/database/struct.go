@@ -5,7 +5,6 @@ import "time"
 type User struct {
 	UserID        int    `json:"userID"`
 	Username      string `json:"username"`
-	UserPropicURL string `json:"userPropicURL"`
 }
 
 /*
@@ -32,9 +31,6 @@ type Comment struct {
 	User      User      `json:"userID"`
 	Text      string    `json:"text"`
 	Timestamp time.Time `json:"timestamp"`
-	// non so se sia il massimo usare time visto che
-	// il timestamp lo gestirò lato frontend e comunque
-	// quando gli arriva è una stringa
 }
 
 /*
@@ -46,4 +42,5 @@ type Profile struct {
 	Bio             string `json:"bio"`
 	FollowersCount  int    `json:"followersCount"`
 	FollowingsCount int    `json:"followingsCount"`
+	IsFollowed    bool   `json:"isFollowing"`
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
 
@@ -37,7 +38,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	// Get limit and offset from the queries
-	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
@@ -51,8 +52,8 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	// Send the response
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(likes); err != nil {
 		ctx.Logger.WithError(err).Error("Error encoding likes")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

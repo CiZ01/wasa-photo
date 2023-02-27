@@ -1,31 +1,47 @@
 <script>
+
 export default {
-	data: function () {
+
+	data() {
 		return {
-			errormsg: null,
+			errorMsg: null,
 			loading: false,
 			posts: [],
+			feedLimit: 10,
+			feedOffeset: 0,
+			busy: false,
 		}
 	},
 	methods: {
 		async getMyStream() {
 			try {
-				let response = await this.$axios.get(`profiles/${localStorage.userID}/feed`, { headers: { 'Authorization': `${localStorage.token}` } });
+				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
+				let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
 				this.posts = response.data;
 				console.log(this.posts);
 			} catch (e) {
-				this.errormsg = e.response.data();
+				this.errorMsg = e.response.data;
 			}
 		},
 
-		async getMyProfile() {
+		getMyProfile() {
 			this.$router.push(`/profiles/${localStorage.userID}`);
 		},
+		updateLike(data){
+			this.posts.forEach(post => {
+				if (post.postID == data.postID) {
+					post.liked = data.liked;
+					post.likesCount++;
+				}
+			});
+		}
 	},
 
 	beforeMount() {
-		if (!localStorage.token)
+		if (!localStorage.token) {
 			this.$router.push('/login');
+			return
+		}
 		this.getMyStream();
 	},
 
@@ -35,7 +51,7 @@ export default {
 </script>
 
 <template>
-	<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
 
 	<div class="home-background-centered">
 		<div class="floatting-navbar">
@@ -45,13 +61,8 @@ export default {
 				<input placeholder="Search..." class="right-searchbar-navbar">
 			</span>
 		</div>
-		<div class="post">
-			<Post v-for="post in posts" :postID="post.postID" :userID="post.user.userID" :username="post.user.username"
-				:image="post.Image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
-			</Post>
-		</div>
+		<Post v-for="post in posts" :postID="post.postID" :userID="post.user.userID" :username="post.user.username"
+			:image="post.image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
+		</Post>
 	</div>
 </template>
-
-
-<style></style>

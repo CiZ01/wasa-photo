@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
@@ -24,7 +25,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		from_follow = true
 	}
 
-	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
@@ -40,7 +41,12 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	var users []User
 	for _, u := range dbUsers {
 		var user User
-		user.FromDatabase(u)
+		err := user.FromDatabase(u)
+		if err != nil {
+			ctx.Logger.Error("Error converting user", err)
+			http.Error(w, "Error converting user", http.StatusInternalServerError)
+			return
+		}
 		users = append(users, user)
 	}
 

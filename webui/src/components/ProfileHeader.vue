@@ -4,11 +4,12 @@ import { toRaw } from 'vue';
 export default {
     props: {
         userID: { type: Number, required: true },
-        username: { type: String, required: true},
-        followersCount: { type: Number, required: true},
-        followingsCount: { type: Number, required: true},
-        bio: { type: String, required: true},
-        proPic: { type: String, required: true},
+        username: { type: String, required: true },
+        followersCount: { type: Number, required: true },
+        followingsCount: { type: Number, required: true },
+        bio: { type: String, required: true },
+        proPic64: { type: String, required: true },
+        isFollowed: { type: Boolean, required: true },
     },
     data() {
         return {
@@ -17,6 +18,9 @@ export default {
             textCounter: 0,
             profilesArray: [],
             textHeader: "",
+
+            // Buttons Text
+            followText: this.isFollowed ? "Follow" : "Unfollow",
         }
     },
     methods: {
@@ -103,6 +107,27 @@ export default {
         },
         freeLists() {
             this.profilesArray = [];
+        },
+        async follow(){
+            if (this.isFollowed) {
+                try{
+                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    this.isFollowed = false;
+                    this.followText = "Follow";
+                    this.followersCount--;
+                } catch (e) {
+                    this.errorMsg = e.response.data;
+                }
+            } else {
+                try{
+                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    this.isFollowed = true;
+                    this.followText = "Unfollow";
+                    this.followersCount++;
+                } catch (e) {
+                    this.errorMsg = e.response.data;
+                }
+            }
         }
     },
     beforeMount() {
@@ -124,7 +149,7 @@ export default {
 
     <div class="top-profile-container">
         <div class="top-profile-picture">
-            <img src="" alt="">
+            <img :src="`data:image/jpg;base64,${proPic64}`">
         </div>
         <div class="top-body-profile-container">
             <input :readonly="!isOwner" v-model="username" class="top-body-profile-username" @focusin="editingUsername"
@@ -145,8 +170,13 @@ export default {
                     <span class="followers-stats-number">{{ followingsCount }}</span>
                 </div>
             </div>
+
+            <div class="top-body-profile-actions">
+                <button class="profile-actions-button follow-button" @click="follow()"> {{ followText }} </button>
+            </div>
         </div>
     </div>
 
     <ProfilesList v-if="(profilesArray.length > 0)" :profiles="profilesArray" :textHeader="textHeader"
-        class="follow-list-view" @exitList="freeLists()"> </ProfilesList></template>
+        :componentEntries="'SimpleProfileEntry'" class="follow-list-view" @exitList="freeLists"> </ProfilesList>
+</template>

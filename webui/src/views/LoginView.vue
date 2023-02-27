@@ -21,6 +21,9 @@ export default {
             }
             );}
         },
+    beforeMount() {
+        localStorage.clear();
+    },
     }
 
 </script>

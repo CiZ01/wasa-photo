@@ -1,12 +1,12 @@
 package api
 
 import (
-	"net/http"
-	"strconv"
-
+	"errors"
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"git.francescofazzari.it/wasa_photo/service/database"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -37,11 +37,11 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	err = rt.db.DeleteLike(profileUserID, postID, userID)
-	if err == database.ErrNoRowsAffected {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusNotFound)
-		return
-	}
 	if err != nil {
+		if errors.Is(err, database.ErrNoRowsAffected) {
+			http.Error(w, "Bad Request there is no one like", http.StatusNotFound)
+			return
+		}
 		ctx.Logger.WithError(err).Error("Error unliking photo")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

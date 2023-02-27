@@ -31,7 +31,7 @@ func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 
 	p.PostID = postID
 
-	path := "./storage/" + userID + "/posts/" + postID + ".jpg"
+	path := "./storage/" + userID + "/posts/" + postID + ".jpeg"
 
 	_, err = db.c.Exec(query_CREATEPOST, postID, userID, path, p.Caption)
 	if err != nil {

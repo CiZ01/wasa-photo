@@ -1,11 +1,11 @@
 package api
 
 import (
-	"net/http"
-	"strconv"
-
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
+	"github.com/mattn/go-sqlite3"
+	"net/http"
+	"strconv"
 )
 
 func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -37,20 +37,23 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	postID, err := strconv.Atoi(ps.ByName("postID"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.CreateLike(userID, profileUserID, postID)
 	if err != nil {
-		if err.Error() == "UNIQUE constraint failed: Like.userID, Like.ownerID, Like.postID" {
-			http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
-			return
+		if sqlite3Err, ok := err.(sqlite3.Error); ok {
+			if sqlite3Err.Code == sqlite3.ErrConstraint &&
+				sqlite3Err.ExtendedCode == 1555 {
+				http.Error(w, "Bad Request like already added", http.StatusBadRequest)
+				return
+			}
 		}
 		ctx.Logger.WithError(err).Error("error liking post")
 		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }

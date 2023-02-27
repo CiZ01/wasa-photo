@@ -6,10 +6,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var query_GETUSERS_FOLLOW = `SELECT userID, username, userPropicURL 
+var query_GETUSERS_FOLLOW = `SELECT userID, username
 							FROM User WHERE userID IN (SELECT followedID FROM Follow WHERE followerID = ?) 
-							AND username REGEXP ? ORDER BY username ASC LIMIT ?, ?`
-var query_GETUSERS = `SELECT userID, username, userPropicURL FROM User WHERE username REGEXP ? ORDER BY username ASC LIMIT ?, ? `
+							AND username regexp(?, ?) ORDER BY username ASC LIMIT ?, ?`
+var query_GETUSERS = `SELECT userID, username FROM User WHERE username regexp(?, ?) ORDER BY username ASC LIMIT ?, ? `
 
 func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, offset int, limit int) ([]User, error) {
 	var users []User
@@ -34,7 +34,7 @@ func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, of
 			return nil, err
 		}
 		var u User
-		if err := rows.Scan(&u.UserID, &u.Username, &u.UserPropicURL); err != nil {
+		if err := rows.Scan(&u.UserID, &u.Username); err != nil {
 			return nil, err
 		}
 		users = append(users, u)

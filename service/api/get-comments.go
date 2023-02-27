@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
 
@@ -39,7 +40,7 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Get limit and offset from the queries
-	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return

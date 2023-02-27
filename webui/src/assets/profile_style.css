@@ -1,4 +1,4 @@
-.top-profile-container{
+.top-profile-container {
     width: 40em;
     height: auto;
 
@@ -11,11 +11,17 @@
 
 }
 
-.top-profile-picture{
+.top-profile-picture {
     width: 10em;
     height: 10em;
     border-radius: 100%;
     border: 1px solid black;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     margin: 0;
     padding: 0;
@@ -27,20 +33,24 @@
     z-index: 1;
 }
 
-.top-body-profile-container{
+.top-body-profile-container {
     background-color: #fff;
     width: 100%;
-    height: 20em;
-    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+    height: auto;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
     position: relative;
 
     padding: 0 2.3em 2.3em 2.3em;
-    
+
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
     border-radius: 0.5em;
 }
 
-.top-body-profile-username{
+.top-body-profile-username {
     font-size: 1.8em;
     font-weight: bold;
 
@@ -57,7 +67,7 @@
     border: none;
 }
 
-.top-body-profile-bio-container{
+.top-body-profile-bio-container {
     display: flex;
     flex-direction: column;
 
@@ -70,28 +80,28 @@
     top: 5.5em;
 }
 
-.top-body-profile-bio-label{
+.top-body-profile-bio-label {
     font-size: 1.1em;
     font-weight: bold;
 
     width: fit-content;
 
-    color: rgb(0,0,0,0.7);
+    color: rgb(0, 0, 0, 0.7);
 
     position: relative;
     top: -1em;
 }
 
-.top-body-profile-bio-text{
+.top-body-profile-bio-text {
     font-size: 1em;
     font-weight: 500;
 
     width: 100%;
-    
-    color: rgb(0,0,0,0.7);
+
+    color: rgb(0, 0, 0, 0.7);
 
     margin: 0;
-    
+
     cursor: default;
 
     border: 0;
@@ -105,7 +115,7 @@
 
 }
 
-.top-body-profile-bio-text-counter{
+.top-body-profile-bio-text-counter {
     font-size: 0.8em;
     font-weight: 500;
 
@@ -118,22 +128,23 @@
     text-align: right;
 }
 
-.top-body-profile-stats-container{
+.top-body-profile-stats-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 
-    width: auto;
-    height: 4em;
+    width: 100%;
+    height: auto;
 
-    padding-top: 0.25em;
+    padding: 0.25em;
     border-top: 1px solid rgb(220, 220, 220);
+    border-bottom: 1px solid rgb(220, 220, 220);
 
     position: relative;
     top: 5em;
 }
 
-.followers-stats{
+.followers-stats {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -141,30 +152,32 @@
 
     width: 18em;
     height: 6em;
-    
+
     cursor: pointer;
+
+    position: relative;
 }
 
-.followers-stats:hover{
+.followers-stats:hover {
     background-color: rgb(220, 220, 220, 0.3);
 }
 
-.followers-stats-text{
+.followers-stats-text {
     font-size: 1.2em;
     font-weight: bold;
 
-    color: rgb(0,0,0,0.7);
+    color: rgb(0, 0, 0, 0.7);
 
 }
 
-.followers-stats-number{
+.followers-stats-number {
     font-size: 1.5em;
     font-weight: bold;
 
-    color: rgb(0,0,0,0.7);
+    color: rgb(0, 0, 0, 0.7);
 }
 
-.posts-grid-container{
+.posts-grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
@@ -173,7 +186,7 @@
     height: fit-content;
     padding: 2em;
 
-    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
     background-color: #fff;
 
@@ -183,7 +196,7 @@
     top: 5em;
 }
 
-.posts-grid-post{
+.posts-grid-post {
     width: 12em;
     height: 12em;
 
@@ -194,25 +207,25 @@
     cursor: pointer;
 }
 
-.posts-grid-nopost-text{
+.posts-grid-nopost-text {
     font-size: 1.5em;
     font-weight: bold;
 
-    color: rgb(0,0,0,0.7);
+    color: rgb(0, 0, 0, 0.7);
 
     position: relative;
 
-    
+
 }
 
-.posts-grid-post-image{
+.posts-grid-post-image {
     width: 100%;
     height: 100%;
 
     object-fit: cover;
 }
 
-.delete-account-button{
+.delete-account-button {
     width: 12em;
     height: 3em;
 
@@ -224,12 +237,12 @@
     font-size: 1.2em;
     font-weight: bold;
 
-    color: rgb(0,0,0,0.7);
+    color: rgb(0, 0, 0, 0.7);
 
     position: relative;
 }
 
-.delete-account-button-container{
+.delete-account-button-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -242,13 +255,56 @@
     top: 6em;
 }
 
-.post-view{
+
+.post-view {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1;
+}
+
+.top-body-profile-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    width: 100%;
+    height: auto;
+
+    position: relative;
+    top: 1em;
+
+}
+
+.profile-actions-button {
+    width: 6em;
+    height: 2em;
+
+    border: 1px solid #000;
+
+    border-radius: 0.2em;
+
+    font-size: 1.2em;
+    font-weight: bold;
+
+    color: rgb(0, 0, 0, 0.7);
+
+    position: relative;
+}
+
+.follow-button {
+    background-color: #03C988;
+}
+
+.follow-button:hover {
+    box-shadow: inset 0px 0px 0px 5em rgb(0, 0, 0, 0.2);
 }

@@ -17,12 +17,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	// Check if the user is authorized
-	userID := isAuthorized(r.Header)
-	if userID == 0 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userID := ctx.UserID
 
 	// Check if the user is banned
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)
@@ -37,9 +32,17 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// Get the user from the database
-	profile, err := rt.db.GetUserProfile(profileUserID)
+	dbProfile, err := rt.db.GetUserProfile(profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while getting the user profile")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Convert the database profile to the API profile
+	var profile Profile
+	if err := profile.FromDatabase(dbProfile); err != nil {
+		ctx.Logger.WithError(err).Error("Error while converting the database profile to the API profile")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
 
@@ -25,7 +26,7 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	// Get the offset and limit from the query
-	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
@@ -43,8 +44,15 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 
 	var posts []Post
 
-	for _, post := range dbPosts {
-		posts = append(posts, post.FromDatabase(dbPosts))
+	for _, dbPost := range dbPosts {
+		var post Post
+		err = post.FromDatabase(dbPost)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error converting post")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		posts = append(posts, post)
 	}
 
 	// Write the response

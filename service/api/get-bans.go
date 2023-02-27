@@ -2,11 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-
-	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -26,7 +26,7 @@ func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	// Get limit and offset from the queries
-	limit, offset, err := getLimitAndOffset(r.URL.Query())
+	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return

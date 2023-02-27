@@ -1,46 +1,43 @@
 <script>
+import { defineAsyncComponent, shallowRef } from 'vue';
+
 
 export default {
+    emits: ["exit-list"],
+
     props: {
         profiles: { type: Object, required: true },
         textHeader: { type: String, required: true },
         componentHeader: { type: Object, required: false },
+        componentEntries: { type: String, required: true, default: "ProfileEntry" },
+        componentFooter: { type: Object, required: false },
         level: { type: Number, required: false },
     },
     data() {
         return {
             customLevel: 0,
+            customEntries: "",
         }
     },
     methods: {
-        exitList() {
-            this.$emit("exitList");
-        },
-        goToProfile(userID) {
-            this.$router.push(`/profile/${userID}`);
-        },
     },
     beforeMount() {
-
-    },
-    mounted() {
+        this.customEntries = shallowRef(defineAsyncComponent(() =>
+            import(`./${this.componentEntries}.vue`))
+        )
     },
 }
 </script>
 
 
 <template>
-    <div class="list-container-background" @click.self="exitList">
+    <div class="list-container-background" @click.self="this.$emit('exit-list')">
         <div class="list-container">
             <div class="list-container-header">
                 <span class="list-header-text">{{ textHeader }}</span>
             </div>
-            <div class="list-entries" v-for="profile in profiles">
-                <div class="list-entries-img">
-                    <img :src="profile.userPropicURL" alt="" loading="lazy">
-                </div>
-                <span @click="goToProfile(profile.userID)" class="list-entries-username">{{ profile.username }}</span>
-            </div>
+            <component class="list-entries" v-for="profile in profiles" :is="customEntries" :data="profile" @exit-list-from-entry="this.$emit('exit-list')">
+            </component>
         </div>
     </div>
 </template>
@@ -61,7 +58,7 @@ export default {
     align-items: center;
 }
 
-.list-container-header{
+.list-container-header {
     width: 100%;
     height: 2em;
     margin-bottom: 1em;
@@ -70,6 +67,7 @@ export default {
     align-items: center;
     justify-content: center;
 }
+
 .list-header-text {
     font-size: 1.8em;
     font-weight: 600;
@@ -88,7 +86,7 @@ export default {
     padding: 2em;
 
     position: relative;
-    z-index: 3;
+    z-index: 2;
 
     overflow: scroll;
 }
@@ -98,27 +96,11 @@ export default {
     height: 3em;
     margin-bottom: 0.005em;
 
-    border-top: 0.01em solid rgb(0, 0, 0, 0.3);
 
     display: flex;
     align-items: center;
     justify-content: left;
 
-    cursor: pointer;
-}
-
-.list-entries-img {
-    width: 2em;
-    height: 2em;
-    border-radius: 50%;
-    margin-right: 0.5em;
-
-    border: 1px solid black;
-}
-
-.list-entries-username {
-    font-size: 1em;
-    font-weight: 500;
 }
 
 .list-container::-webkit-scrollbar {

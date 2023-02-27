@@ -2,9 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"io"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
+	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
@@ -51,6 +51,20 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	// Read the file
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error parse file")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	fileType := http.DetectContentType(data)
+	if fileType != "image/jpeg" {
+		http.Error(w, "Bad Request wrong file type", http.StatusBadRequest)
+		return
+	}
+
 	defer func() { err = file.Close() }()
 
 	// Get the user from the database
@@ -84,37 +98,21 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Create the file
-	tmpfile, err := os.Create(dbNewPost.ImageURL)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error creating file")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	// Save the image
+	ioutil.WriteFile(dbNewPost.ImageURL, data, 0666)
 
-	defer func() { err = tmpfile.Close() }()
-
-	// Copy the uploaded file to the created file
-	_, err = io.Copy(tmpfile, file)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error copying file")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	filename, err := saveAndCrop(dbNewPost.ImageURL, 720, 720)
+	// Crop the image
+	err = utils.SaveAndCrop(dbNewPost.ImageURL, 720, 720)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error cropping file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	dbNewPost.ImageURL = filename
-
 	// Parse the new post from the database package to the Post struct in the api package
-	newPost, err = newPost.FromDatabase(dbNewPost)
+	err = newPost.FromDatabase(dbNewPost)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error parsing post")
+		ctx.Logger.WithError(err).Error("error parsing photo")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

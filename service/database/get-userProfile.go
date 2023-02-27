@@ -1,6 +1,6 @@
 package database
 
-var query_GETUSERINFO = `SELECT userID, username, bio, userPropicURL FROM User WHERE userID=?;`
+var query_GETUSERINFO = `SELECT userID, username, bio FROM User WHERE userID=?;`
 var query_GETCOUNTFOLLOWINGS = `SELECT count(followedID) FROM Follow WHERE followerID=?;`
 var query_GETCOUNTFOLLOWERS = `SELECT count(followerID) FROM Follow WHERE followedID=?;`
 
@@ -18,7 +18,7 @@ func (db *appdbimpl) GetUserProfile(userID int) (Profile, error) {
 			return profile, err
 		}
 		var user User
-		err := rows.Scan(&user.UserID, &user.Username, &profile.Bio, &user.UserPropicURL)
+		err := rows.Scan(&user.UserID, &user.Username, &profile.Bio)
 		if err != nil {
 			return profile, err
 		}

@@ -21,7 +21,7 @@ content-type: application/json
 ###
 
 # FOLLOW #
-POST http://localhost:3000/profiles/3/followings HTTP/1.1
+PUT http://localhost:3000/profiles/1/followings/3 HTTP/1.1
 Authorization: 1
 
 ###
@@ -51,8 +51,8 @@ Authorization: 1
 ###
 
 # GET POSTS #
-GET http://localhost:3000/profiles/2/posts HTTP/1.1
-Authorization: 2
+GET http://localhost:3000/profiles/3/posts HTTP/1.1
+Authorization: 3
 
 ###
 
@@ -69,20 +69,20 @@ ciao
 Content-Disposition: form-data; name="image"; filename="image.jpeg"
 Content-Type: image/jpeg
 
-< ./1.png
+< C:\Users\Francesco\OneDrive - uniroma1.it\Desktop\aaa.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
 
 # LIKE #
-POST http://localhost:3000/profiles/2/posts/1/like HTTP/1.1
-Authorization: 1
+POST http://localhost:3000/profiles/16/posts/8/likes HTTP/1.1
+Authorization: 14
 
 ###
 
 # UNLIKE #
-DELETE http://localhost:3000/profiles/2/posts/1/like HTTP/1.1
-Authorization: 1
+DELETE http://localhost:3000/profiles/16/posts/9/like HTTP/1.1
+Authorization: 14
 
 ###
 
@@ -154,7 +154,7 @@ Authorization: 5
 
 # GET SEARCH #
 GET http://localhost:3000/profiles
-    ?search=har
+    ?search=h
     &offset=0
     &limit=10
 Authorization: 1

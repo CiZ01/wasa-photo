@@ -1,11 +1,17 @@
 <script>
 import ProfilesList from './ProfilesList.vue';
+import LikeHeader from '../components/LikeHeader.vue';
+import CommentHeader from '../components/CommentHeader.vue';
 
 export default {
+    emits: ['update-like'],
+    components: {
+        ProfilesList,
+        LikeHeader,
+        CommentHeader,
+    },
     props: {
-        userID: { type: Number, required: true },
-        postID: { type: String, required: true },
-        username: { type: String, required: true },
+        owner: { type: Object, required: true },
         caption: { type: String, required: true },
         image: { type: String, required: true },
         timestamp: { type: String, required: true },
@@ -13,28 +19,71 @@ export default {
     },
     data() {
         return {
+
+            // Data User
+            ownerID: this.$props.owner['userID'],
+            username:this.$props.owner['username'],
+            proPic64: this.$props.owner['userPropic64'],
+
+
             isOwner: false,
             isHoverComment: false,
             isLiked: this.liked,
-            likesList: [],
+            profilesList: [],
             captionPost: "There is no caption for this post",
             textCounter: 0,
+            errorMsg: "",
+            showList: false,
+            customHeader: "",
+            titleHeaderList: "",
         };
     },
     methods: {
-        like() {
-            this.isLiked = !this.isLiked;
+        async like() {
+            try {
+                let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
+                this.isLiked = true;
+                this.$emit('update-like', { postID: this.postID, liked: true });
+
+            } catch (e) {
+                this.errorMsg = e.response.data;
+            }
+        },
+        async unlike() {
+            try {
+                let _ = await this.$axios.delete(`/profiles/${this.ownerID}/posts/${this.postID}/like/${localStorage.userID}`, { headers: { "Authorization": `${localStorage.token}` } });
+                this.isLiked = false
+                this.$emit('update-like', { postID: this.postID, liked: false });
+            } catch (e) {
+                this.errorMsg = e.response.data;
+            }
         },
         toggleComment() {
             this.isHoverComment = !this.isHoverComment;
         },
+        async getComments(){
+            try{
+                let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments`, { headers: { "Authorization": `${localStorage.token}` } });
+                this.profilesList = response.data;
+                this.customHeader = CommentHeader;
+                this.titleHeaderList = "Comments";
+                this.showList = true;
+                console.log(this.profilesList);
+
+            } catch (e) {
+                this.errorMsg = e.response.data;
+            }
+        },
         async getLikes() {
             try {
-                let response = await this.$axios.get(`/profiles/${this.userID}/posts/${this.postID}/likes`, { headers: { "Authorization": `${localStorage.token}` } });
-                this.likesList = response.data;
+                let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/likes`, { headers: { "Authorization": `${localStorage.token}` } });
+                this.profilesList = response.data;
+                this.customHeader = LikeHeader;
+                this.titleHeaderList = "Likes";
+                this.showList = true;
             }
             catch (e) {
-                this.errormsg = e.data();
+                this.errorMsg = e.response.data;
             }
         },
         editingCaption() {
@@ -50,10 +99,10 @@ export default {
                 }
                 document.getElementsByClassName("post-tail-caption")[0].style.outline = "none";
                 try {
-                    let _ = await this.$axios.put(`/profiles/${this.userID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
+                    let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = e.response.data;
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
             }
@@ -65,7 +114,7 @@ export default {
             }
         },
         goToProfile() {
-            this.$router.push(`/profiles/${this.userID}`);
+            this.$router.push(`/profiles/${this.ownerID}`);
         },
         calcTimestamp(timestamp) {
             const ONE_MINUTE = 60 * 1000;
@@ -89,13 +138,9 @@ export default {
                 return `${elapsedMinutes}m`;
             }
         },
-        getImageSrc(image64) {
-			return 'data:image/jpg;base64,' + btoa(String.fromCharCode.apply(null, image64))
-		},
-
     },
     beforeMount() {
-        if (this.userID == localStorage.userID) {
+        if (this.ownerID == localStorage.ownerID) {
             this.isOwner = true;
         }
         if (this.caption != "") {
@@ -103,31 +148,40 @@ export default {
         }
     },
     mounted() {
+
+    },
+    afterMount() {
         if (this.isOwner) {
             document.getElementsByClassName("post-tail-caption-text")[0].style.cursor = "text";
         }
-    }
+    },
+    watch: {
+        errorMsg: function () {
+            this.$emit("errorOccurred", this.errorMsg);
+            console.log(this.errorMsg);
+        },
+    },
 }
 </script>
 
 <template>
     <div class="post-containter">
         <div class="post-header">
-            <img class="post-header-propic-img" src="https://i.imgur.com/2oUpQtj.jpg" alt="" loading="lazy">
+            <img class="post-header-propic-img" :src="`data:image/jpg;base64,${proPic64}`" alt="" loading="lazy">
             <span @click="goToProfile" class="post-header-username">{{ username }}</span>
             <span class="post-header-timestamp">{{ calcTimestamp(new Date(timestamp)) }}</span>
         </div>
-        <img class="post-img" :src="getImageSrc(image)" @dblclick="like" loading="lazy">
+        <img class="post-img" :src="`data:image/jpg;base64,${image}`" @dblclick="() => isLiked ? unlike() : like()"
+            loading="lazy">
         <div class="post-tail">
             <div class="post-tail-like-comment-options">
                 <button class="post-tail-like-button" name="like">
-                    <font-awesome-icon v-if=!isLiked icon="fa-regular fa-heart" @click="like" />
-                    <font-awesome-icon v-else icon="fa-solid fa-heart" @click="like" @dblclick="getLikes"
-                        style="color:red" />
+                    <font-awesome-icon v-if=(!isLiked) icon="fa-regular fa-heart" @click="like" />
+                    <font-awesome-icon v-else icon="fa-solid fa-heart" @click="unlike" style="color:red" />
                 </button>
                 <button class="post-tail-comment-button" name="comment">
-                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" v-on:mouseover="toggleComment" />
-                    <font-awesome-icon v-else icon="fa-solid fa-comment" v-on:mouseout="toggleComment"
+                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment"  v-on:mouseover="toggleComment" />
+                    <font-awesome-icon v-else icon="fa-solid fa-comment" @click="getComments" v-on:mouseout="toggleComment"
                         style="opacity:0.9" />
                 </button>
                 <button v-if="isOwner" class="post-tail-options-button" name="options">
@@ -139,13 +193,17 @@ export default {
             <span class="post-tail-caption-text-counter">{{ textCounter }}/64 </span>
         </div>
     </div>
-    <ProfilesList v-if="(likesList.length != 0)"> </ProfilesList>
+    <ProfilesList @exitList="()=> !showList" class="stats-lists-component" v-if="showList" :profiles="profilesList" :componentHeader="customHeader" :textHeader="titleHeaderList" > </ProfilesList>
 </template>
 
 <style>
+
+.stats-lists-component{
+    z-index: 3;
+}
 .post-containter {
     width: 30em;
-    height: 40em;
+    height: auto;
 
     background-color: rgb(0, 0, 0, 0.1);
     box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.4);
@@ -162,7 +220,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
 
-    z-index: 3;
+    z-index: 2;
 }
 
 .post-header {
@@ -191,9 +249,11 @@ export default {
     border-radius: 10em;
 
     margin: 0.8em 0em 0em 1em;
+
+    object-fit: cover;
 }
 
-.post-header-timestamp{
+.post-header-timestamp {
     font-size: 1em;
     font-weight: 500;
 
@@ -205,7 +265,8 @@ export default {
 }
 
 .post-img {
-    width: 100%;
+    width: 30em;
+    height: 30em;
 }
 
 .post-tail {

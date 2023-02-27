@@ -22,13 +22,13 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/bio", rt.wrap(rt.setMyBio, true))
 
 	// --------CHANGE PROFILE PIC-------//
-	rt.router.PUT("/profiles/:profileUserID/profile_pic", rt.wrap(rt.setMyProfilePic, true))
+	rt.router.PUT("/profiles/:profileUserID/profile-picture", rt.wrap(rt.setMyProfilePic, true))
 
 	// ----------FOLLOW USER-----------//
-	rt.router.POST("/profiles/:profileUserID/followings", rt.wrap(rt.followUser, true))
+	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser, true))
 
 	// --------UNFOLLOW USER-----------//
-	rt.router.DELETE("/profiles/:profileUserID/followings", rt.wrap(rt.unfollowUser, true))
+	rt.router.DELETE("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.unfollowUser, true))
 
 	// ----------GET FOLLOWINGS--------//
 	rt.router.GET("/profiles/:profileUserID/followings", rt.wrap(rt.getMyFollowings, true))
@@ -37,10 +37,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/profiles/:profileUserID/followers", rt.wrap(rt.getMyFollowers, true))
 
 	// ----------BAN USER--------------//
-	rt.router.POST("/profiles/:profileUserID/bans", rt.wrap(rt.banUser, true))
+	rt.router.PUT("/profiles/:profileUserID/bans/:targetUserID", rt.wrap(rt.banUser, true))
 
 	// --------UNBAN USER--------------//
-	rt.router.DELETE("/profiles/:profileUserID/bans", rt.wrap(rt.unbanUser, true))
+	rt.router.DELETE("/profiles/:profileUserID/bans/:targetUserID", rt.wrap(rt.unbanUser, true))
 
 	// -----------GET BANS------------//
 	rt.router.GET("/profiles/:profileUserID/bans", rt.wrap(rt.getMyBans, true))
@@ -58,10 +58,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/profiles/:profileUserID/posts/:postID", rt.wrap(rt.deletePhoto, true))
 
 	// ----------LIKE POST-------------//
-	rt.router.POST("/profiles/:profileUserID/posts/:postID/likes", rt.wrap(rt.likePhoto, true))
+	rt.router.PUT("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.likePhoto, true))
 
 	// --------UNLIKE POST-------------//
-	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/like", rt.wrap(rt.unlikePhoto, true))
+	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/like/:userID", rt.wrap(rt.unlikePhoto, true))
 
 	// ---------GET LIKES--------------//
 	rt.router.GET("/profiles/:profileUserID/posts/:postID/likes", rt.wrap(rt.getLikes, true))

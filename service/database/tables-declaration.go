@@ -4,7 +4,6 @@ package database
 /*
 	- userID: the unique ID of the user, is the primary key of the table
 	- username: the username of the user
-	- userPropicURL: the URL of the user's profile picture, it's point to the image in the storage.
 	- bio: the bio of the user, is a short description of the user. It's optional. Max length is 64 characters.
 	- timestamp: the timestamp of the user's creation. It's is assigned automatically by the database.
 */
@@ -12,7 +11,6 @@ var sql_TABLEUSER = `CREATE TABLE IF NOT EXISTS User
 (
 	userID INTEGER NOT NULL UNIQUE,
 	username STRING NOT NULL UNIQUE,
-	userPropicURL STRING NOT NULL,
 	bio TEXT,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(userID)

@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"net/url"
@@ -10,7 +10,7 @@ getLimitAndOffset returns the limit and offset from the queries.
 If the queries are not present or not valid, it returns the default values.
 The default values are 10 for limit and 0 for offset.
 */
-func getLimitAndOffset(query url.Values) (int, int, error) {
+func GetLimitAndOffset(query url.Values) (int, int, error) {
 	// Get limit and offset from the queries
 	limit, offset := 10, 0
 
