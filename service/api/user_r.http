@@ -154,7 +154,7 @@ Authorization: 5
 
 # GET SEARCH #
 GET http://localhost:3000/profiles
-    ?search=h
+    ?search=mi
     &offset=0
     &limit=10
 Authorization: 1

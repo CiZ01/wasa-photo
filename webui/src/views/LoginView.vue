@@ -9,20 +9,22 @@ export default {
     methods: {
         doLogin() {
             this.$axios.post('/session', { username: this.username }).then((response) => {
-                console.log(response);
-                localStorage.userID = response.data.User.userID;
-                localStorage.username = response.data.User.username;
-                localStorage.token = response.data.Token;
+                console.log(response.data);
+                localStorage.setItem('userID', response.data.user['userID']);
+                localStorage.setItem('username', response.data.user['username']);
+                localStorage.propic64 = response.data.user['userPropic64'];
+                localStorage.setItem('token', response.data.token)
 
                 this.$router.push("/home");
             }).catch((error) => {
-                console.log(error);
-                this.errorMsg = error.response.data;
+                localStorage.setItem('errorMessage', error.response.data);
             }
             );}
         },
     beforeMount() {
         localStorage.clear();
+    },
+    mounted() {
     },
     }
 
@@ -31,12 +33,11 @@ export default {
 <template>
     <div class="login-container">
         <div class="top-login-container">
-            <span class="top-container-title">Wasa Photo</span>
             <span class="top-container-login-title"> Login </span>
         </div>
         <div class="form-container-login">
             <span class="form-text-container-login">Username</span>
-            <input type="text" placeholder="" name="username-form" spellcheck="false" v-model="username">
+            <input type="text" name="username-form" spellcheck="false" v-model="username">
             <span class="form-text-container-login-error">{{ errorMsg }}</span>
         </div>
         <div class="bottom-login-container">

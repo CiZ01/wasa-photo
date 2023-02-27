@@ -1,5 +1,5 @@
 .top-profile-container {
-    width: 40em;
+    width: auto;
     height: auto;
 
     display: flex;
@@ -7,15 +7,14 @@
     align-items: center;
 
     position: relative;
-    top: 3em;
-
+    top: 4em;
 }
 
 .top-profile-picture {
     width: 10em;
     height: 10em;
     border-radius: 100%;
-    border: 1px solid black;
+    border: 1px solid rgb(0, 0, 0, 0.2);
 
     overflow: hidden;
 
@@ -26,7 +25,7 @@
     margin: 0;
     padding: 0;
 
-    background-color: rgb(220, 220, 220);
+    background-color: rgb(0,0,0,0.3);
 
     position: relative;
     top: 5em;
@@ -35,11 +34,10 @@
 
 .top-body-profile-container {
     background-color: #fff;
-    width: 100%;
-    height: auto;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-
-    position: relative;
+    
+    width: auto;
+    height: auto;
 
     padding: 0 2.3em 2.3em 2.3em;
 
@@ -48,6 +46,8 @@
     align-items: left;
 
     border-radius: 0.5em;
+
+    
 }
 
 .top-body-profile-username {
@@ -151,11 +151,11 @@
     align-items: center;
 
     width: 18em;
-    height: 6em;
+    height: auto;
+
+    padding: 1em;
 
     cursor: pointer;
-
-    position: relative;
 }
 
 .followers-stats:hover {
@@ -177,6 +177,45 @@
     color: rgb(0, 0, 0, 0.7);
 }
 
+.top-body-profile-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    width: 100%;
+    height: auto;
+
+    position: relative;
+    top: 5em;
+
+}
+
+.profile-actions-button {
+    width: 6em;
+    height: 2em;
+
+    border: 1px solid #000;
+
+    border-radius: 0.2em;
+
+    font-size: 1.2em;
+    font-weight: bold;
+
+    color: rgb(0, 0, 0, 0.7);
+
+}
+
+.follow-button {
+    background-color: #03C988;
+}
+
+.follow-button:hover {
+    box-shadow: inset 0px 0px 0px 5em rgb(0, 0, 0, 0.2);
+}
+
+
+/* ------------------------ POSTS ------------------------ */
+
 .posts-grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -193,7 +232,7 @@
     border-radius: 0.5em;
 
     position: relative;
-    top: 5em;
+    top: 9em;
 }
 
 .posts-grid-post {
@@ -272,39 +311,3 @@
     z-index: 1;
 }
 
-.top-body-profile-actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
-    width: 100%;
-    height: auto;
-
-    position: relative;
-    top: 1em;
-
-}
-
-.profile-actions-button {
-    width: 6em;
-    height: 2em;
-
-    border: 1px solid #000;
-
-    border-radius: 0.2em;
-
-    font-size: 1.2em;
-    font-weight: bold;
-
-    color: rgb(0, 0, 0, 0.7);
-
-    position: relative;
-}
-
-.follow-button {
-    background-color: #03C988;
-}
-
-.follow-button:hover {
-    box-shadow: inset 0px 0px 0px 5em rgb(0, 0, 0, 0.2);
-}

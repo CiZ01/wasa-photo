@@ -10,6 +10,12 @@ export default {
 			feedLimit: 10,
 			feedOffeset: 0,
 			busy: false,
+
+			// Search bar
+			search: "",
+			usernameList: [],
+			searchLimit: 10,
+			searchOffset: 0,
 		}
 	},
 	methods: {
@@ -20,12 +26,8 @@ export default {
 				this.posts = response.data;
 				console.log(this.posts);
 			} catch (e) {
-				this.errorMsg = e.response.data;
+				localStorage.errorMessage =e.response.data;
 			}
-		},
-
-		getMyProfile() {
-			this.$router.push(`/profiles/${localStorage.userID}`);
 		},
 		updateLike(data){
 			this.posts.forEach(post => {
@@ -34,7 +36,7 @@ export default {
 					post.likesCount++;
 				}
 			});
-		}
+		},
 	},
 
 	beforeMount() {
@@ -54,14 +56,8 @@ export default {
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
 
 	<div class="home-background-centered">
-		<div class="floatting-navbar">
-			<span @click="getMyProfile" class="left-profile-navbar">
-			</span>
-			<span class="right-search-navbar">
-				<input placeholder="Search..." class="right-searchbar-navbar">
-			</span>
-		</div>
-		<Post v-for="post in posts" :postID="post.postID" :userID="post.user.userID" :username="post.user.username"
+
+		<Post v-for="post in posts" :postID="post.postID" :owner="post.user"
 			:image="post.image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
 		</Post>
 	</div>

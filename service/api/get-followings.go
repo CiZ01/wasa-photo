@@ -26,11 +26,24 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 	}
 
 	// Get the followings
-	followings, err := rt.db.GetFollowings(profileUserID, offset, limit)
+	dbFollowings, err := rt.db.GetFollowings(profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while getting the followings")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	// Convert the database followings to the API followings
+	followings := make([]User, len(dbFollowings))
+	for _, dbUser := range dbFollowings {
+		var user User
+		err := user.FromDatabase(dbUser)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error while converting the user")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		followings = append(followings, user)
 	}
 
 	// Write the response

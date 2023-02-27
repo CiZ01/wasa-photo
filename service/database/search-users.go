@@ -8,8 +8,8 @@ import (
 
 var query_GETUSERS_FOLLOW = `SELECT userID, username
 							FROM User WHERE userID IN (SELECT followedID FROM Follow WHERE followerID = ?) 
-							AND username regexp(?, ?) ORDER BY username ASC LIMIT ?, ?`
-var query_GETUSERS = `SELECT userID, username FROM User WHERE username regexp(?, ?) ORDER BY username ASC LIMIT ?, ? `
+							AND username regexp ? ORDER BY username ASC LIMIT ?, ?`
+var query_GETUSERS = `SELECT userID, username FROM User WHERE username regexp ? ORDER BY username LIMIT ?, ? `
 
 func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, offset int, limit int) ([]User, error) {
 	var users []User
@@ -18,12 +18,12 @@ func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, of
 	var err error
 
 	if from_follow {
-		rows, err = db.c.Query(query_GETUSERS_FOLLOW, userID, search+"*", offset, limit)
+		rows, err = db.c.Query(query_GETUSERS_FOLLOW, userID, "^"+search, offset, limit)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		rows, err = db.c.Query(query_GETUSERS, userID, search+"*", offset, limit)
+		rows, err = db.c.Query(query_GETUSERS, "^"+search, offset, limit)
 		if err != nil {
 			return nil, err
 		}
@@ -33,11 +33,20 @@ func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, of
 		if rows.Err() != nil {
 			return nil, err
 		}
+
 		var u User
 		if err := rows.Scan(&u.UserID, &u.Username); err != nil {
 			return nil, err
 		}
-		users = append(users, u)
+
+		isBanned, err := db.IsBanned(userID, u.UserID)
+		if err != nil {
+			return nil, err
+		}
+		if !isBanned {
+			users = append(users, u)
+
+		}
 	}
 	defer func() { err = rows.Close() }()
 

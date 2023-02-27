@@ -12,6 +12,7 @@ export default {
     },
     props: {
         owner: { type: Object, required: true },
+        postID: { type: String, required: true },
         caption: { type: String, required: true },
         image: { type: String, required: true },
         timestamp: { type: String, required: true },
@@ -46,7 +47,8 @@ export default {
                 this.$emit('update-like', { postID: this.postID, liked: true });
 
             } catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+ e.response.data;
             }
         },
         async unlike() {
@@ -55,7 +57,8 @@ export default {
                 this.isLiked = false
                 this.$emit('update-like', { postID: this.postID, liked: false });
             } catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+ e.response.data;
             }
         },
         toggleComment() {
@@ -71,7 +74,8 @@ export default {
                 console.log(this.profilesList);
 
             } catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+ e.response.data;
             }
         },
         async getLikes() {
@@ -83,7 +87,8 @@ export default {
                 this.showList = true;
             }
             catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+ e.response.data;
             }
         },
         editingCaption() {
@@ -102,7 +107,8 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
-                    this.errorMsg = e.response.data;
+                    localStorage.errorMessage =
+ e.response.data;
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
             }
@@ -140,7 +146,7 @@ export default {
         },
     },
     beforeMount() {
-        if (this.ownerID == localStorage.ownerID) {
+        if (this.ownerID == localStorage.userID) {
             this.isOwner = true;
         }
         if (this.caption != "") {

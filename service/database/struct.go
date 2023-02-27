@@ -3,8 +3,8 @@ package database
 import "time"
 
 type User struct {
-	UserID        int    `json:"userID"`
-	Username      string `json:"username"`
+	UserID   int    `json:"userID"`
+	Username string `json:"username"`
 }
 
 /*
@@ -42,5 +42,5 @@ type Profile struct {
 	Bio             string `json:"bio"`
 	FollowersCount  int    `json:"followersCount"`
 	FollowingsCount int    `json:"followingsCount"`
-	IsFollowed    bool   `json:"isFollowing"`
+	IsFollowed      bool   `json:"isFollowing"`
 }

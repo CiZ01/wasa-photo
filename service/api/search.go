@@ -27,13 +27,13 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 
 	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	dbUsers, err := rt.db.SearchUsers(userID, query_search, from_follow, offset, limit)
 	if err != nil {
-		ctx.Logger.Error("Error searching users", err)
+		ctx.Logger.Error("Error searching users ", err)
 		http.Error(w, "Error searching users", http.StatusInternalServerError)
 		return
 	}
@@ -43,8 +43,8 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		var user User
 		err := user.FromDatabase(u)
 		if err != nil {
-			ctx.Logger.Error("Error converting user", err)
-			http.Error(w, "Error converting user", http.StatusInternalServerError)
+			ctx.Logger.Error("Error converting users ", err)
+			http.Error(w, "Error converting users ", http.StatusInternalServerError)
 			return
 		}
 		users = append(users, user)
@@ -54,8 +54,8 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(users); err != nil {
-		ctx.Logger.Error("Error encoding users", err)
-		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+		ctx.Logger.Error("Error encoding users ", err)
+		http.Error(w, "Error encoding response ", http.StatusInternalServerError)
 		return
 	}
 

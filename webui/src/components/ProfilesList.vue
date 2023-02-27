@@ -94,13 +94,10 @@ export default {
 .list-entries {
     width: 100%;
     height: 3em;
-    margin-bottom: 0.005em;
-
 
     display: flex;
     align-items: center;
     justify-content: left;
-
 }
 
 .list-container::-webkit-scrollbar {

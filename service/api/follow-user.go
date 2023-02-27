@@ -9,14 +9,14 @@ import (
 )
 
 /*
-	 * FollowUser is the handler for the PUT /profiles/:profileUserID/followings/:targetUser API
-	 * It allows a user to follow another user
-	 * It returns 400 if the user is trying to follow himself
-	 * It returns 400 if the user is already following the target user
-	 * It returns 400 if the target user has banned the user
-	 * It returns 500 if there is an error while checking if the user is already following the target user
+* FollowUser is the handler for the PUT /profiles/:profileUserID/followings/:targetUser API
+* It allows a user to follow another user
+* It returns 400 if the user is trying to follow himself
+* It returns 400 if the user is already following the target user
+* It returns 400 if the target user has banned the user
+* It returns 500 if there is an error while checking if the user is already following the target user
 
-	 DA RIVEDERE	
+DA RIVEDERE
 */
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL

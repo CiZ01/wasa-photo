@@ -34,7 +34,7 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// Convert the database followers to the API followers
-	var followers []User
+	followers := make([]User, len(dbFollowers))
 	for _, dbUser := range dbFollowers {
 		var user User
 		user.FromDatabase(dbUser)

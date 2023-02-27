@@ -58,7 +58,6 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 
 	defer func() { err = file.Close() }()
 
-
 	// Create the file
 	path := utils.GetProfilePicPath(userID)
 	err = os.WriteFile(path, data, 0644)

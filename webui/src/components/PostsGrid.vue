@@ -40,7 +40,6 @@ export default {
 
 
 <template>
-    <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">
             <img @click="openPost(post)" :src="`data:image/jpg;base64,${post.image}`" loading="lazy"

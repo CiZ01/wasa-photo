@@ -11,7 +11,7 @@ body{
     height: 25em;
 
     position: absolute;
-    top: 50%;
+    top: 12em;
 
     display: flex;
     flex-direction: column;

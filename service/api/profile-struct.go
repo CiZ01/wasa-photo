@@ -13,7 +13,7 @@ type Profile struct {
 	Bio             string `json:"bio"`
 	FollowerCount   int    `json:"followersCount"`
 	FollowingsCount int    `json:"followingsCount"`
-	IsFollowed     bool   `json:"isFollowed"`
+	IsFollowed      bool   `json:"isFollowed"`
 }
 
 func (p *Profile) FromDatabase(dbProfile database.Profile) error {

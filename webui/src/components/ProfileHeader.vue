@@ -39,7 +39,8 @@ export default {
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    localStorage.errorMessage =
+                        e.toString();
                 }
                 document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "#fff";
             }
@@ -66,7 +67,8 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/username`, { username: this.username }, { headers: { 'Authorization': `${localStorage.token}` } });
                     localStorage.username = this.username;
                 } catch (e) {
-                    this.errorMsg = e.response.data;
+                    localStorage.errorMessage =
+                        e.response.data;
                     this.username = localStorage.username;
                 }
             }
@@ -92,7 +94,8 @@ export default {
                 this.profilesArray = toRaw(this.profilesArray);
                 this.textHeader = "Followers";
             } catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+                    e.response.data;
             }
         },
         async getFollowings() {
@@ -102,30 +105,33 @@ export default {
                 this.profilesArray = toRaw(this.profilesArray);
                 this.textHeader = "Followings";
             } catch (e) {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage =
+                    e.response.data;
             }
         },
         freeLists() {
             this.profilesArray = [];
         },
-        async follow(){
+        async follow() {
             if (this.isFollowed) {
-                try{
+                try {
                     let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                     this.isFollowed = false;
                     this.followText = "Follow";
                     this.followersCount--;
                 } catch (e) {
-                    this.errorMsg = e.response.data;
+                    localStorage.errorMessage =
+                        e.response.data;
                 }
             } else {
-                try{
+                try {
                     let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                     this.isFollowed = true;
                     this.followText = "Unfollow";
                     this.followersCount++;
                 } catch (e) {
-                    this.errorMsg = e.response.data;
+                    localStorage.errorMessage =
+                        e.response.data;
                 }
             }
         }
@@ -145,8 +151,6 @@ export default {
 
 
 <template>
-    <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
-
     <div class="top-profile-container">
         <div class="top-profile-picture">
             <img :src="`data:image/jpg;base64,${proPic64}`">

@@ -10,60 +10,6 @@
     align-items: center;
 }
 
-.floatting-navbar{
-    background-color: #deefe1;
-    height: 5em;
-    width: 24em;
-    padding: 0;
-    border-radius: 10em;
-
-    box-shadow: 0 0.2em 0 0 rgba(176,179,184,0.50);
-
-    position: fixed;
-    top: 3em;
-
-    padding: 1.1em;
-    
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;    
-    z-index: 3;
-}
-
-.left-profile-navbar{
-    background-color: #ffffff;
-    height: 3em;
-    width: 3em;
-    border-radius: 10em;
-
-    float: left;
-    
-}
-
-.left-profile-navbar:hover{
-    cursor: pointer;
-}
-
-.right-search-navbar{
-    background-color: #ffffff;
-    height: 3em;
-    width: 12em;
-    border-radius: 10em;
-
-    float: right;
-}
-
-.right-searchbar-navbar{
-    background-color: #f0f2f5;
-    height: 3em;
-    width: 12em;
-    border-radius: 10em;
-    padding: 1em;
-
-    box-shadow: none;
-    outline: none;
-    border: none;
-}
 
 
 

@@ -6,7 +6,7 @@ export default {
     },
     data() {
         return {
-            propic64: this.$props.data["propic64"],
+            propic64: this.$props.data["userPropic64"],
             username: this.$props.data["username"],
             userID: this.$props.data["userID"],
         }
@@ -24,9 +24,7 @@ export default {
 
 <template>
     <div class="profile-entries" @click.native="goToProfile">
-        <div class="profile-entries-propic">
-            <img :src="propic64" alt="" loading="lazy">
-        </div>
+        <img class="propic-image" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
         <span class="profile-entries-username">{{ username }}</span>
     </div>
 </template>
@@ -41,15 +39,17 @@ export default {
     cursor: pointer;
 
     border-top: 0.01em solid rgb(0, 0, 0, 0.3);
+
+    padding: 0.5em 0 0 0.5em;
 }
 
-.profile-entries-propic {
+.propic-image{
     width: 2em;
     height: 2em;
-    border-radius: 50%;
+    border-radius: 100%;
     margin-right: 0.5em;
 
-    border: 1px solid black;
+    border: 0.1em solid rgb(0, 0, 0, 0.1);
 }
 
 .profile-entries-username {

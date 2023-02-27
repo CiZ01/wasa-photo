@@ -41,7 +41,7 @@ export default {
                 console.log(response.data)
             })
                 .catch(e => {
-                    this.errorMsg = e.toString();
+                    localStorage.errorMessage = e.response.data;
                 });
         },
         getPosts() {
@@ -49,7 +49,7 @@ export default {
             this.$axios.get(`/profiles/${this.userID}/posts?limit=10&offset=${this.offset}`, { headers: { 'Authorization': `${localStorage.token}` } }).then(response => {
                 this.posts = response.data;
             }).catch(e => {
-                this.errorMsg = e.response.data;
+                localStorage.errorMessage = e.response.data;
             });
         },
     },
