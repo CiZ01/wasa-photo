@@ -75,8 +75,7 @@ body{
 }
 
 .form-container-login input:focus{
-    outline: none;
-    border: 1px solid #03C988;
+    outline-color: #03C988;
 }
 
 .form-text-container-login{

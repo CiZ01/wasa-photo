@@ -1,15 +1,16 @@
 <script>
 import SearchBar from "./SearchBar.vue";
 export default {
-    components:{
+    components: {
         SearchBar,
     },
+    emits: ['show-upload-form'],
     props: {
 
     },
     data() {
-        return{
-
+        return {
+            propic64: localStorage.propic64,
         }
     },
     methods: {
@@ -23,9 +24,11 @@ export default {
 <template>
     <div class="floatting-navbar">
         <button @click="getMyProfile" class="left-profile-navbar">
-        <!-- <img :src="`image/jpg;base64,${localStorage.userID}`"> -->
+            <img :src="`data:image/jpg;base64,${propic64}`">
         </button>
-        <div class="upload-post-button"></div>
+        <button class="upload-post-button" @click="$emit('show-upload-form')">
+            <font-awesome-icon icon="fa-regular fa-square-plus" />
+        </button>
         <SearchBar> </SearchBar>
     </div>
 </template>
@@ -46,18 +49,28 @@ export default {
 
     padding: 1.1em;
     margin: 3em;
-    
+
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     z-index: 3;
 }
 
-.left-profile-navbar {
-    background-color: #ffffff;
+.left-profile-navbar img {
     height: 3em;
     width: 3em;
     border-radius: 10em;
+    overflow: hidden;
+
+}
+
+.left-profile-navbar {
+    background-color: rgb(0,0,0,0.7);
+    height: 3em;
+    width: 3em;
+    border-radius: 10em;
+
+    padding: 0;
 
     float: left;
     outline: none;
@@ -67,5 +80,27 @@ export default {
 
 .left-profile-navbar:hover {
     cursor: pointer;
+}
+
+.upload-post-button {
+    background-color: rgb(255,255,255,0.4);
+    height: 1.5em;
+    width: 1.5em;
+    border-radius: 10em;
+
+    padding: 0;
+
+    float: left;
+    outline: none;
+    border: none;
+
+    font-size: 2em;
+    line-height: 0;
+
+    color: rgb(0,0,0,0.8)
+}
+
+.upload-post-button:hover{
+    box-shadow: inset 0 0 0 1em rgb(0,0,0,0.2);
 }
 </style>

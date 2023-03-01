@@ -25,7 +25,7 @@
     margin: 0;
     padding: 0;
 
-    background-color: rgb(0,0,0,0.3);
+    background-color: rgb(0, 0, 0, 0.3);
 
     position: relative;
     top: 5em;
@@ -35,8 +35,8 @@
 .top-body-profile-container {
     background-color: #fff;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-    
-    width: auto;
+
+    width: 100%;
     height: auto;
 
     padding: 0 2.3em 2.3em 2.3em;
@@ -47,7 +47,7 @@
 
     border-radius: 0.5em;
 
-    
+
 }
 
 .top-body-profile-username {
@@ -55,13 +55,11 @@
     font-weight: bold;
 
     line-height: 0;
-    font-weight: bold;
 
-    margin: 0;
+    margin: 3em 0 0.1em 0;
     padding: 0;
 
-    position: relative;
-    top: 3em;
+    cursor: default;
 
     outline: none;
     border: none;
@@ -77,7 +75,6 @@
     border-top: 1px solid rgb(220, 220, 220);
 
     position: relative;
-    top: 5.5em;
 }
 
 .top-body-profile-bio-label {
@@ -141,7 +138,6 @@
     border-bottom: 1px solid rgb(220, 220, 220);
 
     position: relative;
-    top: 5em;
 }
 
 .followers-stats {
@@ -185,8 +181,9 @@
     width: 100%;
     height: auto;
 
+    margin-top: 1em;
+
     position: relative;
-    top: 5em;
 
 }
 
@@ -310,4 +307,3 @@
     left: 0;
     z-index: 1;
 }
-

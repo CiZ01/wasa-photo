@@ -1,0 +1,217 @@
+<script>
+import EditorPost from '../components/EditorPost.vue';
+export default {
+    components: {
+        EditorPost,
+    },
+    emits: ['exit-upload-form'],
+    porps: {
+        photoType: {
+            type: String,
+            required: true,
+            validator(value) {
+                return ['post', 'proPic'].includes(value)
+            },
+        },
+    },
+    data() {
+        return {
+            file: null,
+            file64: "",
+            fileType: "",
+        }
+    },
+    methods: {
+        onChange() {
+            this.file = this.$refs.file.files[0];
+            this.fileType = this.file.type;
+        },
+        dragover(event) {
+            event.preventDefault();
+            // Add some visual fluff to show the user can drop its files
+            if (!event.currentTarget.classList.contains('bg-green-300')) {
+                event.currentTarget.classList.remove('bg-gray-100');
+                event.currentTarget.classList.add('bg-green-300');
+            }
+        },
+        dragleave(event) {
+            // Clean up
+            event.currentTarget.classList.add('bg-gray-100');
+            event.currentTarget.classList.remove('bg-green-300');
+        },
+        drop(event) {
+            event.preventDefault();
+            this.$refs.file.files = event.dataTransfer.files;
+            this.onChange(); // Trigger the onChange event manually
+            // Clean up
+            event.currentTarget.classList.add('bg-gray-100');
+            event.currentTarget.classList.remove('bg-green-300');
+        },
+
+        async createPost(postData){
+            console.log(postData);
+            const formData = new FormData();
+            formData.append('image', postData.imageBlob);
+            formData.append('caption', postData.caption);
+            try{
+                let response = await this.$axios.post(`profiles/${localStorage.userID}/posts`, formData, {
+                    headers: {
+                        'Authorization': `${localStorage.token}`,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log(response.data);
+            } catch (e) {
+                localStorage.errorMessage = e.response.data;
+                console.log("Error: ", e.response.data);
+            }
+        },
+    },
+    watch: {
+        file() {
+            this.file64 = URL.createObjectURL(this.file);
+        }
+    }
+}
+</script>
+
+
+<template>
+    <div class="upload-form-background" @click.self="this.$emit('exit-upload-form')">
+        <div class="upload-form-container" v-if="!file64">
+            <div class="drag-drop-area-container" @dragover="dragover" @dragleave="dragleave" @drop="drop">
+                <button class="drag-drop-area" @click="this.$refs.file.click()">
+                    <input type="file" ref="file" accept=".pdf,.jpg,.jpeg,.png" @change="onChange" hidden />
+                    <span class="drag-drop-area-text">
+                        Drop your photo here
+                    </span>
+                    <span class="drag-drop-area-subtext">
+                        max size 5MB, only jpg, png, gif
+                    </span>
+
+                </button>
+            </div>
+            <div class="bottom-area">
+                <button @click="this.$refs.file.click()" type="file" class="upload-button" title="Choose file">Choose File
+                    <input type="file" ref="file" accept=".pdf,.jpg,.jpeg,.png" @change="onChange" hidden />
+                </button>
+
+            </div>
+        </div>
+
+        <EditorPost :image64="file64" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')" @save-upload-form="createPost"></EditorPost>
+    </div>
+</template>
+
+
+<style>
+.upload-form-background {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    z-index: 4;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-form-container {
+    background-color: #fff;
+    height: 40em;
+    width: 50em;
+    padding: 0;
+    border-radius: 0.5em;
+
+    box-shadow: 0 0.2em 0 0 rgba(176, 179, 184, 0.50);
+
+    position: fixed;
+
+    padding: 2em;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.drag-drop-area-container {
+
+    height: 100%;
+    width: 100%;
+
+    padding: 0;
+
+
+    cursor: pointer;
+}
+
+.drag-drop-area {
+    background-color: #deefe1;
+
+    height: 100%;
+    width: 100%;
+
+    border-radius: 0.5em;
+    border: 0.3em dashed rgb(0, 0, 0, 0.5);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+
+    position: relative;
+
+    opacity: 1;
+}
+
+.drag-drop-area-text {
+    font-size: 1.5em;
+    font-weight: 500;
+    color: rgb(0, 0, 0, 0.5);
+    text-align: center;
+    margin-top: 9em;
+}
+
+.drag-drop-area-subtext {
+    font-size: 1em;
+    font-weight: 500;
+    color: rgb(0, 0, 0, 0.5);
+    text-align: center;
+    margin-bottom: 15em;
+}
+
+.bottom-area {
+    height: 5em;
+    width: auto;
+
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+.upload-button {
+    background-color: #03C988;
+
+    height: 2.5em;
+    width: 9em;
+
+    padding: 0;
+
+    border-radius: 10em;
+    border: none;
+
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+</style>

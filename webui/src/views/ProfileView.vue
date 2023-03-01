@@ -1,16 +1,8 @@
 <script>
-import { nextTick } from 'vue';
-import PostsGrid from '../components/PostsGrid.vue';
-import ProfileHeader from '../components/ProfileHeader.vue'
 
 export default {
-    components: {
-        PostsGrid,
-        ProfileHeader,
-    },
     data() {
         return {
-            isOwner: false,
             errorMsg: "",
 
             // Profile data
@@ -22,9 +14,23 @@ export default {
             proPic64: "",
             isFollowed: false,
 
+            isOwner: false,
+
+            // Buttons Text
+            followTextButton: this.isFollowed ? "Unfollow" : "Follow",
+
+            // Other Data
+            textCounter: 0,
+            profilesArray: [],
+            textHeader: "",
+
             // Posts data
-            posts:  [],
+            posts: [],
             offset: 0,
+            showPost: false,
+            postViewData: {},
+
+
         }
     },
     methods: {
@@ -36,6 +42,7 @@ export default {
                 this.followingsCount = response.data.followingsCount;
                 if (response.data.bio != "")
                     this.bio = response.data.bio;
+                this.textCounter = this.bio.length;
                 this.proPic64 = response.data.user.userPropic64;
                 this.isFollowed = response.data.isFollowed;
                 console.log(response.data)
@@ -52,10 +59,118 @@ export default {
                 localStorage.errorMessage = e.response.data;
             });
         },
+        editingBio() {
+            if (this.isOwner) {
+                document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
+                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outline = "auto";
+                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outlineColor = "#03C988";
+
+            }
+        },
+        async saveChangeBio() {
+            if (this.isOwner) {
+                if (this.bio == "") {
+                    this.bio = "This user have notighing to say";
+                }
+                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outline = "none";
+                try {
+                    let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
+                } catch (e) {
+                    localStorage.errorMessage = e.response.data;
+                }
+                document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "#fff";
+            }
+        },
+        editingUsername() {
+            if (this.isOwner) {
+                document.getElementsByClassName("top-body-profile-username")[0].style.outline = "auto";
+                document.getElementsByClassName("top-body-profile-username")[0].style.outlineColor = "#03C988";
+            }
+        },
+        async saveChangeUsername() {
+            if (this.isOwner) {
+                document.getElementsByClassName("top-body-profile-username")[0].style.outline = "none";
+                if (this.username == "" | this.username.length < 3) {
+                    this.username = localStorage.username;
+                    return
+                }
+                try {
+                    let _ = await this.$axios.put(`/profiles/${this.userID}/username`, { username: this.username }, { headers: { 'Authorization': `${localStorage.token}` } });
+                    localStorage.username = this.username;
+                } catch (e) {
+                    localStorage.errorMessage = e.response.data;
+                    this.username = localStorage.username;
+                }
+            }
+        },
+        async getFollowers() {
+            try {
+                let response = await this.$axios.get(`/profiles/${this.userID}/followers`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.profilesArray = response.data;
+                this.profilesArray = this.profilesArray;
+                this.textHeader = "Followers";
+            } catch (e) {
+                localStorage.errorMessage = e.response.data;
+            }
+        },
+        async getFollowings() {
+            try {
+                let response = await this.$axios.get(`/profiles/${this.userID}/followings`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.profilesArray = response.data;
+                this.profilesArray = this.profilesArray;
+                this.textHeader = "Followings";
+            } catch (e) {
+                localStorage.errorMessage = e.response.data;
+            }
+        },
+        freeLists() {
+            this.profilesArray = [];
+        },
+        async follow() {
+            if (this.isFollowed) {
+                try {
+                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    this.isFollowed = false;
+                    this.followTextButton = "Follow";
+                    this.followersCount--;
+                } catch (e) {
+                    localStorage.errorMessage = e.response.data;
+                }
+            } else {
+                try {
+                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    this.isFollowed = true;
+                    this.followTextButton = "Unfollow";
+                    this.followersCount++;
+                } catch (e) {
+                    localStorage.errorMessage = e.response.data;
+                }
+            }
+        },
+        openPost(post) {
+            this.showPost = true;
+            this.postViewData = post;
+        },
+        exitPost() {
+            this.showPost = false;
+            this.postViewData = {};
+        },
+        updateLike(data) {
+            this.posts.forEach(post => {
+                if (post.postID == data.postID) {
+                    post.liked = data.liked;
+                    post.likesCount = data.liked ? post.likesCount + 1 : post.likesCount - 1;
+                }
+            });
+        },
+
     },
     beforeMount() {
         if (!localStorage.token) {
             this.$router.push('/login');
+        }
+        if (localStorage.userID == this.$route.params.userID) {
+            this.isOwner = true;
         }
     },
 
@@ -65,23 +180,68 @@ export default {
         if (this.$route.params.userID == localStorage.userID) {
             this.isOwner = true;
         }
+        if (this.isOwner) {
+            document.getElementsByClassName("top-body-profile-bio-text")[0].style.cursor = "text";
+            document.getElementsByClassName("top-body-profile-username")[0].style.cursor = "text";
+        }
     },
 
     beforeRouteUpdate(to, from) {
         this.userID = parseInt(to.params.userID);
         this.getProfile();
         this.getPosts();
-    }
+    },
 }
 
 </script>
 
 
 <template>
-    <ProfileHeader :userID="userID" :username="username" :followersCount="followersCount" :followingsCount="followingsCount"
-        :bio="bio" :proPic64="proPic64" :isFollowed="isFollowed"> </ProfileHeader>
+    <div class="top-profile-container">
+        <div class="top-profile-picture">
+            <img :src="`data:image/jpg;base64,${proPic64}`">
+        </div>
+        <div class="top-body-profile-container">
+            <input :readonly="!isOwner" v-model="username" class="top-body-profile-username" @focusin="editingUsername"
+                @focusout="saveChangeUsername" @input="checkUsername" maxlength="13" spellcheck="false">
+            <div class="top-body-profile-bio-container">
+                <span class="top-body-profile-bio-text-counter">{{ textCounter }}/100</span>
+                <span class="top-body-profile-bio-label">Bio</span>
+                <textarea :readonly="!isOwner" @focusin="editingBio" @focusout="saveChangeBio" @input="countChar"
+                    v-model="bio" class="top-body-profile-bio-text" spellcheck="false" maxlength="100" rows="2"></textarea>
+            </div>
+            <div class="top-body-profile-stats-container">
+                <div class="followers-stats" @click="getFollowers">
+                    <span class="followers-stats-text">followers</span>
+                    <span class="followers-stats-number">{{ followersCount }}</span>
+                </div>
+                <div class="followers-stats" @click="getFollowings">
+                    <span class="followers-stats-text">followings</span>
+                    <span class="followers-stats-number">{{ followingsCount }}</span>
+                </div>
+            </div>
+            <div class="top-body-profile-actions" v-if="!isOwner">
+                <button class="profile-actions-button follow-button" @click="follow()"> {{ followTextButton }} </button>
+            </div>
+        </div>
+    </div>
 
-    <PostsGrid :posts="posts" :profileUserID="parseInt(userID)"> </PostsGrid>
+    <ProfilesList v-if="(profilesArray.length > 0)" :profiles="profilesArray" :textHeader="textHeader"
+        :componentEntries="'SimpleProfileEntry'" class="follow-list-view" @exitList="freeLists"> </ProfilesList>
+
+    <div class="posts-grid-container">
+        <div v-for="post in posts" :key="post.postID" class="posts-grid-post">
+            <img @click="openPost(post)" :src="`data:image/jpg;base64,${post.image}`" loading="lazy"
+                class="posts-grid-post-image" :id="post.postID">
+        </div>
+        <span v-if="(posts.length === 0)" class="posts-grid-nopost-text"> There are no posts yet </span>
+    </div>
+
+    <div v-if="showPost" class="post-view" @click.self="exitPost">
+        <Post :postID="postViewData.postID" :owner="postViewData.user" :caption="postViewData.caption"
+            :liked="postViewData.liked" :timestamp="postViewData.timestamp" :image="postViewData.image"
+            @update-like="updateLike"> </Post>
+    </div>
 
     <div v-if="isOwner" class="delete-account-button-container">
         <button class="delete-account-button"> Delete Account </button>

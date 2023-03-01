@@ -31,6 +31,7 @@ app.component("ProfilesList", ProfilesList);
 
 library.add(fas);
 library.add(far);
+
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(router)

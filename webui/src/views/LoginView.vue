@@ -12,7 +12,7 @@ export default {
                 console.log(response.data);
                 localStorage.setItem('userID', response.data.user['userID']);
                 localStorage.setItem('username', response.data.user['username']);
-                localStorage.propic64 = response.data.user['userPropic64'];
+                localStorage.setItem('propic64', response.data.user['userPropic64']);
                 localStorage.setItem('token', response.data.token)
 
                 this.$router.push("/home");
@@ -22,7 +22,6 @@ export default {
             );}
         },
     beforeMount() {
-        localStorage.clear();
     },
     mounted() {
     },

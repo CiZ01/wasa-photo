@@ -1,11 +1,9 @@
 <script setup>
-import FloatingNavbar from './components/FloattingNavbar.vue'
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <script>
 export default {
 	components: {
-		FloatingNavbar,
 		RouterLink,
 		RouterView,
 	},
@@ -23,12 +21,10 @@ export default {
 			this.$router.push('/home');
 		},
 	},
-	beforeMount() {
+	mounted() {
 		localStorage.setItem('errorMessage', '');
 	},
-	mounted() {
 
-	},
 }
 </script>
 
@@ -39,8 +35,6 @@ export default {
 		<div class="navbar-header">
 			<span @click="goHome">Wasa Photo</span>
 		</div>
-		<FloatingNavbar v-if="this.$route.path != '/login'" > </FloatingNavbar>
-
 		<RouterView />
 	</main>
 </template>

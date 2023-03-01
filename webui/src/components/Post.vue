@@ -4,7 +4,7 @@ import LikeHeader from '../components/LikeHeader.vue';
 import CommentHeader from '../components/CommentHeader.vue';
 
 export default {
-    emits: ['update-like'],
+    emits: ['update-like', 'toogle-navbar'],
     components: {
         ProfilesList,
         LikeHeader,
@@ -23,7 +23,7 @@ export default {
 
             // Data User
             ownerID: this.$props.owner['userID'],
-            username:this.$props.owner['username'],
+            username: this.$props.owner['username'],
             proPic64: this.$props.owner['userPropic64'],
 
 
@@ -47,8 +47,7 @@ export default {
                 this.$emit('update-like', { postID: this.postID, liked: true });
 
             } catch (e) {
-                localStorage.errorMessage =
- e.response.data;
+                localStorage.errorMessage = e.response.data;
             }
         },
         async unlike() {
@@ -57,15 +56,14 @@ export default {
                 this.isLiked = false
                 this.$emit('update-like', { postID: this.postID, liked: false });
             } catch (e) {
-                localStorage.errorMessage =
- e.response.data;
+                localStorage.errorMessage = e.response.data;
             }
         },
         toggleComment() {
             this.isHoverComment = !this.isHoverComment;
         },
-        async getComments(){
-            try{
+        async getComments() {
+            try {
                 let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments`, { headers: { "Authorization": `${localStorage.token}` } });
                 this.profilesList = response.data;
                 this.customHeader = CommentHeader;
@@ -74,8 +72,7 @@ export default {
                 console.log(this.profilesList);
 
             } catch (e) {
-                localStorage.errorMessage =
- e.response.data;
+                localStorage.errorMessage = e.response.data;
             }
         },
         async getLikes() {
@@ -87,8 +84,7 @@ export default {
                 this.showList = true;
             }
             catch (e) {
-                localStorage.errorMessage =
- e.response.data;
+                localStorage.errorMessage = e.response.data;
             }
         },
         editingCaption() {
@@ -107,8 +103,7 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
-                    localStorage.errorMessage =
- e.response.data;
+                    localStorage.errorMessage = e.response.data;
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
             }
@@ -186,7 +181,7 @@ export default {
                     <font-awesome-icon v-else icon="fa-solid fa-heart" @click="unlike" style="color:red" />
                 </button>
                 <button class="post-tail-comment-button" name="comment">
-                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment"  v-on:mouseover="toggleComment" />
+                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" v-on:mouseover="toggleComment" />
                     <font-awesome-icon v-else icon="fa-solid fa-comment" @click="getComments" v-on:mouseout="toggleComment"
                         style="opacity:0.9" />
                 </button>
@@ -199,14 +194,16 @@ export default {
             <span class="post-tail-caption-text-counter">{{ textCounter }}/64 </span>
         </div>
     </div>
-    <ProfilesList @exitList="()=> !showList" class="stats-lists-component" v-if="showList" :profiles="profilesList" :componentHeader="customHeader" :textHeader="titleHeaderList" > </ProfilesList>
+    <ProfilesList @exitList="() => !showList" class="stats-lists-component" v-if="showList" :profiles="profilesList"
+        :componentHeader="customHeader" :textHeader="titleHeaderList"> </ProfilesList>
 </template>
 
-<style>
 
-.stats-lists-component{
+<style>
+.stats-lists-component {
     z-index: 3;
 }
+
 .post-containter {
     width: 30em;
     height: auto;
@@ -216,11 +213,11 @@ export default {
 
     border-radius: 0.5em;
 
-    margin-bottom: 6em;
 
     position: relative;
     left: 0;
 
+    margin-bottom: 6em;
 
     display: flex;
     flex-direction: column;

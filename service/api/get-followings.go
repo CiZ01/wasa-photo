@@ -35,7 +35,7 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 
 	// Convert the database followings to the API followings
 	followings := make([]User, len(dbFollowings))
-	for _, dbUser := range dbFollowings {
+	for i, dbUser := range dbFollowings {
 		var user User
 		err := user.FromDatabase(dbUser)
 		if err != nil {
@@ -43,7 +43,7 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		followings = append(followings, user)
+		followings[i] = user
 	}
 
 	// Write the response

@@ -1,7 +1,12 @@
 <script>
+import FloatingNavbar from '../components/FloattingNavbar.vue'
+import UploadPhoto from '../components/UploadPhoto.vue';
 
 export default {
-
+	components: {
+		FloatingNavbar,
+		UploadPhoto,
+	},
 	data() {
 		return {
 			errorMsg: null,
@@ -16,6 +21,9 @@ export default {
 			usernameList: [],
 			searchLimit: 10,
 			searchOffset: 0,
+
+			// Upload photo
+			showUploadPhoto: true,
 		}
 	},
 	methods: {
@@ -55,7 +63,9 @@ export default {
 <template>
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
 
+	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto=false"> </UploadPhoto>
 	<div class="home-background-centered">
+		<FloatingNavbar @show-upload-form="showUploadPhoto=true"> </FloatingNavbar>
 
 		<Post v-for="post in posts" :postID="post.postID" :owner="post.user"
 			:image="post.image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">

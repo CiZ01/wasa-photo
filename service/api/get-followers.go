@@ -35,10 +35,15 @@ func (rt *_router) getMyFollowers(w http.ResponseWriter, r *http.Request, ps htt
 
 	// Convert the database followers to the API followers
 	followers := make([]User, len(dbFollowers))
-	for _, dbUser := range dbFollowers {
+	for i, dbUser := range dbFollowers {
 		var user User
-		user.FromDatabase(dbUser)
-		followers = append(followers, user)
+		err := user.FromDatabase(dbUser)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error while converting the user")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		followers[i] = user
 	}
 
 	// Write the response
