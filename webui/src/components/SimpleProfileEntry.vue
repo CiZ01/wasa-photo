@@ -1,6 +1,6 @@
 <script>
 export default {
-    emits: ["exit-list-from-entry"],
+    emits: ["exit-list-from-entry", 'error-occured'],
     props: {
         data: { type: Object, required: true },
     },
@@ -18,7 +18,6 @@ export default {
         },
     },
 }
-
 </script>
 
 

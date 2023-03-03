@@ -62,7 +62,7 @@ type AppDatabase interface {
 	// ChangeProfilePic(userID int, newProfilePicURL string) error
 
 	// Get a user profile
-	GetUserProfile(userID int) (Profile, error)
+	GetUserProfile(profileUserID int, userID int) (Profile, error)
 
 	// Get a user by its username
 	GetUserByName(username string) (User, error)

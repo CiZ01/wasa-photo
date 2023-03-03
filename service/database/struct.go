@@ -12,7 +12,7 @@ This struct rappresents the Post object.
 The post is identified by the PostID, which is the primary key.
 */
 type Post struct {
-	PostID       string    `json:"postID"`
+	PostID       int       `json:"postID"`
 	User         User      `json:"user"`
 	ImageURL     string    `json:"imageURL"`
 	Caption      string    `json:"caption"`
@@ -42,5 +42,5 @@ type Profile struct {
 	Bio             string `json:"bio"`
 	FollowersCount  int    `json:"followersCount"`
 	FollowingsCount int    `json:"followingsCount"`
-	IsFollowed      bool   `json:"isFollowing"`
+	IsFollowed      int    `json:"isFollowing"`
 }

@@ -6,10 +6,13 @@ export default {
     emits: ["exit-list"],
 
     props: {
-        profiles: { type: Object, required: true },
+        dataGetter: { type: Function, required: true },
         textHeader: { type: String, required: true },
         componentHeader: { type: Object, required: false },
-        componentEntries: { type: String, required: true, default: "ProfileEntry" },
+        componentEntries: { type: String, required: true},
+        typeEntry: { type: String, required: false, default: 'followings', validator(value) {
+            return ['bans', 'followings'].includes(value)
+        } },
         componentFooter: { type: Object, required: false },
         level: { type: Number, required: false },
     },
@@ -17,27 +20,67 @@ export default {
         return {
             customLevel: 0,
             customEntries: "",
+            profiles: [],
+
+
+            // Load More
+            limit: 10,
+            offset: 0,
+            busy: false,
+            dataAvaible: true,
+
+            errorMsg: '',
+
         }
     },
     methods: {
+        loadMoreContents(){
+            if (this.busy || !this.dataAvaible) return;
+            this.busy = true;
+            this.offset += this.limit;
+            this.dataGetter(this.profiles, this.limit, this.offset, this.dataAvaible);
+            this.busy = false;
+            
+        },
+        handleError(msg){
+            this.errorMsg = msg;
+        }
     },
     beforeMount() {
         this.customEntries = shallowRef(defineAsyncComponent(() =>
             import(`./${this.componentEntries}.vue`))
         )
     },
+    mounted(){
+        this.dataGetter(this.profiles, this.limit, this.offset, this.dataAvaible);
+
+        
+        const el = document.getElementsByClassName("list-container")[0];
+        el.addEventListener('scroll', e => {
+            if(el.scrollTop + el.clientHeight >= el.scrollHeight) {
+                this.loadMoreContents();
+            }
+        });
+    }
 }
 </script>
 
 
 <template>
+
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+
+
     <div class="list-container-background" @click.self="this.$emit('exit-list')">
         <div class="list-container">
             <div class="list-container-header">
                 <span class="list-header-text">{{ textHeader }}</span>
             </div>
-            <component class="list-entries" v-for="profile in profiles" :is="customEntries" :data="profile" @exit-list-from-entry="this.$emit('exit-list')">
+            <component class="list-entries" v-for="user in profiles" :key="user.userID" :is="customEntries" :data="user" :type="typeEntry" 
+            @exit-list-from-entry="this.$emit('exit-list')" @error-occured="handleError">
             </component>
+
+            <span v-if="profiles.length == 0" class="empty-list-msg">Nothing to see</span>
         </div>
     </div>
 </template>
@@ -109,5 +152,15 @@ export default {
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+}
+
+.empty-list-msg{
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #aaa;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>

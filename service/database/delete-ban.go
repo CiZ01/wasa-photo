@@ -5,14 +5,18 @@ import "database/sql"
 var query_DELETEBAN = `DELETE FROM Ban WHERE bannerID = ? AND bannedID = ?`
 var query_SHOWCOMMENT = `UPDATE Comment SET hidden = FALSE WHERE userID = ? AND postID = ?`
 
+/*
+DeleteBan deletes the ban relationship between the banner and the banned users.
+*/
 func (db *appdbimpl) DeleteBan(bannerID int, bannedID int) error {
+
 	// Get all posts from the banner user
 	rows, err := db.c.Query(query_GETALLPOST, bannerID)
 	if err != nil {
 		return err
 	}
 
-	var posts []int
+	var postsByID []int
 	for rows.Next() {
 		if rows.Err() != nil {
 			return err
@@ -22,7 +26,7 @@ func (db *appdbimpl) DeleteBan(bannerID int, bannedID int) error {
 		if err != nil {
 			return err
 		}
-		posts = append(posts, postID)
+		postsByID = append(postsByID, postID)
 	}
 	defer func() { err = rows.Close() }()
 
@@ -40,7 +44,7 @@ func (db *appdbimpl) DeleteBan(bannerID int, bannedID int) error {
 
 	// Unhide all comments from the banned user in banner's posts
 	showComment, err := tx.Prepare(query_SHOWCOMMENT)
-	for _, postID := range posts {
+	for _, postID := range postsByID {
 		// Unhide the comment
 		_, err := showComment.Exec(bannedID, postID)
 		if err != nil {

@@ -3,11 +3,12 @@ package database
 var query_GETUSERINFO = `SELECT userID, username, bio FROM User WHERE userID=?;`
 var query_GETCOUNTFOLLOWINGS = `SELECT count(followedID) FROM Follow WHERE followerID=?;`
 var query_GETCOUNTFOLLOWERS = `SELECT count(followerID) FROM Follow WHERE followedID=?;`
+var query_ISFOLLOWED = `SELECT count(followedID) FROM Follow WHERE followedID=? AND followerID=?;`
 
-func (db *appdbimpl) GetUserProfile(userID int) (Profile, error) {
+func (db *appdbimpl) GetUserProfile(profileUserID int, userID int) (Profile, error) {
 	var profile Profile
 
-	rows, err := db.c.Query(query_GETUSERINFO, userID)
+	rows, err := db.c.Query(query_GETUSERINFO, profileUserID)
 	if err != nil {
 		return profile, err
 	}
@@ -25,12 +26,17 @@ func (db *appdbimpl) GetUserProfile(userID int) (Profile, error) {
 		profile.User = user
 	}
 
-	err = db.c.QueryRow(query_GETCOUNTFOLLOWINGS, userID).Scan(&profile.FollowingsCount)
+	err = db.c.QueryRow(query_GETCOUNTFOLLOWINGS, profileUserID).Scan(&profile.FollowingsCount)
 	if err != nil {
 		return profile, err
 	}
 
-	err = db.c.QueryRow(query_GETCOUNTFOLLOWERS, userID).Scan(&profile.FollowersCount)
+	err = db.c.QueryRow(query_GETCOUNTFOLLOWERS, profileUserID).Scan(&profile.FollowersCount)
+	if err != nil {
+		return profile, err
+	}
+
+	err = db.c.QueryRow(query_ISFOLLOWED, profileUserID, userID).Scan(&profile.IsFollowed)
 	if err != nil {
 		return profile, err
 	}

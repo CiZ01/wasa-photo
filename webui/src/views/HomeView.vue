@@ -1,7 +1,7 @@
 <script>
 import FloatingNavbar from '../components/FloattingNavbar.vue'
 import UploadPhoto from '../components/UploadPhoto.vue';
-
+import { toRaw } from 'vue';
 export default {
 	components: {
 		FloatingNavbar,
@@ -9,12 +9,11 @@ export default {
 	},
 	data() {
 		return {
-			errorMsg: null,
+			errorMsg: '',
 			loading: false,
 			posts: [],
-			feedLimit: 10,
+			feedLimit: 5,
 			feedOffeset: 0,
-			busy: false,
 
 			// Search bar
 			search: "",
@@ -23,7 +22,11 @@ export default {
 			searchOffset: 0,
 
 			// Upload photo
-			showUploadPhoto: true,
+			showUploadPhoto: false,
+
+			// Load More 
+			busy: false,
+			dataAvaible: true,
 		}
 	},
 	methods: {
@@ -31,13 +34,16 @@ export default {
 			try {
 				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
 				let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
-				this.posts = response.data;
-				console.log(this.posts);
+				if (response.data.length == 0) {
+					this.dataAvaible = false;
+					return;
+				}
+				this.posts.push(...response.data);
 			} catch (e) {
-				localStorage.errorMessage =e.response.data;
+				this.errorMsg = e.toString();
 			}
 		},
-		updateLike(data){
+		updateLike(data) {
 			this.posts.forEach(post => {
 				if (post.postID == data.postID) {
 					post.liked = data.liked;
@@ -45,8 +51,14 @@ export default {
 				}
 			});
 		},
+		loadMoreContents() {
+			if (this.busy || !this.dataAvaible) return;
+			this.busy = true;
+			this.feedOffeset += this.feedLimit;
+			this.getMyStream();
+			this.busy = false;
+		},
 	},
-
 	beforeMount() {
 		if (!localStorage.token) {
 			this.$router.push('/login');
@@ -54,8 +66,13 @@ export default {
 		}
 		this.getMyStream();
 	},
-
 	mounted() {
+
+		document.addEventListener('scroll', e => {
+			if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight * (0.7)) {
+				this.loadMoreContents();
+			}
+		});
 	}
 }
 </script>
@@ -63,12 +80,10 @@ export default {
 <template>
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
 
-	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto=false"> </UploadPhoto>
-	<div class="home-background-centered">
-		<FloatingNavbar @show-upload-form="showUploadPhoto=true"> </FloatingNavbar>
+	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
+		@refresh-posts="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
+	<FloatingNavbar @show-upload-form="showUploadPhoto = true"> </FloatingNavbar>
 
-		<Post v-for="post in posts" :postID="post.postID" :owner="post.user"
-			:image="post.image" :caption="post.caption" :timestamp="post.timestamp" :liked="post.liked">
-		</Post>
-	</div>
+	<Post v-for="post in posts" :postID="post.postID" :owner="post.user" :image="post.image" :caption="post.caption"
+		:timestamp="post.timestamp" :liked="post.liked" />
 </template>

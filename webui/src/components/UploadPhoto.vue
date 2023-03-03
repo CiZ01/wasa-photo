@@ -4,7 +4,7 @@ export default {
     components: {
         EditorPost,
     },
-    emits: ['exit-upload-form'],
+    emits: ['exit-upload-form', 'refresh-posts'],
     porps: {
         photoType: {
             type: String,
@@ -48,22 +48,22 @@ export default {
             event.currentTarget.classList.remove('bg-green-300');
         },
 
-        async createPost(postData){
-            console.log(postData);
+        async createPost(postData) {
             const formData = new FormData();
-            formData.append('image', postData.imageBlob);
-            formData.append('caption', postData.caption);
-            try{
-                let response = await this.$axios.post(`profiles/${localStorage.userID}/posts`, formData, {
+            formData.append("image", postData['imageFile']);
+            formData.append("caption", postData['caption']);
+
+            try {
+                let _ = await this.$axios.post(`profiles/${localStorage.userID}/posts`, formData, {
                     headers: {
                         'Authorization': `${localStorage.token}`,
-                        'Content-Type': 'multipart/form-data'
+                        'content-type': 'multipart/form-data'
                     }
                 });
-                console.log(response.data);
+                this.$emit('refresh-posts');
+                this.$emit('exit-upload-form');
             } catch (e) {
                 localStorage.errorMessage = e.response.data;
-                console.log("Error: ", e.response.data);
             }
         },
     },
@@ -99,7 +99,8 @@ export default {
             </div>
         </div>
 
-        <EditorPost :image64="file64" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')" @save-upload-form="createPost"></EditorPost>
+        <EditorPost :image64="file64" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')"
+            @save-upload-form="createPost"></EditorPost>
     </div>
 </template>
 
@@ -213,5 +214,4 @@ export default {
     font-size: 1.2em;
     font-weight: 600;
 }
-
 </style>

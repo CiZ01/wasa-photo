@@ -1,10 +1,9 @@
 <script>
-
 export default {
     data() {
         return {
             errorMsg: "",
-
+            componentEntries: "",
             // Profile data
             userID: parseInt(this.$route.params.userID),
             username: "",
@@ -17,20 +16,31 @@ export default {
             isOwner: false,
 
             // Buttons Text
-            followTextButton: this.isFollowed ? "Unfollow" : "Follow",
+            followTextButton: "Follow",
 
             // Other Data
             textCounter: 0,
             profilesArray: [],
             textHeader: "",
+            typeList: "",
 
             // Posts data
             posts: [],
-            offset: 0,
+            postOffset: 0,
+            postLimit: 20,
             showPost: false,
             postViewData: {},
 
+            // Load more data
+            busy: false,
+            dataAvaible: true,
 
+            // Follower data
+            followersFunc: () => { },
+            showList: false,
+
+            // Options data
+            showOptions: false,
         }
     },
     methods: {
@@ -45,19 +55,24 @@ export default {
                 this.textCounter = this.bio.length;
                 this.proPic64 = response.data.user.userPropic64;
                 this.isFollowed = response.data.isFollowed;
-                console.log(response.data)
+                this.followTextButton = this.isFollowed ? "Unfollow" : "Follow";
+                this.isOwner = localStorage.userID == this.userID;
             })
                 .catch(e => {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                 });
         },
-        getPosts() {
-            this.posts = [];
-            this.$axios.get(`/profiles/${this.userID}/posts?limit=10&offset=${this.offset}`, { headers: { 'Authorization': `${localStorage.token}` } }).then(response => {
-                this.posts = response.data;
-            }).catch(e => {
-                localStorage.errorMessage = e.response.data;
-            });
+        async getPosts() {
+            try {
+                let response = await this.$axios.get(`/profiles/${this.userID}/posts?limit=${this.postLimit}&offset=${this.postOffset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                if (response.data == null) {
+                    this.dataAvaible = false;
+                    return;
+                }
+                this.posts.push(...response.data);
+            } catch (e) {
+                localStorage.errorMessage = e.toString();
+            };
         },
         editingBio() {
             if (this.isOwner) {
@@ -76,7 +91,7 @@ export default {
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
                 } catch (e) {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                 }
                 document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "#fff";
             }
@@ -98,52 +113,68 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/username`, { username: this.username }, { headers: { 'Authorization': `${localStorage.token}` } });
                     localStorage.username = this.username;
                 } catch (e) {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                     this.username = localStorage.username;
                 }
             }
         },
-        async getFollowers() {
-            try {
-                let response = await this.$axios.get(`/profiles/${this.userID}/followers`, { headers: { 'Authorization': `${localStorage.token}` } });
-                this.profilesArray = response.data;
-                this.profilesArray = this.profilesArray;
-                this.textHeader = "Followers";
-            } catch (e) {
-                localStorage.errorMessage = e.response.data;
+        getFollowers() {
+            this.showList = true;
+            this.textHeader = "Followers";
+            this.componentEntries= "SimpleProfileEntry";
+            this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
+                try {
+                    let response = await this.$axios.get(`/profiles/${this.userID}/followers?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    if (response.data == null) {
+                        dataAvaible = false;
+                        return;
+                    }
+                    profilesArray.push(...response.data);
+                } catch (e) {
+                    this.errorMsg = e.toString();
+                }
             }
         },
-        async getFollowings() {
-            try {
-                let response = await this.$axios.get(`/profiles/${this.userID}/followings`, { headers: { 'Authorization': `${localStorage.token}` } });
-                this.profilesArray = response.data;
-                this.profilesArray = this.profilesArray;
-                this.textHeader = "Followings";
-            } catch (e) {
-                localStorage.errorMessage = e.response.data;
+        getFollowings() {
+            this.showList = true;
+            this.textHeader = "Followings";
+            this.componentEntries= "SimpleProfileEntry";
+            this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
+                try {
+                    let response = await this.$axios.get(`/profiles/${this.userID}/followings?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    if (response.data == null) {
+                        dataAvaible = false;
+                        return;
+                    }
+                    profilesArray.push(...response.data);
+                } catch (e) {
+                    this.errorMsg = e.toString();
+                }
             }
         },
         freeLists() {
+            this.showList = false;
             this.profilesArray = [];
+            this.textHeader = "";
         },
         async follow() {
             if (this.isFollowed) {
                 try {
-                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    let _ = await this.$axios.delete(`profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                     this.isFollowed = false;
                     this.followTextButton = "Follow";
                     this.followersCount--;
                 } catch (e) {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                 }
             } else {
                 try {
-                    let _ = await this.$axios.put(`/profiles/${localStorage.userID}/followings/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    let _ = await this.$axios.put(`profiles/${localStorage.userID}/followings/${this.userID}`, {}, { headers: { 'Authorization': `${localStorage.token}` } });
                     this.isFollowed = true;
                     this.followTextButton = "Unfollow";
                     this.followersCount++;
                 } catch (e) {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                 }
             }
         },
@@ -163,30 +194,77 @@ export default {
                 }
             });
         },
-
+        loadMoreContents() {
+            if (this.busy || !this.dataAvaible) return;
+            this.busy = true;
+            this.postOffset += this.postLimit;
+            this.getPosts();
+            this.busy = false;
+        },
+        doLogout() {
+            localStorage.clear();
+            this.$router.push('/login');
+        },
+        getBans(){
+            this.showList = true;
+            this.textHeader = "Bans";
+            this.componentEntries= "BanProfileEntry";
+            this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
+                try {
+                    let response = await this.$axios.get(`/profiles/${this.userID}/bans?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    if (response.data == null) {
+                        dataAvaible = false;
+                        return;
+                    }
+                    profilesArray.push(...response.data);
+                    console.log(profilesArray);
+                } catch (e) {
+                    this.errorMsg = e.toString();
+                }
+            }
+        },
+        closeOptions(){
+            setTimeout(() => {
+                this.showOptions = false;
+            }, 500);
+        },
+        async banUser(){
+            try {
+                let _ = await this.$axios.put(`/profiles/${localStorage.userID}/bans/${this.userID}`, {}, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.$router.push(`/profiles/${localStorage.userID}`);
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
+            this.showOptions = false;
+        },
     },
     beforeMount() {
         if (!localStorage.token) {
             this.$router.push('/login');
-        }
-        if (localStorage.userID == this.$route.params.userID) {
-            this.isOwner = true;
         }
     },
 
     mounted() {
         this.getProfile();
         this.getPosts();
-        if (this.$route.params.userID == localStorage.userID) {
-            this.isOwner = true;
-        }
+
         if (this.isOwner) {
             document.getElementsByClassName("top-body-profile-bio-text")[0].style.cursor = "text";
             document.getElementsByClassName("top-body-profile-username")[0].style.cursor = "text";
         }
+
+        document.addEventListener('scroll', e => {
+            if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight) {
+                this.loadMoreContents();
+            }
+        });
     },
 
     beforeRouteUpdate(to, from) {
+        this.posts = [];
+        this.postOffset = 0;
+        this.dataAvaible = true;
+
         this.userID = parseInt(to.params.userID);
         this.getProfile();
         this.getPosts();
@@ -202,6 +280,29 @@ export default {
             <img :src="`data:image/jpg;base64,${proPic64}`">
         </div>
         <div class="top-body-profile-container">
+            <div class="profile-options-button-container">
+                <button class="profile-options-button" @click="showOptions = true" @focusout="closeOptions">
+                    <font-awesome-icon icon="fa-solid fa-ellipsis" />
+                </button>
+                <div v-if="showOptions && isOwner" class="profile-options-menu">
+                    <div class="options-menu">
+                        <div class="options-menu-item" @click="getBans">
+                            <span>Bans list</span>
+                        </div>
+                        <div class="options-menu-item" @click="">
+                            <span>Delete profile</span>
+                        </div>
+                        <div class="options-menu-item" @click="doLogout">
+                            <span>Logout</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-else-if="showOptions" class="profile-options-menu">
+                    <div class="options-menu-item" @click="banUser">
+                            <span>Ban this user</span>
+                    </div>
+                </div>
+            </div>
             <input :readonly="!isOwner" v-model="username" class="top-body-profile-username" @focusin="editingUsername"
                 @focusout="saveChangeUsername" @input="checkUsername" maxlength="13" spellcheck="false">
             <div class="top-body-profile-bio-container">
@@ -226,8 +327,8 @@ export default {
         </div>
     </div>
 
-    <ProfilesList v-if="(profilesArray.length > 0)" :profiles="profilesArray" :textHeader="textHeader"
-        :componentEntries="'SimpleProfileEntry'" class="follow-list-view" @exitList="freeLists"> </ProfilesList>
+    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader"
+        :componentEntries="componentEntries" class="follow-list-view" @exitList="freeLists"> </ProfilesList>
 
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">
@@ -241,10 +342,6 @@ export default {
         <Post :postID="postViewData.postID" :owner="postViewData.user" :caption="postViewData.caption"
             :liked="postViewData.liked" :timestamp="postViewData.timestamp" :image="postViewData.image"
             @update-like="updateLike"> </Post>
-    </div>
-
-    <div v-if="isOwner" class="delete-account-button-container">
-        <button class="delete-account-button"> Delete Account </button>
     </div>
 </template>
 

@@ -20,7 +20,6 @@ var sql_TABLEUSER = `CREATE TABLE IF NOT EXISTS User
 /*
 	- postID: the unique ID of the post, is the primary key of the table
 	- userID: the userID of the user who created the post
-	- postImageURL: the URL of the post's image, it's point to the image in the storage.
 	- caption: the caption of the post, is a short description of the post. It's optional. Max length is 100 characters.
 	- timestamp: the timestamp of the post's creation. It's is assigned automatically by the database.
 */
@@ -28,7 +27,6 @@ var sql_TABLEPOST = `CREATE TABLE IF NOT EXISTS Post
 (
 	postID INTEGER NOT NULL,
 	userID INTEGER NOT NULL,
-	postImageURL STRING NOT NULL UNIQUE,
 	caption TEXT,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(postID, userID),

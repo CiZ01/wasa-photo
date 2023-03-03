@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
-	"strconv"
 )
 
 func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -32,11 +33,24 @@ func (rt *_router) getMyBans(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	bans, err := rt.db.GetBans(profileUserID, offset, limit)
+	dbBans, err := rt.db.GetBans(profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting bans")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	bans := make([]User, len(dbBans))
+
+	for i, dbBan := range dbBans {
+		var user User
+		err := user.FromDatabase(dbBan)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error while converting the user")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		bans[i] = user
 	}
 
 	// Write the response

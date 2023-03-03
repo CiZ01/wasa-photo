@@ -12,7 +12,7 @@ export default {
     },
     props: {
         owner: { type: Object, required: true },
-        postID: { type: String, required: true },
+        postID: { type: Number, required: true },
         caption: { type: String, required: true },
         image: { type: String, required: true },
         timestamp: { type: String, required: true },

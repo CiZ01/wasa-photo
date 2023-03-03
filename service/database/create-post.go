@@ -2,10 +2,9 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 )
 
-var query_CREATEPOST = `INSERT INTO Post (postID, userID, postImageURL, caption) VALUES (?, ?, ?, ?)`
+var query_CREATEPOST = `INSERT INTO Post (postID, userID, caption) VALUES (?, ?, ?)`
 
 func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 	// Check last postID in db
@@ -26,14 +25,9 @@ func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 		err = tx.Commit()
 	}()
 
-	postID := fmt.Sprint(_postID + 1)
-	userID := fmt.Sprint(p.User.UserID)
+	p.PostID = _postID + 1
 
-	p.PostID = postID
-
-	path := "./storage/" + userID + "/posts/" + postID + ".jpeg"
-
-	_, err = db.c.Exec(query_CREATEPOST, postID, userID, path, p.Caption)
+	_, err = db.c.Exec(query_CREATEPOST, p.PostID, p.User.UserID, p.Caption)
 	if err != nil {
 		return p, err
 	}
@@ -43,5 +37,5 @@ func (db *appdbimpl) CreatePost(p Post) (Post, error) {
 		return p, err
 	}
 
-	return newPost[0], nil
+	return newPost[0], err
 }

@@ -1,6 +1,7 @@
 <script>
 import SimpleProfileEntry from './SimpleProfileEntry.vue';
 export default {
+    emits: ['error-occurred'],
     components: {
         SimpleProfileEntry,
     },
@@ -13,6 +14,8 @@ export default {
             usernameList: [],
             searchLimit: 10,
             searchOffset: 0,
+            busy: false,
+            dataAvaible: true,
         }
     },
     methods: {
@@ -24,19 +27,38 @@ export default {
             try {
                 const url = `profiles?limit=${this.searchLimit}&offset=${this.searchOffset}&search=${this.search}`;
                 let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
-                this.usernameList = response.data;
+                if (response.data == null) {
+                    this.dataAvaible = false;
+                    return;
+                }
+                this.usernameList.push(...response.data);
             } catch (e) {
-                localStorage.errorMessage =
- e.response.data;
+                this.$emit('error-occurred', e.toString());
             }
         },
-        exitList(){
+        exitList() {
             setTimeout(() => {
                 this.usernameList = [];
                 this.search = "";
-            }, 100);
+                this.dataAvaible = true;
+            }, 500);
 
-        }
+        },
+        loadMoreContents() {
+            if (this.busy || !this.dataAvaible) return;
+            this.busy = true;
+            this.searchOffset += this.searchLimit;
+            this.updateSearch();
+            this.busy = false;
+        },
+    },
+    mounted() {
+        const el = document.getElementsByClassName("users-list")[0];
+        el.addEventListener('scroll', e => {
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight * (0.5)) {
+                this.loadMoreContents();
+            }
+        });
     },
 }
 </script>
@@ -44,10 +66,10 @@ export default {
 
 <template>
     <div class="search-navbar-container">
-        <input placeholder="Search..." class="search-bar" @input="updateSearch" v-model="search" @focusout="exitList">
-        <div class="users-list" v-if="usernameList.length"> 
-            <SimpleProfileEntry v-for="user in usernameList" :key="user.userID" :data="user" @exit-list-from-entry="exitList">
-            </SimpleProfileEntry>
+        <input placeholder="Search..." class="search-bar" @input="() => {usernameList = []; updateSearch()}" v-model="search" @focusout="exitList" maxlength="13">
+        <div class="users-list" v-show="usernameList.length">
+            <SimpleProfileEntry v-for="user in usernameList" :key="user.userID" :data="user"
+                @exit-list-from-entry="exitList" />
         </div>
     </div>
 </template>
@@ -75,7 +97,7 @@ export default {
     border: none;
 }
 
-.users-list{
+.users-list {
     background-color: #ffffff;
     height: auto;
     max-height: 20em;
@@ -93,5 +115,14 @@ export default {
     box-shadow: 0px 0.5em 0.6em -0.5em #000000;
     outline: none;
     border: none;
+
+    -ms-overflow-style: none;
+    /* IE*/
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.users-list::-webkit-scrollbar {
+    display: none;
 }
 </style>

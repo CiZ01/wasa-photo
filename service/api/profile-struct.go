@@ -27,7 +27,12 @@ func (p *Profile) FromDatabase(dbProfile database.Profile) error {
 	p.Bio = dbProfile.Bio
 	p.FollowerCount = dbProfile.FollowersCount
 	p.FollowingsCount = dbProfile.FollowingsCount
-	p.IsFollowed = dbProfile.IsFollowed
+
+	if dbProfile.IsFollowed == 1 {
+		p.IsFollowed = true
+	} else {
+		p.IsFollowed = false
+	}
 
 	return nil
 }

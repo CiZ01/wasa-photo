@@ -19,25 +19,23 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	userID := ctx.UserID
-
-	if profileUserID == userID {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
-	isFollowing, err := rt.db.IsFollowing(userID, profileUserID)
+	targetUserID, err := strconv.Atoi(ps.ByName("targetUserID"))
 	if err != nil {
-		ctx.Logger.WithError(err).Error("error checking if the user is following the target user")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
-	if !isFollowing {
+
+	if profileUserID != ctx.UserID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
+	if profileUserID == targetUserID {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	isBanned, err := rt.db.IsBanned(profileUserID, userID)
+	isBanned, err := rt.db.IsBanned(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -48,7 +46,18 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	err = rt.db.DeleteFollow(userID, profileUserID)
+	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error checking if the user is following the target user")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if !isFollowing {
+		http.Error(w, "Bad Request the user is not followed", http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.DeleteFollow(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting follow")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

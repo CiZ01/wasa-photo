@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -42,9 +43,9 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	// Access the photo key
-	// The photo key is the name of the file input in the HTML form
-	// If the key is not present an error is returned
+	caption := r.FormValue("caption")
+
+	// Get the file from the form
 	file, _, err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
@@ -83,7 +84,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// The caption is taken from the form, the FormValue function returns an empty string if the key is not present
 	var newPost = Post{
 		User:    user,
-		Caption: string(r.FormValue("caption")),
+		Caption: caption,
 	}
 
 	// Parse the new post from the api package to the Post struct in the database package
@@ -99,7 +100,12 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Save the image
-	ioutil.WriteFile(dbNewPost.ImageURL, data, 0666)
+	err = ioutil.WriteFile(dbNewPost.ImageURL, data, 0666)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error saving file")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	// Crop the image
 	err = utils.SaveAndCrop(dbNewPost.ImageURL, 720, 720)

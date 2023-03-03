@@ -1,6 +1,6 @@
 package database
 
-var join_FOLLOWINGS_POSTS = `SELECT User.userID, User.username, Post.postID, Post.postImageURL, Post.caption, Post.timestamp 
+var join_FOLLOWINGS_POSTS = `SELECT User.userID, User.username, Post.postID, Post.caption, Post.timestamp 
 							FROM (` + union_FOLLOWINGS_ME + `) AS User INNER JOIN Post ON User.userID = Post.userID ORDER BY Post.timestamp DESC LIMIT ?, ?`
 var union_FOLLOWINGS_ME = query_GETFOLLOWINGS + ` UNION SELECT userID, username FROM User WHERE userID=?`
 
@@ -22,7 +22,7 @@ func (db *appdbimpl) GetStream(userID int, offeset int, limit int) ([]Post, erro
 		var post Post
 
 		// Scan the result into the post struct
-		if err := res.Scan(&user.UserID, &user.Username, &post.PostID, &post.ImageURL, &post.Caption, &post.Timestamp); err != nil {
+		if err := res.Scan(&user.UserID, &user.Username, &post.PostID, &post.Caption, &post.Timestamp); err != nil {
 			return nil, err
 		}
 

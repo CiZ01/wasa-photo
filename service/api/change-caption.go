@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"encoding/json"
+
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
@@ -49,6 +50,4 @@ func (rt *_router) changeCaption(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-
-	return
 }

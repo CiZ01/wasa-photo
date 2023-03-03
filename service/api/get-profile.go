@@ -32,7 +32,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// Get the user from the database
-	dbProfile, err := rt.db.GetUserProfile(profileUserID)
+	dbProfile, err := rt.db.GetUserProfile(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while getting the user profile")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

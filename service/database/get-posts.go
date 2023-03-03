@@ -1,6 +1,10 @@
 package database
 
-var query_GETPOSTS = `SELECT postID, userID, postImageURL, caption, timestamp FROM Post WHERE userID=? ORDER BY timestamp DESC LIMIT ?, ?`
+import (
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
+)
+
+var query_GETPOSTS = `SELECT postID, userID, caption, timestamp FROM Post WHERE userID=? ORDER BY timestamp DESC LIMIT ?, ?`
 var query_GETLIKECOUNT = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=?`
 var query_GETCOMMENTCOUNT = `SELECT COUNT(postID) FROM Comment WHERE postID=? AND ownerID=?`
 var query_ISLIKED = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=? AND userID=?`
@@ -14,7 +18,7 @@ func (db *appdbimpl) GetPosts(userID int, profileUserID int, offset int, limit i
 	defer func() { err = rows.Close() }()
 
 	// Create the slice of posts
-	posts := make([]Post, 0)
+	var posts []Post
 
 	for rows.Next() {
 		if rows.Err() != nil {
@@ -24,7 +28,7 @@ func (db *appdbimpl) GetPosts(userID int, profileUserID int, offset int, limit i
 		var user User
 
 		// Get post data
-		err = rows.Scan(&post.PostID, &user.UserID, &post.ImageURL, &post.Caption, &post.Timestamp)
+		err = rows.Scan(&post.PostID, &user.UserID, &post.Caption, &post.Timestamp)
 		if err != nil {
 			return nil, err
 		}
@@ -61,8 +65,10 @@ func (db *appdbimpl) GetPosts(userID int, profileUserID int, offset int, limit i
 		// Set user data
 		post.User = user
 
-		posts = append(posts, post)
+		// Set image path
+		post.ImageURL = utils.GetPostPhotoPath(user.UserID, post.PostID)
 
+		posts = append(posts, post)
 	}
 	return posts, err
 }

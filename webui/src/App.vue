@@ -9,7 +9,7 @@ export default {
 	},
 	data() {
 		return {
-			errorMsg: localStorage.errorMessage,
+			errorMsg: '',
 		}
 	},
 	methods: {
@@ -22,7 +22,6 @@ export default {
 		},
 	},
 	mounted() {
-		localStorage.setItem('errorMessage', '');
 	},
 
 }

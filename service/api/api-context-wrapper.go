@@ -27,6 +27,7 @@ func (rt *_router) wrap(fn httpRouterHandler, auth bool) func(http.ResponseWrite
 		if auth {
 			// Check if the user is authorized
 			userID = isAuthorized(r.Header)
+
 			if userID == 0 {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return

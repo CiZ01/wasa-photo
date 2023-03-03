@@ -18,7 +18,7 @@ export default {
             textCounter: 0,
             textCaption: "",
             postData: {
-                imageBlob: null,
+                imageFile: null,
                 caption: "",
             },
         };
@@ -26,7 +26,20 @@ export default {
     methods: {
         saveEdit() {
             const { canvas, } = this.$refs.cropper.getResult();
-            this.postData['imageBlob'] = canvas.toDataURL("image/jpeg");
+            const image64 = canvas.toDataURL("image/jpeg");
+            
+            // Converti l'immagine in un blob
+            const byteString = atob(image64.split(',')[1]);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([ab], { type: 'image/jpeg' });
+
+            // Crea l'oggetto file
+            const file = new File([blob], 'image/jpeg', { type: 'image/jpeg' });
+            this.postData['imageFile'] = file;
             this.postData['caption'] = this.textCaption;
             this.$emit('save-upload-form', this.postData)
         },

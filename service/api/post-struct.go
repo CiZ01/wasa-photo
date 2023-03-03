@@ -1,9 +1,10 @@
 package api
 
 import (
+	"time"
+
 	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"git.francescofazzari.it/wasa_photo/service/database"
-	"time"
 )
 
 /*
@@ -11,7 +12,7 @@ This struct rappresents the Post object.
 The post is identified by the PostID, which is the primary key.
 */
 type Post struct {
-	PostID       string    `json:"postID"`
+	PostID       int       `json:"postID"`
 	User         User      `json:"user"`
 	Image        string    `json:"image"`
 	Caption      string    `json:"caption"`
@@ -44,7 +45,6 @@ func (p *Post) ToDatabase() database.Post {
 	return database.Post{
 		PostID:       p.PostID,
 		User:         database.User{UserID: p.User.UserID, Username: p.User.Username},
-		ImageURL:     "",
 		Caption:      p.Caption,
 		LikeCount:    p.LikeCount,
 		CommentCount: p.CommentCount,
@@ -54,7 +54,7 @@ func (p *Post) ToDatabase() database.Post {
 }
 
 func (p *Post) FromDatabase(dbPost database.Post) error {
-	image64, err := utils.ImageToBase64(dbPost.ImageURL)
+	image64, err := utils.ImageToBase64(utils.GetPostPhotoPath(dbPost.User.UserID, dbPost.PostID))
 	if err != nil {
 		return err
 	}

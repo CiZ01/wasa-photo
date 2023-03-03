@@ -21,14 +21,14 @@ content-type: application/json
 ###
 
 # FOLLOW #
-PUT http://localhost:3000/profiles/1/followings/3 HTTP/1.1
-Authorization: 1
+PUT http://localhost:3000/profiles/15/followings/5 HTTP/1.1
+Authorization: 15
 
 ###
 
 # UNFOLLOW #
-DELETE http://localhost:3000/profiles/5/followings HTTP/1.1
-Authorization: 3
+DELETE http://localhost:3000/profiles/15/followings/5 HTTP/1.1
+Authorization: 15
 
 ###
 
@@ -69,7 +69,6 @@ ciao
 Content-Disposition: form-data; name="image"; filename="image.jpeg"
 Content-Type: image/jpeg
 
-< C:\Users\Francesco\OneDrive - uniroma1.it\Desktop\aaa.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
@@ -147,8 +146,8 @@ content-type: application/json
 ###
 
 # GET FEED #
-GET http://localhost:3000/profiles/5/feed HTTP/1.1
-Authorization: 5
+GET http://localhost:3000/profiles/11/feed HTTP/1.1
+Authorization: 11
 
 ###
 
