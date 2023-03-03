@@ -1,5 +1,9 @@
 <script>
+import UploadPhotoVue from '../components/UploadPhoto.vue';
 export default {
+    components: {
+        UploadPhotoVue,
+    },
     data() {
         return {
             errorMsg: "",
@@ -14,6 +18,10 @@ export default {
             isFollowed: false,
 
             isOwner: false,
+
+            // Edting propic
+            showEditPropic: false,
+            isEditingPropic: false,
 
             // Buttons Text
             followTextButton: "Follow",
@@ -237,10 +245,22 @@ export default {
             }
             this.showOptions = false;
         },
+        async deletePost(postID) {
+			try{
+				let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+				this.posts = this.posts.filter(post => post.postID != postID);
+                this.exitPost();
+			}catch(e){
+				this.errorMsg = e.toString();
+			}
+		},
     },
     beforeMount() {
         if (!localStorage.token) {
             this.$router.push('/login');
+        }
+        if (localStorage.userID === this.$route.params.userID) {
+            this.isOwner = true;
         }
     },
 
@@ -251,6 +271,8 @@ export default {
         if (this.isOwner) {
             document.getElementsByClassName("top-body-profile-bio-text")[0].style.cursor = "text";
             document.getElementsByClassName("top-body-profile-username")[0].style.cursor = "text";
+
+            document.getElementsByClassName("top-profile-picture")[0].style.cursor = "pointer";
         }
 
         document.addEventListener('scroll', e => {
@@ -275,8 +297,14 @@ export default {
 
 
 <template>
+    <UploadPhotoVue v-if="isEditingPropic" :photoType="'proPic'" @refresh-data="getProfile" @exit-upload-form="isEditingPropic = false" @error-occured="errorMsg = value"/>
     <div class="top-profile-container">
-        <div class="top-profile-picture">
+        <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false" >
+            <div class="edit-propic" v-if="showEditPropic && isOwner">
+                <button class="edit-propic-button" @click="isEditingPropic = true">
+                    <font-awesome-icon icon="fa-regular fa-pen-to-square" size="lg" color="#fff" />
+                </button>
+            </div>
             <img :src="`data:image/jpg;base64,${proPic64}`">
         </div>
         <div class="top-body-profile-container">
@@ -341,7 +369,7 @@ export default {
     <div v-if="showPost" class="post-view" @click.self="exitPost">
         <Post :postID="postViewData.postID" :owner="postViewData.user" :caption="postViewData.caption"
             :liked="postViewData.liked" :timestamp="postViewData.timestamp" :image="postViewData.image"
-            @update-like="updateLike"> </Post>
+            @update-like="updateLike" @delete-post="deletePost" />
     </div>
 </template>
 

@@ -1,16 +1,26 @@
 <script>
-import { Cropper } from "vue-advanced-cropper";
+import { RectangleStencil, CircleStencil, Cropper } from "vue-advanced-cropper";
+import { markRaw } from "vue";
 import "vue-advanced-cropper/dist/style.css";
 
 export default {
     emits: ['exit-upload-form', 'save-upload-form'],
     components: {
         Cropper,
+        CircleStencil,
+        RectangleStencil,
     },
     props: {
         image64: {
             type: String,
             required: true,
+        },
+        editorType: {
+            type: String,
+            required: true,
+            validator(value) {
+                return ['post', 'proPic'].includes(value);
+            },
         },
     },
     data() {
@@ -21,13 +31,25 @@ export default {
                 imageFile: null,
                 caption: "",
             },
+
+            cropperProps: {
+                stencilSize: {
+                    width: 0,
+                    height: 0,
+                },
+                stencilComponent: '',
+            },
         };
     },
     methods: {
         saveEdit() {
+
+            if (this.editorType === 'post') {
+                this.postData['caption'] = this.textCaption;
+            }
             const { canvas, } = this.$refs.cropper.getResult();
             const image64 = canvas.toDataURL("image/jpeg");
-            
+
             // Converti l'immagine in un blob
             const byteString = atob(image64.split(',')[1]);
             const ab = new ArrayBuffer(byteString.length);
@@ -40,10 +62,27 @@ export default {
             // Crea l'oggetto file
             const file = new File([blob], 'image/jpeg', { type: 'image/jpeg' });
             this.postData['imageFile'] = file;
-            this.postData['caption'] = this.textCaption;
             this.$emit('save-upload-form', this.postData)
         },
     },
+    created() {
+        if (this.editorType === 'post') {
+            this.cropperProps.stencilSize = {
+                width: 720,
+                height: 720,
+            };
+            this.cropperProps.stencilComponent = markRaw(RectangleStencil);
+        } else if (this.editorType === 'proPic') {
+            this.cropperProps.stencilSize = {
+                width: 250,
+                height: 250,
+            };
+            this.cropperProps.stencilComponent = markRaw(CircleStencil);
+        }
+    },
+    mounted() {
+    },
+
     watch: {
         textCaption() {
             this.textCounter = this.textCaption.length;
@@ -54,13 +93,9 @@ export default {
 
 <template>
     <div class="cropper-container">
-        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-size="{
-            width: 720,
-            height: 720
-        }" image-restriction="stencil" :stencil-props="{
-    aspectRatio: 1 / 1,
-}"> </cropper>
-        <div class="caption-form-container">
+        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
+            :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
+        <div class="caption-form-container" v-if="editorType === 'post'">
             <div class="label-container">
                 <span class="caption-title">Caption</span>
                 <span class="caption-text-counter">{{ textCounter }}/64</span>

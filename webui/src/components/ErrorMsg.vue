@@ -18,8 +18,12 @@ export default {
 .override-style {
 	position: absolute;
 	top: 2em;
+
+	min-width: 40em;
 	width: auto;
 	max-width: 70em;
+
+	height: auto;
 
 	align-items: center;
 

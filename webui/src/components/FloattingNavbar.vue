@@ -28,8 +28,8 @@ export default {
         <button @click="getMyProfile" class="left-profile-navbar">
             <img :src="`data:image/jpg;base64,${propic64}`">
         </button>
-        <button class="home-button">
-            <font-awesome-icon icon="fa-sharp fa-regular fa-house-blank" />
+        <button class="home-button" @click="$router.go(0)">
+            <font-awesome-icon icon="fa-solid fa-house" />
         </button>
         <button class="upload-post-button" @click="$emit('show-upload-form')">
             <font-awesome-icon icon="fa-regular fa-square-plus" />

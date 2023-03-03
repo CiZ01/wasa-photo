@@ -1,7 +1,6 @@
 <script>
 import FloatingNavbar from '../components/FloattingNavbar.vue'
 import UploadPhoto from '../components/UploadPhoto.vue';
-import { toRaw } from 'vue';
 export default {
 	components: {
 		FloatingNavbar,
@@ -58,6 +57,14 @@ export default {
 			this.getMyStream();
 			this.busy = false;
 		},
+		async deletePost(postID) {
+			try{
+				let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+				this.posts = this.posts.filter(post => post.postID != postID);
+			}catch(e){
+				this.errorMsg = e.toString();
+			}
+		},
 	},
 	beforeMount() {
 		if (!localStorage.token) {
@@ -81,9 +88,9 @@ export default {
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
 
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
-		@refresh-posts="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
+		@refresh-data="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
 	<FloatingNavbar @show-upload-form="showUploadPhoto = true"> </FloatingNavbar>
 
 	<Post v-for="post in posts" :postID="post.postID" :owner="post.user" :image="post.image" :caption="post.caption"
-		:timestamp="post.timestamp" :liked="post.liked" />
+		:timestamp="post.timestamp" :liked="post.liked" @delete-post="deletePost" />
 </template>

@@ -4,8 +4,8 @@ export default {
     components: {
         EditorPost,
     },
-    emits: ['exit-upload-form', 'refresh-posts'],
-    porps: {
+    emits: ['exit-upload-form', 'refresh-data', 'error-occured'],
+    props: {
         photoType: {
             type: String,
             required: true,
@@ -19,6 +19,8 @@ export default {
             file: null,
             file64: "",
             fileType: "",
+
+            errorMsg: '',
         }
     },
     methods: {
@@ -48,6 +50,14 @@ export default {
             event.currentTarget.classList.remove('bg-green-300');
         },
 
+        saveData(data) {
+            if (this.photoType == 'post') {
+                this.createPost(data);
+            } else if (this.photoType == 'proPic') {
+                this.changePropic(data);
+            }
+        },
+
         async createPost(postData) {
             const formData = new FormData();
             formData.append("image", postData['imageFile']);
@@ -60,12 +70,31 @@ export default {
                         'content-type': 'multipart/form-data'
                     }
                 });
-                this.$emit('refresh-posts');
+                this.$emit('refresh-data');
                 this.$emit('exit-upload-form');
             } catch (e) {
-                localStorage.errorMessage = e.response.data;
+                this.errorMsg = e.toString();
+                this.$emit('error-occurred', this.errorMsg);
             }
         },
+
+        async changePropic(propicData) {
+            const formData = new FormData();
+            formData.append("image", propicData['imageFile']);
+            try {
+                let _ = await this.$axios.put(`profiles/${localStorage.userID}/profile-picture`, formData, {
+                    headers: {
+                        'Authorization': `${localStorage.token}`,
+                        'content-type': 'multipart/form-data'
+                    }
+                });
+                this.$emit('refresh-data');
+                this.$emit('exit-upload-form');
+            } catch (e) {
+                this.errorMsg = e.toString();
+                this.$emit('error-occurred', this.errorMsg);
+            }
+        }
     },
     watch: {
         file() {
@@ -99,8 +128,8 @@ export default {
             </div>
         </div>
 
-        <EditorPost :image64="file64" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')"
-            @save-upload-form="createPost"></EditorPost>
+        <EditorPost :image64="file64" :editorType="this.$props.photoType" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')"
+            @save-upload-form="saveData"></EditorPost>
     </div>
 </template>
 

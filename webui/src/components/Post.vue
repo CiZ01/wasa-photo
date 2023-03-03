@@ -4,7 +4,7 @@ import LikeHeader from '../components/LikeHeader.vue';
 import CommentHeader from '../components/CommentHeader.vue';
 
 export default {
-    emits: ['update-like', 'toogle-navbar'],
+    emits: ['update-like', 'toogle-navbar', 'delete-post'],
     components: {
         ProfilesList,
         LikeHeader,
@@ -139,6 +139,9 @@ export default {
                 return `${elapsedMinutes}m`;
             }
         },
+        deletePost() {
+            this.$emit('delete-post', this.postID);
+        }
     },
     beforeMount() {
         if (this.ownerID == localStorage.userID) {
@@ -185,8 +188,8 @@ export default {
                     <font-awesome-icon v-else icon="fa-solid fa-comment" @click="getComments" v-on:mouseout="toggleComment"
                         style="opacity:0.9" />
                 </button>
-                <button v-if="isOwner" class="post-tail-options-button" name="options">
-                    <font-awesome-icon icon="fa-solid fa-ellipsis" />
+                <button v-if="isOwner" class="post-tail-delete-button" name="delete" @click="deletePost">
+                    <font-awesome-icon icon="fa-regular fa-trash-can" />
                 </button>
             </div>
             <textarea :readonly="!isOwner" @focusin="editingCaption" @focusout="saveChangeCaption" @input="countChar"
@@ -217,7 +220,7 @@ export default {
     position: relative;
     left: 0;
 
-    margin-bottom: 6em;
+    margin-bottom: 4em;
 
     display: flex;
     flex-direction: column;
@@ -297,8 +300,11 @@ export default {
     margin-right: 0.5em;
 }
 
-.post-tail-options-button {
+.post-tail-delete-button {
     float: right;
+
+    font-size: 0.8em;
+    margin-top: 0.3em;
 }
 
 .post-tail-caption {
