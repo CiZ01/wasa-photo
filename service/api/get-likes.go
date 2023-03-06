@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -44,11 +45,23 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	likes, err := rt.db.GetLikes(postID, profileUserID, offset, limit)
+	dbLikes, err := rt.db.GetLikes(postID, profileUserID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting likes")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	likes := make([]User, len(dbLikes))
+	for i, dbLike := range dbLikes {
+		var user User
+		err := user.FromDatabase(dbLike)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error while converting the user")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		likes[i] = user
 	}
 
 	// Send the response

@@ -356,7 +356,7 @@ export default {
     </div>
 
     <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader"
-        :componentEntries="componentEntries" class="follow-list-view" @exitList="freeLists"> </ProfilesList>
+        :componentEntries="componentEntries" class="follow-list-view" @exit-list="freeLists" />
 
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">

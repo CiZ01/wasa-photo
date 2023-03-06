@@ -33,16 +33,19 @@ export default {
             profilesList: [],
             captionPost: "There is no caption for this post",
             textCounter: 0,
-            errorMsg: "",
             showList: false,
-            customHeader: "",
-            titleHeaderList: "",
+            textHeader: "",
+            componentEntries: "",
+            customHeader: null,
+            dataGetter: () => { },
+
+            errorMsg: "",
         };
     },
     methods: {
         async like() {
             try {
-                let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
+                let _ = await this.$axios.put(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
                 this.isLiked = true;
                 this.$emit('update-like', { postID: this.postID, liked: true });
 
@@ -52,7 +55,7 @@ export default {
         },
         async unlike() {
             try {
-                let _ = await this.$axios.delete(`/profiles/${this.ownerID}/posts/${this.postID}/like/${localStorage.userID}`, { headers: { "Authorization": `${localStorage.token}` } });
+                let _ = await this.$axios.delete(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, { headers: { "Authorization": `${localStorage.token}` } });
                 this.isLiked = false
                 this.$emit('update-like', { postID: this.postID, liked: false });
             } catch (e) {
@@ -66,8 +69,9 @@ export default {
             try {
                 let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments`, { headers: { "Authorization": `${localStorage.token}` } });
                 this.profilesList = response.data;
-                this.customHeader = CommentHeader;
+                this.customHeader = markRaw(CommentHeader);
                 this.titleHeaderList = "Comments";
+
                 this.showList = true;
                 console.log(this.profilesList);
 
@@ -76,15 +80,21 @@ export default {
             }
         },
         async getLikes() {
-            try {
-                let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/likes`, { headers: { "Authorization": `${localStorage.token}` } });
-                this.profilesList = response.data;
-                this.customHeader = LikeHeader;
-                this.titleHeaderList = "Likes";
-                this.showList = true;
-            }
-            catch (e) {
-                localStorage.errorMessage = e.response.data;
+            this.showList = true;
+            this.textHeader = "Likes";
+            this.componentEntries = "SimpleProfileEntry";
+            this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
+                try {
+                    let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/likes?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    if (response.data == null) {
+                        dataAvaible = false;
+                        return;
+                    }
+                    profilesArray.push(...response.data);
+                    console.log(profilesArray);
+                } catch (e) {
+                    this.errorMsg = e.toString();
+                }
             }
         },
         editingCaption() {
@@ -169,6 +179,7 @@ export default {
 </script>
 
 <template>
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg" />
     <div class="post-containter">
         <div class="post-header">
             <img class="post-header-propic-img" :src="`data:image/jpg;base64,${proPic64}`" alt="" loading="lazy">
@@ -179,14 +190,20 @@ export default {
             loading="lazy">
         <div class="post-tail">
             <div class="post-tail-like-comment-options">
-                <button class="post-tail-like-button" name="like">
-                    <font-awesome-icon v-if=(!isLiked) icon="fa-regular fa-heart" @click="like" />
-                    <font-awesome-icon v-else icon="fa-solid fa-heart" @click="unlike" style="color:red" />
+                <button class="post-tail-button" name="like" @click="isLiked ? unlike() : like()">
+                    <font-awesome-icon v-if=(!isLiked) icon="fa-regular fa-heart" />
+                    <font-awesome-icon v-else icon="fa-solid fa-heart" style="color:red" />
+                    <span class="title-button" @click.self="getLikes">
+                        Likes
+                    </span>
                 </button>
-                <button class="post-tail-comment-button" name="comment">
+                <button class="post-tail-button" name="comment" @click="getComments">
                     <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" v-on:mouseover="toggleComment" />
-                    <font-awesome-icon v-else icon="fa-solid fa-comment" @click="getComments" v-on:mouseout="toggleComment"
+                    <font-awesome-icon v-else icon="fa-solid fa-comment" v-on:mouseout="toggleComment"
                         style="opacity:0.9" />
+                    <span class="title-button">
+                        Comments
+                    </span>
                 </button>
                 <button v-if="isOwner" class="post-tail-delete-button" name="delete" @click="deletePost">
                     <font-awesome-icon icon="fa-regular fa-trash-can" />
@@ -197,14 +214,27 @@ export default {
             <span class="post-tail-caption-text-counter">{{ textCounter }}/64 </span>
         </div>
     </div>
-    <ProfilesList @exitList="() => !showList" class="stats-lists-component" v-if="showList" :profiles="profilesList"
-        :componentHeader="customHeader" :textHeader="titleHeaderList"> </ProfilesList>
+    <ProfilesList @exit-list="showList = false" class="stats-lists-component" v-if="showList"
+        :componentHeader="customHeader" :textHeader="textHeader" :dataGetter="dataGetter"
+        :componentEntries="componentEntries" />
 </template>
 
 
 <style>
 .stats-lists-component {
     z-index: 3;
+}
+
+.post-tail-button {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    margin-right: 0.5em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
 }
 
 .post-containter {
@@ -285,19 +315,25 @@ export default {
 }
 
 
-
 .post-tail-like-comment-options {
     width: 100%;
     height: 2em;
     font-size: 1.5em;
     border-bottom: 1px solid rgb(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-.post-tail-like-comment-options>button {
-    border: none;
-    background-color: transparent;
-    outline: none;
-    margin-right: 0.5em;
+.title-button {
+    font-size: 0.5em;
+    font-weight: 500;
+    color: rgb(0, 0, 0, 0.5);
+    cursor: pointer;
+
+    position: relative;
+
 }
 
 .post-tail-delete-button {

@@ -43,14 +43,14 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
-              example: { "user_id" : 10 , "auth" : 10 }
+              example: { "user_id": 10, "auth": 10 }
         "200":
           description: |-
             Log-in succesfull.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AuthUser" }
-              example: { "user_id" : 10 , "auth" : 10 }
+              example: { "user_id": 10, "auth": 10 }
         "400": { $ref: "#/components/responses/BadRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
@@ -120,15 +120,20 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/followings:
+  /profiles/{profile_user_id}/followings/{target_user_id}:
     parameters:
       - name: profile_user_id
         in: path
         description: The user Id of the followed user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+      - name: target_user_id
+        in: path
+        description: The user Id of the user who want to follow
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
 
-    post:
+    put:
       tags: ["User"]
       operationId: followUser
       summary: Follow user
@@ -169,6 +174,15 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+  /profiles/{profile_user_id}/followings:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the followed user
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
 
     get:
       tags: ["User"]
@@ -179,10 +193,6 @@ paths:
         Return a list of users. See User for more details.
       security:
         - bearerAuth: []
-
-      parameters:
-        - { $ref: "#/components/parameters/Offset" }
-        - { $ref: "#/components/parameters/Limit" }
 
       responses:
         "200":
@@ -225,15 +235,20 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/bans:
+  /profiles/{profile_user_id}/bans/{target_user_id}:
     parameters:
       - name: profile_user_id
         in: path
         description: The user Id of the banned user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+      - name: target_user_id
+        in: path
+        description: The user Id of the user who want to ban
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
 
-    post:
+    put:
       tags: ["User"]
       operationId: banUser
       summary: Ban user
@@ -274,6 +289,16 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /profiles/{profile_user_id}/bans:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the banned user
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+
     get:
       tags: ["User"]
       operationId: getMyBans
@@ -283,10 +308,6 @@ paths:
         Return a list of users. See User for more details.
       security:
         - bearerAuth: []
-
-      parameters:
-        - { $ref: "#/components/parameters/Offset" }
-        - { $ref: "#/components/parameters/Limit" }
 
       responses:
         "200":
@@ -298,7 +319,6 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-
 
   /profiles/{profile_user_id}:
     parameters:
@@ -333,7 +353,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-    
+
     delete:
       tags: ["User"]
       operationId: deleteUser
@@ -379,13 +399,7 @@ paths:
                 The photo to upload and the caption of the post.
               type: object
               properties:
-                caption:
-                  description: The caption of the post.
-                  type: string
-                  pattern: ^[^\\]{1,64}$
-                  example: "In montagna con Haru"
-                  minLength: 1
-                  maxLength: 64
+                caption: { $ref: "#/components/schemas/Caption" }
                 file:
                   description: The photo to upload.
                   type: string
@@ -461,7 +475,7 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/posts/{post_id}/likes:
+  /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
     parameters:
       - name: profile_user_id
         in: path
@@ -473,8 +487,13 @@ paths:
         description: The post id of the post to (un)like
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
+      - name: user_id
+        in: path
+        description: The user id of the user that (un)like the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
 
-    post:
+    put:
       tags: ["Post"]
       operationId: likePhoto
       summary: Like the post and add the user to the likes list of the post.
@@ -512,6 +531,21 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
+  /profiles/{profile_user_id}/posts/{post_id}/likes:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post id of the post to (un)like
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+      - { $ref: "#/components/parameters/Offset" }
+      - { $ref: "#/components/parameters/Limit" }
+
     get:
       tags: ["Post"]
       operationId: getLikes
@@ -521,10 +555,6 @@ paths:
         the users object is composed by the user_id and the username.
       security:
         - bearerAuth: []
-
-      parameters:
-      - { $ref: "#/components/parameters/Offset" }
-      - { $ref: "#/components/parameters/Limit" }
 
       responses:
         "200":
@@ -588,7 +618,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CommentsList" }
-              
+
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -701,13 +731,14 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/profile_pic:
+  /profiles/{profile_user_id}/profile-pic:
     parameters:
       - name: profile_user_id
         in: path
         description: The user Id of the owner of the post.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     put:
       tags: ["User"]
       operationId: setMyProfilePic
@@ -734,12 +765,52 @@ paths:
           description: Profile picture setted successful
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 description: The url of the profile picture
                 properties:
                   schema: { $ref: "#/components/schemas/ImgURL" }
-                example: { "img_url": "https://www.example.com/storage/2/profile_pic_250x250.jpeg" }
+                example:
+                  {
+                    "img_url": "https://www.example.com/storage/2/profile_pic_250x250.jpeg",
+                  }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profiles/:profileUserID/posts/:postID/caption:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the post.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post Id of the post to comment
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+
+    put:
+      tags: ["Post"]
+      operationId: changeCaption
+      summary: Set the caption of the post
+      description: |-
+        Set the caption of the post
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Caption" }
+      responses:
+        "200":
+          description: Caption setted successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Caption" }
+              example:
+                { "caption": "Io sono Haru, ho 1 anno e sono un gatto 🐱" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -777,7 +848,7 @@ components:
       properties:
         user: { $ref: "#/components/schemas/User" }
         bio: { $ref: "#/components/schemas/Bio" }
-        profilePic: { $ref: "#/components/schemas/ImgURL" }
+        profile_pic: { $ref: "#/components/schemas/ImgURL" }
         followers:
           type: integer
           description: Number of followers
@@ -834,13 +905,7 @@ components:
       type: object
       properties:
         photo_url: { $ref: "#/components/schemas/ImgURL" }
-        caption:
-          type: string
-          description: Caption of the post.
-          example: "Foto al lago con Haru"
-          pattern: '^[^\/\\]{1,100}$'
-          minLength: 0
-          maxLength: 100
+        caption: { $ref: "#/components/schemas/Caption" }
         likes_count:
           type: integer
           description: Number of likes of the post.
@@ -857,6 +922,18 @@ components:
       items: { $ref: "#/components/schemas/Post" }
       minItems: 0
       maxItems: 100
+    Caption:
+      title: Caption
+      description: Caption of the post
+      type: object
+      properties:
+        caption:
+          type: string
+          description: Caption of the post.
+          example: "Foto al lago con Haru"
+          pattern: '^[^\/\\]{1,100}$'
+          minLength: 0
+          maxLength: 64
     UsersList:
       title: Users List
       description: |-
@@ -868,7 +945,7 @@ components:
         description: User
         properties:
           user: { $ref: "#/components/schemas/User" }
-          proPic: { $ref: "#/components/schemas/ImgURL" }
+          pro_pic: { $ref: "#/components/schemas/ImgURL" }
       minItems: 0
       maxItems: 100
     Bio:

@@ -15,8 +15,6 @@ export default{
 <template>
     <div class="like-header-container">
         <font-awesome-icon icon="fa-regular fa-heart like-icon"/>
-
-
     </div>
 
 </template>
@@ -33,6 +31,8 @@ export default{
     padding: 0 10px;
     box-sizing: border-box;
     cursor: pointer;
+
+    background-color: rgb(0, 0, 0, 1);
 }
 
 </style>

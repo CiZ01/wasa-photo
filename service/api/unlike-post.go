@@ -2,11 +2,12 @@ package api
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"git.francescofazzari.it/wasa_photo/service/database"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
-	"strconv"
 )
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -23,7 +24,18 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	targetUserID, err := strconv.Atoi(ps.ByName("userID"))
+	if err != nil {
+		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	userID := ctx.UserID
+
+	if targetUserID != userID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {

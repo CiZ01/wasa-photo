@@ -51,20 +51,15 @@ def create_posts(count: int):
                     print(f"{i}. Post succesfull posted!")
 
 def create_likes(count : int) -> None:
-    i = 1
-
-    while i < count:
-        user1, user2 = (random.randint(1,20), random.randint(1,20))
-        post_user2 = random.randint(2,5)
-        header = {'Authorization': str(user1)}
-        response = r.put(f"http://localhost:3000/profiles/{user2}/posts/{post_user2}/likes/{user1}", headers= header)
-        if response.status_code != '201':
-            print(f"Like.{i} non creato!, {user1} and {user2} and {post_user2}")
-            print(response.text)
-            i += 1
-        else:
-            print(f"{i}. {response.text}")
-            i += 1
+    for i in range(1,count):
+        for j in range(1,5):
+            header = {'Authorization': str(i)}
+            response = r.put(f"http://localhost:3000/profiles/{random.randint(0,20)}/posts/{j}/likes/{i}", headers=header)
+            if response.status_code != 201:
+                print("Error creating like " + str(i))
+                print(response.text)
+            else:
+                print(f"{i}. Like succesfull posted!")
 
 def create_comments(count):
     for i in range(1,count):
@@ -129,10 +124,10 @@ def main():
     #create_users(20)
     #create_propic(20)
     #create_posts(20)
-    #create_likes(20)
+    create_likes(20)
     #create_comments(30)
-    create_follows(50)
-    create_ban(20)
+    #create_follows(40)
+    #create_ban(20)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@ export default {
         componentHeader: { type: Object, required: false },
         componentEntries: { type: String, required: true},
         typeEntry: { type: String, required: false, default: 'followings', validator(value) {
-            return ['bans', 'followings'].includes(value)
+            return ['bans', 'followings', 'comments'].includes(value)
         } },
         componentFooter: { type: Object, required: false },
         level: { type: Number, required: false },
@@ -72,6 +72,7 @@ export default {
 
 
     <div class="list-container-background" @click.self="this.$emit('exit-list')">
+        {{ componentHeader }}
         <div class="list-container">
             <div class="list-container-header">
                 <span class="list-header-text">{{ textHeader }}</span>
@@ -94,7 +95,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 3;
 
     display: flex;
     justify-content: center;
