@@ -367,9 +367,7 @@ export default {
     </div>
 
     <div v-if="showPost" class="post-view" @click.self="exitPost">
-        <Post :postID="postViewData.postID" :owner="postViewData.user" :caption="postViewData.caption"
-            :liked="postViewData.liked" :timestamp="postViewData.timestamp" :image="postViewData.image"
-            @update-like="updateLike" @delete-post="deletePost" />
+        <Post :postData="postViewData" @delete-post="deletePost" />
     </div>
 </template>
 

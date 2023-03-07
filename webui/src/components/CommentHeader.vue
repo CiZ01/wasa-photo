@@ -1,11 +1,11 @@
 <script>
 export default{
     props: {
-        likeCount: { type: Number, required: true },
+        data: { type: Object, required: true },
     },
     data(){
         return{
-            isHover: false,
+            commentsCount: this.$props.data["commentsCount"],
         }
     },
 }
@@ -13,26 +13,33 @@ export default{
 
 
 <template>
-    <div class="like-header-container">
-        <font-awesome-icon icon="fa-regular fa-heart like-icon"/>
+    <div class="comment-header-container">
+        <font-awesome-icon class="baloon-icon" icon="fa-regular fa-comment"/>
+        <span class="comments-count">Comments: {{ commentsCount }}</span>
     </div>
 
 </template>
 
 
 <style> 
-.like-header-container{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+.comment-header-container{
     width: 100%;
-    height: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
-    cursor: pointer;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
-    background-color: rgb(0, 0, 0, 1);
+.comments-count{
+    font-size: 1.2em;
+    font-weight: 600;
+    color: rgb(0,0,0,0.6);
+}
+
+.baloon-icon{
+    font-size: 7em;
+    color: rgb(0,0,0,0.3);
 }
 
 </style>

@@ -1,58 +1,165 @@
 <script>
+import utils from "../services/utils.js";
+
 export default {
-    emits: ["exit-list-from-entry", 'error-occured'],
+    emits: ["exit-list-from-entry", 'error-occured', 'data-update'],
     props: {
+        /*
+        {
+            commentID,
+            postID,
+            ownerID,
+            user: {
+                userID,
+                username,
+                userPropic64,
+            },
+            text,
+            timestamp
+        }
+        */
         data: { type: Object, required: true },
     },
     data() {
         return {
-            propic64: this.$props.data["userPropic64"],
-            username: this.$props.data["username"],
-            userID: this.$props.data["userID"],
+            propic64: this.$props.data.user["userPropic64"],
+            username: this.$props.data.user["username"],
+            userID: this.$props.data.user["userID"],
+            
+            ownerID: this.$props.data.ownerID,
+            postID: this.$props.data.postID,
+            text: this.$props.data.text,
+            commentID: this.$props.data.commentID,
+            timestamp: this.$props.data.timestamp,
+
+            isOwner: false,
         }
     },
     methods: {
+        since(timestamp) {
+            return utils.since(timestamp);
+        },
         goToProfile() {
             this.$router.push(`/profiles/${this.userID}`);
             this.$emit('exit-list-from-entry')
         },
+        async deleteComment() {
+            try {
+                let _ = await this.$axios.delete(`profiles/${this.ownerID}/posts/${this.postID}/comments/${this.commentID}`,
+                    { headers: { 'Authorization': `${localStorage.token}` } });
+                this.$emit('data-update', {'value': this.commentID, 'opType:': 'delete'});
+            } catch (e) {
+                this.$emit('error-occured', e.response.data.message);
+            }
+        }
     },
+    mounted() {
+        if (localStorage.userID == this.userID) this.isOwner = true;
+    }
 }
 </script>
 
 
 <template>
-    <div class="profile-entries" @click.native="goToProfile">
-        <img class="propic-image" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
-        <span class="profile-entries-username">{{ username }}</span>
+    <div class="comment-entry">
+        <div class="comment-entry-info">
+            <img class="propic-image" @click="goToProfile" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
+            <span class="profile-entry-username" @click="goToProfile">{{ username }}</span>
+            <span class="comment-entry-timestamp">{{ since(timestamp) }}</span>
+            <button v-if="!isOwner" class="comment-entry-button-menu" @click="deleteComment">
+                <font-awesome-icon class="comment-entry-icon" icon="fa-regular fa-trash-can" />
+            </button>
+        </div>
+        <span class="comment-entry-text"> {{ text }} </span>
     </div>
 </template>
 
 
 <style>
-.profile-entries {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5em;
+.comment-entry {
+    width: 100%;
+    min-height: 3em;
+    height: auto;
+    max-height: 5em;
 
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 0.5em;
 
     border-top: 0.01em solid rgb(0, 0, 0, 0.3);
 
     padding: 0.5em 0 0 0.5em;
 }
 
-.propic-image{
+.comment-entry-icon {
+    font-size: 1em;
+    color: rgb(0, 0, 0, 0.6);
+    margin-left: auto;
+    margin-right: 0.5em;
+}
+
+.comment-entry-info {
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+}
+
+.propic-image {
     width: 2em;
     height: 2em;
     border-radius: 100%;
     margin-right: 0.5em;
 
+    cursor: pointer;
+
     border: 0.1em solid rgb(0, 0, 0, 0.1);
 }
 
-.profile-entries-username {
+.profile-entry-username {
     font-size: 1em;
-    font-weight: 500;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.comment-entry-button-menu {
+    width: 2em;
+    height: 2em;
+    border: none;
+    background-color: white;
+
+    margin-left: auto;
+    margin-right: 0.5em;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment-entry-text {
+    width: 85%;
+    height: auto;
+
+    word-wrap: break-word;
+    display: inline-block;
+
+    margin-left: 2.8em;
+
+    font-size: 0.8em;
+    font-weight: 400;
+    color: rgb(0, 0, 0, 0.6);
+}
+
+.comment-entry-timestamp {
+    font-size: 0.7em;
+    font-weight: 400;
+    color: rgb(0, 0, 0, 0.6);
+
+    margin-left: 1em;
 }
 </style>

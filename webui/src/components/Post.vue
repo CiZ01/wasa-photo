@@ -1,48 +1,61 @@
 <script>
+
 import ProfilesList from './ProfilesList.vue';
 import LikeHeader from '../components/LikeHeader.vue';
 import CommentHeader from '../components/CommentHeader.vue';
+import CommentFooter from '../components/CommentFooter.vue';
+import utils from '../services/utils.js';
 
 export default {
-    emits: ['update-like', 'toogle-navbar', 'delete-post'],
+    emits: ['update-like', 'delete-post'],
     components: {
         ProfilesList,
         LikeHeader,
         CommentHeader,
+        CommentFooter,
     },
     props: {
-        owner: { type: Object, required: true },
-        postID: { type: Number, required: true },
-        caption: { type: String, required: true },
-        image: { type: String, required: true },
-        timestamp: { type: String, required: true },
-        liked: { type: Boolean, required: true },
+        postData: { type: Object, required: true },
     },
     data() {
         return {
 
             // Data User
-            ownerID: this.$props.owner['userID'],
-            username: this.$props.owner['username'],
-            proPic64: this.$props.owner['userPropic64'],
+            ownerID: this.postData.user['userID'],
+            username: this.postData.user['username'],
+            proPic64: this.postData.user['userPropic64'],
 
+            // Data Post
+            postID: this.postData.postID,
+            isLiked: this.postData.liked,
+            image64: this.postData.image,
+            likesCount: this.postData.likesCount,
+            commentsCount: this.postData.commentsCount,
+            timestamp: this.postData.timestamp,
+            captionPost: this.postData.caption ? this.postData.caption : "There is no caption for this post",
 
             isOwner: false,
             isHoverComment: false,
-            isLiked: this.liked,
+
             profilesList: [],
-            captionPost: "There is no caption for this post",
             textCounter: 0,
             showList: false,
             textHeader: "",
             componentEntries: "",
             customHeader: null,
+            customFooter: null,
+            typeEntry: '',
             dataGetter: () => { },
+            dataUpdater: () => { },
+            additionalData: {},
 
             errorMsg: "",
         };
     },
     methods: {
+        since(timestamp) {
+            return utils.since(timestamp);
+        },
         async like() {
             try {
                 let _ = await this.$axios.put(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
@@ -50,7 +63,7 @@ export default {
                 this.$emit('update-like', { postID: this.postID, liked: true });
 
             } catch (e) {
-                localStorage.errorMessage = e.response.data;
+                this.errorMsg = e.toString();
             }
         },
         async unlike() {
@@ -59,30 +72,49 @@ export default {
                 this.isLiked = false
                 this.$emit('update-like', { postID: this.postID, liked: false });
             } catch (e) {
-                localStorage.errorMessage = e.response.data;
+                this.errorMsg = e.toString();
             }
         },
         toggleComment() {
             this.isHoverComment = !this.isHoverComment;
         },
         async getComments() {
-            try {
-                let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments`, { headers: { "Authorization": `${localStorage.token}` } });
-                this.profilesList = response.data;
-                this.customHeader = markRaw(CommentHeader);
-                this.titleHeaderList = "Comments";
-
-                this.showList = true;
-                console.log(this.profilesList);
-
-            } catch (e) {
-                localStorage.errorMessage = e.response.data;
-            }
+            this.showList = true;
+            this.textHeader = "";
+            this.componentEntries = "CommentEntry";
+            this.customHeader = CommentHeader;
+            this.customFooter = CommentFooter;
+            this.additionalData = { 'commentsCount': this.commentsCount, 'postID': this.postID, 'ownerID': this.ownerID};
+            this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
+                try {
+                    let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                    if (response.data == null) {
+                        dataAvaible = false;
+                        return;
+                    }
+                    profilesArray.push(...response.data);
+                } catch (e) {
+                    this.errorMsg = e.toString();
+                }
+            };
+            this.dataUpdater = (entries, values) => {
+                if (values.opType == 'insert'){
+                    const value = values.value;
+                    entries.push(value);
+                }else if (values.opType == 'delete'){
+                    const value = values.value;
+                    entries = entries.filter(entry => entry.commentID != value);
+                }
+            };
         },
         async getLikes() {
             this.showList = true;
-            this.textHeader = "Likes";
+            this.textHeader = "";
             this.componentEntries = "SimpleProfileEntry";
+
+            this.customFooter = null;
+            this.customHeader = LikeHeader;
+            this.additionalData = { 'likesCount': this.likesCount };
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/likes?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -113,7 +145,7 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
-                    localStorage.errorMessage = e.response.data;
+                    this.errorMsg = e.toString();
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
             }
@@ -127,31 +159,9 @@ export default {
         goToProfile() {
             this.$router.push(`/profiles/${this.ownerID}`);
         },
-        calcTimestamp(timestamp) {
-            const ONE_MINUTE = 60 * 1000;
-            const ONE_HOUR = 60 * ONE_MINUTE;
-            const ONE_DAY = 24 * ONE_HOUR;
-            const ONE_WEEK = 7 * ONE_DAY;
-
-            const diff = Math.abs(Date.now() - timestamp);
-            const elapsedMinutes = Math.floor(diff / ONE_MINUTE);
-            const elapsedHours = Math.floor(diff / ONE_HOUR);
-            const elapsedDays = Math.floor(diff / ONE_DAY);
-            const elapsedWeeks = Math.floor(diff / ONE_WEEK);
-
-            if (elapsedWeeks > 0) {
-                return `${elapsedWeeks}w`;
-            } else if (elapsedDays > 0) {
-                return `${elapsedDays}d`;
-            } else if (elapsedHours > 0) {
-                return `${elapsedHours}h`;
-            } else {
-                return `${elapsedMinutes}m`;
-            }
-        },
         deletePost() {
             this.$emit('delete-post', this.postID);
-        }
+        },
     },
     beforeMount() {
         if (this.ownerID == localStorage.userID) {
@@ -160,33 +170,27 @@ export default {
         if (this.caption != "") {
             this.captionPost = this.caption;
         }
+
     },
     mounted() {
-
     },
     afterMount() {
         if (this.isOwner) {
             document.getElementsByClassName("post-tail-caption-text")[0].style.cursor = "text";
         }
     },
-    watch: {
-        errorMsg: function () {
-            this.$emit("errorOccurred", this.errorMsg);
-            console.log(this.errorMsg);
-        },
-    },
 }
 </script>
 
 <template>
-    <ErrorMsg v-if="errorMsg" :msg="errorMsg" />
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''" />
     <div class="post-containter">
         <div class="post-header">
             <img class="post-header-propic-img" :src="`data:image/jpg;base64,${proPic64}`" alt="" loading="lazy">
             <span @click="goToProfile" class="post-header-username">{{ username }}</span>
-            <span class="post-header-timestamp">{{ calcTimestamp(new Date(timestamp)) }}</span>
+            <span class="post-header-timestamp">{{ since(timestamp) }}</span>
         </div>
-        <img class="post-img" :src="`data:image/jpg;base64,${image}`" @dblclick="() => isLiked ? unlike() : like()"
+        <img class="post-img" :src="`data:image/jpg;base64,${image64}`" @dblclick="() => isLiked ? unlike() : like()"
             loading="lazy">
         <div class="post-tail">
             <div class="post-tail-like-comment-options">
@@ -215,8 +219,8 @@ export default {
         </div>
     </div>
     <ProfilesList @exit-list="showList = false" class="stats-lists-component" v-if="showList"
-        :componentHeader="customHeader" :textHeader="textHeader" :dataGetter="dataGetter"
-        :componentEntries="componentEntries" />
+        :componentHeader="customHeader" :textHeader="textHeader" :dataGetter="dataGetter" :dataUpdater="dataUpdater"
+        :componentEntries="componentEntries" :componentFooter="customFooter" :argv="additionalData" />
 </template>
 
 

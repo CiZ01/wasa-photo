@@ -51,9 +51,17 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	comment, err := rt.db.CreateComment(userID, profileUserID, postID, tmpComment.Text)
+	dbComment, err := rt.db.CreateComment(userID, profileUserID, postID, tmpComment.Text)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error creating comment")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	var comment Comment
+	err = comment.FromDatabase(dbComment)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error converting comment")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

@@ -27,12 +27,12 @@ func (db *appdbimpl) GetStream(userID int, offeset int, limit int) ([]Post, erro
 		}
 
 		// Get the likes count for the post
-		if err := db.c.QueryRow(query_GETLIKECOUNT, post.PostID, user.UserID).Scan(&post.LikeCount); err != nil {
+		if err := db.c.QueryRow(query_GETLIKECOUNT, post.PostID, user.UserID).Scan(&post.LikesCount); err != nil {
 			return nil, err
 		}
 
 		// Get the comments count for the post
-		if err := db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID, user.UserID).Scan(&post.CommentCount); err != nil {
+		if err := db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID, user.UserID).Scan(&post.CommentsCount); err != nil {
 			return nil, err
 		}
 

@@ -12,14 +12,14 @@ This struct rappresents the Post object.
 The post is identified by the PostID, which is the primary key.
 */
 type Post struct {
-	PostID       int       `json:"postID"`
-	User         User      `json:"user"`
-	ImageURL     string    `json:"imageURL"`
-	Caption      string    `json:"caption"`
-	LikeCount    int       `json:"likeCount"`
-	CommentCount int       `json:"commentCount"`
-	Liked        bool      `json:"liked"`
-	Timestamp    time.Time `json:"timestamp"`
+	PostID        int       `json:"postID"`
+	User          User      `json:"user"`
+	ImageURL      string    `json:"imageURL"`
+	Caption       string    `json:"caption"`
+	LikesCount    int       `json:"likesCount"`
+	CommentsCount int       `json:"commentsCount"`
+	Liked         bool      `json:"liked"`
+	Timestamp     time.Time `json:"timestamp"`
 }
 
 /*
@@ -28,6 +28,8 @@ The post is identified by the CommentID, which is the primary key.
 */
 type Comment struct {
 	CommentID int       `json:"commentID"`
+	PostID    int       `json:"postID"`
+	OwnerID   int       `json:"ownerID"`
 	User      User      `json:"userID"`
 	Text      string    `json:"text"`
 	Timestamp time.Time `json:"timestamp"`

@@ -85,12 +85,11 @@ export default {
 </script>
 
 <template>
-	<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+	<ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
 
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
 		@refresh-data="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
 	<FloatingNavbar @show-upload-form="showUploadPhoto = true"> </FloatingNavbar>
 
-	<Post v-for="post in posts" :postID="post.postID" :owner="post.user" :image="post.image" :caption="post.caption"
-		:timestamp="post.timestamp" :liked="post.liked" @delete-post="deletePost" />
+	<Post v-for="post in posts" :postData="post" @delete-post="deletePost" />
 </template>

@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -47,11 +48,23 @@ func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Get the comments
-	comments, err := rt.db.GetComments(profileUserID, postID, offset, limit)
+	dbComments, err := rt.db.GetComments(profileUserID, postID, offset, limit)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting comments")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	// Convert the comments to the API struct
+	comments := make([]Comment, len(dbComments))
+	for i, dbComment := range dbComments {
+		var comment Comment
+		if err = comment.FromDatabase(dbComment); err != nil {
+			ctx.Logger.WithError(err).Error("Error converting comment")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		comments[i] = comment
 	}
 
 	// Write the comments

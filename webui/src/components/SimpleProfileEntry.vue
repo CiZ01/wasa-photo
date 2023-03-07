@@ -22,7 +22,7 @@ export default {
 
 
 <template>
-    <div class="profile-entries" @click.native="goToProfile">
+    <div class="profile-entries" @click="goToProfile">
         <img class="propic-image" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
         <span class="profile-entries-username">{{ username }}</span>
     </div>
@@ -53,6 +53,6 @@ export default {
 
 .profile-entries-username {
     font-size: 1em;
-    font-weight: 500;
+    font-weight: 600;
 }
 </style>

@@ -1,6 +1,6 @@
 package database
 
-var query_GETALLCOMMENTS = `SELECT commentID, userID, commentText, timestamp FROM Comment WHERE ownerID = ? AND postID = ? AND hidden="0" LIMIT ?,?`
+var query_GETALLCOMMENTS = `SELECT commentID, userID, ownerID, postID, commentText, timestamp FROM Comment WHERE ownerID = ? AND postID = ? AND hidden="0" LIMIT ?,?`
 
 func (db *appdbimpl) GetComments(ownerID int, postID int, offset int, limit int) ([]Comment, error) {
 	var comments []Comment
@@ -17,7 +17,7 @@ func (db *appdbimpl) GetComments(ownerID int, postID int, offset int, limit int)
 		}
 		var comment Comment
 		var userID int
-		err = rows.Scan(&comment.CommentID, &userID, &comment.Text, &comment.Timestamp)
+		err = rows.Scan(&comment.CommentID, &userID, &comment.OwnerID, &comment.PostID, &comment.Text, &comment.Timestamp)
 		if err != nil {
 			return nil, err
 		}

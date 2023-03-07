@@ -92,12 +92,12 @@ Authorization: 2
 ###
 
 # COMMENT #
-POST http://localhost:3000/profiles/2/posts/2/comments HTTP/1.1
+POST http://localhost:3000/profiles/5/posts/3/comments HTTP/1.1
 Authorization: 1
 content-type: application/json
 
 {
-    "text": "asd"
+    "text": "bella foto!"
 }
 
 ###

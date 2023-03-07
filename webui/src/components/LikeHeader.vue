@@ -1,38 +1,44 @@
 <script>
 export default{
     props: {
-        likeCount: { type: Number, required: true },
+        data: { type: Object, required: true },
     },
     data(){
         return{
             isHover: false,
+            likesCount: this.$props.data["likesCount"],
         }
     },
 }
 </script>
 
 
-<template>
+<template> 
     <div class="like-header-container">
-        <font-awesome-icon icon="fa-regular fa-heart like-icon"/>
-
-
+        <font-awesome-icon class="heart-icon" icon="fa-regular fa-heart"/>
+        <span class="likes-count">Likes: {{ likesCount }}</span>
     </div>
-
 </template>
 
 
 <style> 
 .like-header-container{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
     width: 100%;
-    height: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
-    cursor: pointer;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
+.likes-count{
+    font-size: 1.2em;
+    font-weight: 600;
+    color: rgb(0,0,0,0.6);
+}
+
+.heart-icon{
+    font-size: 7em;
+    color: rgb(0,0,0,0.3);
+}
 </style>

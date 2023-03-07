@@ -43,9 +43,11 @@ func (db *appdbimpl) CreateComment(userID int, ownerID int, postID int, commentT
 	comment = Comment{
 		CommentID: lastCommentID + 1,
 		User:      user,
+		PostID:    postID,
+		OwnerID:   ownerID,
 		Text:      commentText,
 		Timestamp: time.Time(time.Now()),
 	}
 
-	return comment, nil
+	return comment, err
 }

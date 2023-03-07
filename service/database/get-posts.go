@@ -33,13 +33,13 @@ func (db *appdbimpl) GetPosts(userID int, profileUserID int, offset int, limit i
 			return nil, err
 		}
 		// Get like count
-		err = db.c.QueryRow(query_GETLIKECOUNT, post.PostID, profileUserID).Scan(&post.LikeCount)
+		err = db.c.QueryRow(query_GETLIKECOUNT, post.PostID, profileUserID).Scan(&post.LikesCount)
 		if err != nil {
 			return nil, err
 		}
 
 		// Get comment count
-		err = db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID, profileUserID).Scan(&post.CommentCount)
+		err = db.c.QueryRow(query_GETCOMMENTCOUNT, post.PostID, profileUserID).Scan(&post.CommentsCount)
 		if err != nil {
 			return nil, err
 		}

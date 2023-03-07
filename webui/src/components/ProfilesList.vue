@@ -4,23 +4,26 @@ import { defineAsyncComponent, shallowRef } from 'vue';
 
 export default {
     emits: ["exit-list"],
-
     props: {
         dataGetter: { type: Function, required: true },
+        dataUpdater: { type: Function, required: false },
+
         textHeader: { type: String, required: true },
         componentHeader: { type: Object, required: false },
-        componentEntries: { type: String, required: true},
-        typeEntry: { type: String, required: false, default: 'followings', validator(value) {
-            return ['bans', 'followings', 'comments'].includes(value)
-        } },
+        componentEntries: { type: String, required: true },
+        typeEntry: {
+            type: String, required: false, default: 'followings', validator(value) {
+                return ['bans', 'followings', 'comments'].includes(value)
+            }
+        },
         componentFooter: { type: Object, required: false },
-        level: { type: Number, required: false },
+        argv: { type: Object, required: false },
     },
     data() {
         return {
             customLevel: 0,
             customEntries: "",
-            profiles: [],
+            entries: [],
 
 
             // Load More
@@ -34,30 +37,36 @@ export default {
         }
     },
     methods: {
-        loadMoreContents(){
+        loadMoreContents() {
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
             this.offset += this.limit;
-            this.dataGetter(this.profiles, this.limit, this.offset, this.dataAvaible);
+            this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
             this.busy = false;
-            
+
         },
-        handleError(msg){
+        handleError(msg) {
             this.errorMsg = msg;
-        }
+        },
+        dataUpdaterEvent(values) {
+            if (this.dataUpdater)
+                this.dataUpdater(this.entries, values);
+            else
+                this.errorMsg = "Data Updater not defined";
+        },
     },
     beforeMount() {
         this.customEntries = shallowRef(defineAsyncComponent(() =>
-            import(`./${this.componentEntries}.vue`))
+            import(`../components/${this.componentEntries}.vue`))
         )
     },
-    mounted(){
-        this.dataGetter(this.profiles, this.limit, this.offset, this.dataAvaible);
+    mounted() {
+        this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
+        console.log(this.entries);
 
-        
         const el = document.getElementsByClassName("list-container")[0];
         el.addEventListener('scroll', e => {
-            if(el.scrollTop + el.clientHeight >= el.scrollHeight) {
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
                 this.loadMoreContents();
             }
         });
@@ -67,21 +76,24 @@ export default {
 
 
 <template>
-
-    <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
 
 
     <div class="list-container-background" @click.self="this.$emit('exit-list')">
-        {{ componentHeader }}
         <div class="list-container">
             <div class="list-container-header">
+                <component :is="componentHeader" :data="argv" v-if="componentHeader"></component>
                 <span class="list-header-text">{{ textHeader }}</span>
             </div>
-            <component class="list-entries" v-for="user in profiles" :key="user.userID" :is="customEntries" :data="user" :type="typeEntry" 
-            @exit-list-from-entry="this.$emit('exit-list')" @error-occured="handleError">
+            <component class="list-entries" v-for="entry in entries" :key="entry.id" :is="customEntries" :data="entry"
+                :type="typeEntry" @exit-list-from-entry="this.$emit('exit-list')" @data-update="removeEntry"
+                @error-occured="handleError">
             </component>
 
-            <span v-if="profiles.length == 0" class="empty-list-msg">Nothing to see</span>
+            <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
+
+            <component class="component-footer" :is="componentFooter" v-if="componentFooter" :data="argv"
+                @update-data="dataUpdaterEvent" @error-occured="handleError"></component>
         </div>
     </div>
 </template>
@@ -98,38 +110,31 @@ export default {
     z-index: 3;
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
 .list-container-header {
     width: 100%;
-    height: 2em;
-    margin-bottom: 1em;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: auto;
 }
 
 .list-header-text {
     font-size: 1.8em;
     font-weight: 600;
-    position: relative;
-
-
 }
 
 .list-container {
     width: 25em;
-    height: 30em;
+    height: auto;
+    min-height: 20em;
 
     border-radius: 0.5em;
     background-color: #fff;
 
     padding: 2em;
 
-    position: relative;
     z-index: 2;
 
     overflow: scroll;
@@ -137,25 +142,23 @@ export default {
 
 .list-entries {
     width: 100%;
-    height: 3em;
+    height: auto;
 
     display: flex;
     align-items: center;
     justify-content: left;
-}
 
-.list-container::-webkit-scrollbar {
-    display: none;
-}
-
-.list-container {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
 }
 
-.empty-list-msg{
+.list-container::-webkit-scrollbar {
+    display: none;
+}
+
+.empty-list-msg {
     font-size: 1.2em;
     font-weight: 600;
     color: #aaa;
@@ -163,5 +166,9 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.component-footer {
+    position: fixed;
 }
 </style>
