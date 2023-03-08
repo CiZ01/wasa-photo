@@ -6,6 +6,8 @@ import CommentHeader from '../components/CommentHeader.vue';
 import CommentFooter from '../components/CommentFooter.vue';
 import utils from '../services/utils.js';
 
+import { shallowRef } from 'vue';
+
 export default {
     emits: ['update-like', 'delete-post'],
     components: {
@@ -32,7 +34,7 @@ export default {
             likesCount: this.postData.likesCount,
             commentsCount: this.postData.commentsCount,
             timestamp: this.postData.timestamp,
-            captionPost: this.postData.caption ? this.postData.caption : "There is no caption for this post",
+            captionPost: this.postData.caption != '' ? this.postData.caption : "There is no caption for this post",
 
             isOwner: false,
             isHoverComment: false,
@@ -42,9 +44,7 @@ export default {
             showList: false,
             textHeader: "",
             componentEntries: "",
-            customHeader: null,
             customFooter: null,
-            typeEntry: '',
             dataGetter: () => { },
             dataUpdater: () => { },
             additionalData: {},
@@ -61,7 +61,7 @@ export default {
                 let _ = await this.$axios.put(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
                 this.isLiked = true;
                 this.$emit('update-like', { postID: this.postID, liked: true });
-
+                this.likesCount++;
             } catch (e) {
                 this.errorMsg = e.toString();
             }
@@ -71,6 +71,7 @@ export default {
                 let _ = await this.$axios.delete(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, { headers: { "Authorization": `${localStorage.token}` } });
                 this.isLiked = false
                 this.$emit('update-like', { postID: this.postID, liked: false });
+                this.likesCount--;
             } catch (e) {
                 this.errorMsg = e.toString();
             }
@@ -80,11 +81,10 @@ export default {
         },
         async getComments() {
             this.showList = true;
-            this.textHeader = "";
+            this.textHeader = "Comments";
             this.componentEntries = "CommentEntry";
-            this.customHeader = CommentHeader;
-            this.customFooter = CommentFooter;
-            this.additionalData = { 'commentsCount': this.commentsCount, 'postID': this.postID, 'ownerID': this.ownerID};
+            this.customFooter = shallowRef(CommentFooter);
+            this.additionalData = { 'commentsCount': this.commentsCount, 'postID': this.postID, 'ownerID': this.ownerID };
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.ownerID}/posts/${this.postID}/comments?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -98,22 +98,23 @@ export default {
                 }
             };
             this.dataUpdater = (entries, values) => {
-                if (values.opType == 'insert'){
-                    const value = values.value;
-                    entries.push(value);
-                }else if (values.opType == 'delete'){
-                    const value = values.value;
-                    entries = entries.filter(entry => entry.commentID != value);
+                console.log(values);
+                if (values['opType'] == 'insert') {
+                    entries.push(values['value']);
+                    this.commentsCount++;
+                } else if (values['opType'] == 'delete') {
+                    const index = entries.findIndex((entry) => entry.commentID == values['value']);
+                    entries.splice(index, 1);
+                    this.commentsCount--;
                 }
             };
         },
         async getLikes() {
             this.showList = true;
-            this.textHeader = "";
+            this.textHeader = "Likes";
             this.componentEntries = "SimpleProfileEntry";
 
             this.customFooter = null;
-            this.customHeader = LikeHeader;
             this.additionalData = { 'likesCount': this.likesCount };
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
@@ -123,7 +124,6 @@ export default {
                         return;
                     }
                     profilesArray.push(...response.data);
-                    console.log(profilesArray);
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
@@ -133,27 +133,22 @@ export default {
             if (this.isOwner) {
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
                 document.getElementsByClassName("post-tail-caption")[0].style.outline = "auto";
+                document.getElementsByClassName("post-tail-caption")[0].style.outlineColor = "#03C988";
             }
         },
         async saveChangeCaption() {
             if (this.isOwner) {
-                if (this.bio == "") {
-                    this.bio = "This user have notighing to say";
+                if (this.captionPost == "") {
+                    this.captionPost = "This user have notighing to say";
                 }
                 document.getElementsByClassName("post-tail-caption")[0].style.outline = "none";
                 try {
-                    let _ = await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.caption }, { headers: { "Authorization": `${localStorage.token}` } });
+                    await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.captionPost }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
                     this.errorMsg = e.toString();
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
-            }
-        },
-        countChar() {
-            this.textCounter = this.caption.length;
-            if (this.caption.includes("\n")) {
-                this.caption = this.caption.replace("\n", "");
             }
         },
         goToProfile() {
@@ -167,10 +162,6 @@ export default {
         if (this.ownerID == localStorage.userID) {
             this.isOwner = true;
         }
-        if (this.caption != "") {
-            this.captionPost = this.caption;
-        }
-
     },
     mounted() {
     },
@@ -178,6 +169,15 @@ export default {
         if (this.isOwner) {
             document.getElementsByClassName("post-tail-caption-text")[0].style.cursor = "text";
         }
+    },
+
+    watch: {
+        captionPost() {
+            this.textCounter = this.captionPost.length;
+            if (this.captionPost.includes("\n")) {
+                this.captionPost = this.captionPost.replace("\n", "");
+            }
+        },
     },
 }
 </script>
@@ -194,17 +194,19 @@ export default {
             loading="lazy">
         <div class="post-tail">
             <div class="post-tail-like-comment-options">
-                <button class="post-tail-button" name="like" @click="isLiked ? unlike() : like()">
-                    <font-awesome-icon v-if=(!isLiked) icon="fa-regular fa-heart" />
-                    <font-awesome-icon v-else icon="fa-solid fa-heart" style="color:red" />
+                <button class="post-tail-button fa-layers fa-fw" name="like" @click.self="isLiked ? unlike() : like()">
+                    <font-awesome-icon v-if="!isLiked" icon="fa-regular fa-heart" @click="like" />
+                    <font-awesome-icon v-else icon="fa-solid fa-heart" style="color:red" @click="unlike" />
+                    <span class="fa-layers-counter bg-secondary h2">{{ likesCount }}</span>
                     <span class="title-button" @click.self="getLikes">
                         Likes
                     </span>
                 </button>
-                <button class="post-tail-button" name="comment" @click="getComments">
+                <button class="post-tail-button fa-layers fa-fw" name="comment" @click="getComments">
                     <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" v-on:mouseover="toggleComment" />
                     <font-awesome-icon v-else icon="fa-solid fa-comment" v-on:mouseout="toggleComment"
                         style="opacity:0.9" />
+                    <span class="fa-layers-counter bg-secondary h2">{{ commentsCount }}</span>
                     <span class="title-button">
                         Comments
                     </span>
@@ -213,32 +215,20 @@ export default {
                     <font-awesome-icon icon="fa-regular fa-trash-can" />
                 </button>
             </div>
-            <textarea :readonly="!isOwner" @focusin="editingCaption" @focusout="saveChangeCaption" @input="countChar"
-                v-model="captionPost" spellcheck="false" maxlength="64" rows="2" class="post-tail-caption"></textarea>
+            <textarea :readonly="!isOwner" @focusin="editingCaption" @focusout="saveChangeCaption" v-model="captionPost"
+                spellcheck="false" maxlength="64" rows="2" class="post-tail-caption"></textarea>
             <span class="post-tail-caption-text-counter">{{ textCounter }}/64 </span>
         </div>
     </div>
-    <ProfilesList @exit-list="showList = false" class="stats-lists-component" v-if="showList"
-        :componentHeader="customHeader" :textHeader="textHeader" :dataGetter="dataGetter" :dataUpdater="dataUpdater"
-        :componentEntries="componentEntries" :componentFooter="customFooter" :argv="additionalData" />
+    <ProfilesList @exit-list="showList = false" v-if="showList" :textHeader="textHeader" :dataGetter="dataGetter"
+        :dataUpdater="dataUpdater" :componentEntries="componentEntries" :componentFooter="customFooter"
+        :argv="additionalData" />
 </template>
 
 
 <style>
 .stats-lists-component {
     z-index: 3;
-}
-
-.post-tail-button {
-    border: none;
-    background-color: transparent;
-    outline: none;
-    margin-right: 0.5em;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
 }
 
 .post-containter {
@@ -249,10 +239,6 @@ export default {
     box-shadow: 0 4px 5px -2px rgba(0, 0, 0, 0.4);
 
     border-radius: 0.5em;
-
-
-    position: relative;
-    left: 0;
 
     margin-bottom: 4em;
 
@@ -322,12 +308,29 @@ export default {
 .post-tail-like-comment-options {
     width: 100%;
     height: 2em;
+
     font-size: 1.5em;
     border-bottom: 1px solid rgb(0, 0, 0, 0.2);
+
+    padding: 0 0 1em 0;
 
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.post-tail-button {
+    border: none;
+    background-color: transparent;
+    outline: none;
+
+    margin-right: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
 }
 
 .title-button {
@@ -337,11 +340,16 @@ export default {
     cursor: pointer;
 
     position: relative;
+    top: 2em;
 
 }
 
 .post-tail-delete-button {
-    float: right;
+    margin-left: auto;
+
+    border: none;
+    background-color: transparent;
+    outline: none;
 
     font-size: 0.8em;
     margin-top: 0.3em;

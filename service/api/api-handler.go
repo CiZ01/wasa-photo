@@ -61,7 +61,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.likePhoto, true))
 
 	// --------UNLIKE POST-------------//
-	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/like/:userID", rt.wrap(rt.unlikePhoto, true))
+	rt.router.DELETE("/profiles/:profileUserID/posts/:postID/likes/:userID", rt.wrap(rt.unlikePhoto, true))
 
 	// ---------GET LIKES--------------//
 	rt.router.GET("/profiles/:profileUserID/posts/:postID/likes", rt.wrap(rt.getLikes, true))

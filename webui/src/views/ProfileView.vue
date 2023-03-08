@@ -44,7 +44,7 @@ export default {
             dataAvaible: true,
 
             // Follower data
-            followersFunc: () => { },
+            dataGetter: () => { },
             showList: false,
 
             // Options data
@@ -356,7 +356,7 @@ export default {
     </div>
 
     <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader"
-        :componentEntries="componentEntries" class="follow-list-view" @exit-list="freeLists" />
+        :componentEntries="componentEntries" @exit-list="freeLists"> </ProfilesList>
 
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">

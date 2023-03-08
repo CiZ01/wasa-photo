@@ -21,7 +21,7 @@ export default {
             document.getElementsByClassName("comment-input")[0].style.outline = "auto";
             document.getElementsByClassName("comment-input")[0].style.outlineColor = "#03C988";
         },
-        nowritingComment() {
+        noWritingComment() {
             document.getElementsByClassName("comment-input")[0].style.outline = "none";
         },
         async sendComment() {
@@ -37,7 +37,8 @@ export default {
                 let response = await this.$axios.post(`profiles/${this.ownerID}/posts/${this.postID}/comments`,
                     body,
                     { headers: { 'Authorization': `${localStorage.token}` } });
-                this.$emit('data-update', {'value': response.data, 'opType:': 'insert'});
+                this.$emit('data-update', {'value': response.data, 'opType': 'insert'});
+                this.commentText = '';
             } catch (e) {
                 this.$emit('error-occured', e.toString());
             }
@@ -53,8 +54,8 @@ export default {
 <template>
     <div class="comment-form-container">
         <img :src="`data:image/jpg;base64,${propic64}`" class="propic-image">
-        <input class="comment-input" type="text" v-model="commentText" placeholder="Write a comment..."
-            @focus="writingComment" @focusout="nowritingComment" maxlength="64">
+        <input class="comment-input" type="text" v-model="commentText" placeholder="Write a comment..." spellcheck="false"
+            @focus="writingComment" @focusout="noWritingComment" maxlength="64">
         <button class="comment-button-send" type="submit" @click="sendComment">
             <font-awesome-icon class="send-icon" icon="fa-solid fa-paper-plane" />
         </button>

@@ -29,6 +29,9 @@ export default {
 		}
 	},
 	methods: {
+		getID(post) {
+			return `${post.user.userID}`+ `${post.postID}`;
+		},
 		async getMyStream() {
 			try {
 				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
@@ -58,9 +61,10 @@ export default {
 			this.busy = false;
 		},
 		async deletePost(postID) {
+			const index = this.posts.findIndex(post => post.postID == postID && post.user.userID == localStorage.userID);
 			try{
-				let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
-				this.posts = this.posts.filter(post => post.postID != postID);
+				await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+				this.posts.splice(index, 1);
 			}catch(e){
 				this.errorMsg = e.toString();
 			}
@@ -72,6 +76,7 @@ export default {
 			return
 		}
 		this.getMyStream();
+		console.log(this.posts);
 	},
 	mounted() {
 
@@ -91,5 +96,5 @@ export default {
 		@refresh-data="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
 	<FloatingNavbar @show-upload-form="showUploadPhoto = true"> </FloatingNavbar>
 
-	<Post v-for="post in posts" :postData="post" @delete-post="deletePost" />
+	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost" />
 </template>

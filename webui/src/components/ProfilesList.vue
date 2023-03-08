@@ -11,11 +11,7 @@ export default {
         textHeader: { type: String, required: true },
         componentHeader: { type: Object, required: false },
         componentEntries: { type: String, required: true },
-        typeEntry: {
-            type: String, required: false, default: 'followings', validator(value) {
-                return ['bans', 'followings', 'comments'].includes(value)
-            }
-        },
+
         componentFooter: { type: Object, required: false },
         argv: { type: Object, required: false },
     },
@@ -32,13 +28,22 @@ export default {
             busy: false,
             dataAvaible: true,
 
+            additionalData: this.$props.argv,
+
             errorMsg: '',
 
         }
     },
     methods: {
+        getID(entry) {
+            if (this.componentEntries == 'CommentEntry'){
+                return entry.commentID;
+            } else if (this.componentEntries == 'SimpleProfileEntry')
+                return entry.userID;
+        },
         loadMoreContents() {
             if (this.busy || !this.dataAvaible) return;
+            console.log("Loading more contents");
             this.busy = true;
             this.offset += this.limit;
             this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
@@ -49,10 +54,11 @@ export default {
             this.errorMsg = msg;
         },
         dataUpdaterEvent(values) {
-            if (this.dataUpdater)
-                this.dataUpdater(this.entries, values);
-            else
+            if (this.dataUpdater) {
+                this.dataUpdater(this.entries, values, this.additionalData);
+            } else {
                 this.errorMsg = "Data Updater not defined";
+            }
         },
     },
     beforeMount() {
@@ -62,9 +68,8 @@ export default {
     },
     mounted() {
         this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
-        console.log(this.entries);
 
-        const el = document.getElementsByClassName("list-container")[0];
+        const el = document.getElementsByClassName("list-entries")[0];
         el.addEventListener('scroll', e => {
             if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
                 this.loadMoreContents();
@@ -79,21 +84,23 @@ export default {
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
 
 
-    <div class="list-container-background" @click.self="this.$emit('exit-list')">
+    <div class="list-container-background" @click.self="$emit('exit-list')">
         <div class="list-container">
-            <div class="list-container-header">
-                <component :is="componentHeader" :data="argv" v-if="componentHeader"></component>
-                <span class="list-header-text">{{ textHeader }}</span>
+
+            <div class="list-entries">
+                <div class="list-container-header">
+                    <component :is="componentHeader" :data="additionalData" v-if="componentHeader"></component>
+                    <span class="list-header-text">{{ textHeader }}</span>
+                </div>
+                <component class="list-entry" v-for="entry in entries" :key="getID(entry)" :is="customEntries" :data="entry"
+                    @exit-list-from-entry="$emit('exit-list')" @data-update="dataUpdaterEvent" @error-occured="handleError">
+                </component>
+
+                <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
             </div>
-            <component class="list-entries" v-for="entry in entries" :key="entry.id" :is="customEntries" :data="entry"
-                :type="typeEntry" @exit-list-from-entry="this.$emit('exit-list')" @data-update="removeEntry"
-                @error-occured="handleError">
-            </component>
 
-            <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
-
-            <component class="component-footer" :is="componentFooter" v-if="componentFooter" :data="argv"
-                @update-data="dataUpdaterEvent" @error-occured="handleError"></component>
+            <component class="component-footer" :is="componentFooter" v-if="componentFooter" :data="additionalData"
+                @data-update="dataUpdaterEvent" @error-occured="handleError"></component>
         </div>
     </div>
 </template>
@@ -118,17 +125,25 @@ export default {
 .list-container-header {
     width: 100%;
     height: auto;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .list-header-text {
     font-size: 1.8em;
     font-weight: 600;
+
+
 }
 
 .list-container {
     width: 25em;
     height: auto;
     min-height: 20em;
+    max-height: 40em;
 
     border-radius: 0.5em;
     background-color: #fff;
@@ -137,16 +152,19 @@ export default {
 
     z-index: 2;
 
-    overflow: scroll;
+    overflow: none;
 }
 
 .list-entries {
     width: 100%;
-    height: auto;
+    height: 30em;
 
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: left;
+    justify-content: flex-start;
+
+    overflow: scroll;
 
     -ms-overflow-style: none;
     /* IE and Edge */
@@ -154,7 +172,16 @@ export default {
     /* Firefox */
 }
 
-.list-container::-webkit-scrollbar {
+.list-entry {
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.list-entries::-webkit-scrollbar {
     display: none;
 }
 

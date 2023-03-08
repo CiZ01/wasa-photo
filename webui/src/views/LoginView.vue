@@ -36,11 +36,11 @@ export default {
         </div>
         <div class="form-container-login">
             <span class="form-text-container-login">Username</span>
-            <input type="text" name="username-form" spellcheck="false" v-model="username">
+            <input :on-submit="doLogin" type="text" name="username-form" spellcheck="false" v-model="username">     
             <span class="form-text-container-login-error">{{ errorMsg }}</span>
         </div>
         <div class="bottom-login-container">
-            <button @click="doLogin"> Login </button>
+            <button @click="doLogin" type="submit"> Login </button>
         </div>
 
     </div>

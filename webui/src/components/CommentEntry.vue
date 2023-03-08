@@ -66,8 +66,8 @@ export default {
             <img class="propic-image" @click="goToProfile" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
             <span class="profile-entry-username" @click="goToProfile">{{ username }}</span>
             <span class="comment-entry-timestamp">{{ since(timestamp) }}</span>
-            <button v-if="!isOwner" class="comment-entry-button-menu" @click="deleteComment">
-                <font-awesome-icon class="comment-entry-icon" icon="fa-regular fa-trash-can" />
+            <button v-if="!isOwner"  class="comment-entry-button-menu" @click="deleteComment">
+                <font-awesome-icon class="comments-icon" icon="fa-regular fa-trash-can" />
             </button>
         </div>
         <span class="comment-entry-text"> {{ text }} </span>
@@ -78,25 +78,20 @@ export default {
 <style>
 .comment-entry {
     width: 100%;
-    min-height: 3em;
     height: auto;
-    max-height: 5em;
+    
 
     display: flex;
     flex-direction: column;
 
-    margin-bottom: 0.5em;
-
     border-top: 0.01em solid rgb(0, 0, 0, 0.3);
 
-    padding: 0.5em 0 0 0.5em;
+    padding: 0.5em;
 }
 
-.comment-entry-icon {
+.comments-icon {
     font-size: 1em;
     color: rgb(0, 0, 0, 0.6);
-    margin-left: auto;
-    margin-right: 0.5em;
 }
 
 .comment-entry-info {
@@ -133,9 +128,6 @@ export default {
     border: none;
     background-color: white;
 
-    margin-left: auto;
-    margin-right: 0.5em;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,7 +144,11 @@ export default {
 
     font-size: 0.8em;
     font-weight: 400;
+
+
     color: rgb(0, 0, 0, 0.6);
+
+    position: relative;
 }
 
 .comment-entry-timestamp {
