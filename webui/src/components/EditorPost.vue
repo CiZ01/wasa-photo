@@ -7,7 +7,6 @@ export default {
     emits: ['exit-upload-form', 'save-upload-form'],
     components: {
         Cropper,
-        CircleStencil,
         RectangleStencil,
     },
     props: {
@@ -27,7 +26,7 @@ export default {
         return {
             textCounter: 0,
             textCaption: "",
-            postData: {
+            imageData: {
                 imageFile: null,
                 caption: "",
             },
@@ -45,7 +44,7 @@ export default {
         saveEdit() {
 
             if (this.editorType === 'post') {
-                this.postData['caption'] = this.textCaption;
+                this.imageData['caption'] = this.textCaption;
             }
             const { canvas, } = this.$refs.cropper.getResult();
             const image64 = canvas.toDataURL("image/jpeg");
@@ -61,11 +60,13 @@ export default {
 
             // Crea l'oggetto file
             const file = new File([blob], 'image/jpeg', { type: 'image/jpeg' });
-            this.postData['imageFile'] = file;
-            this.$emit('save-upload-form', this.postData)
+            this.imageData['imageFile'] = file;
+            this.$emit('save-upload-form', this.imageData)
         },
     },
     created() {
+
+        // teoricamente da rimuovere ma voglio sapere se l'errore sussiste
         if (this.editorType === 'post') {
             this.cropperProps.stencilSize = {
                 width: 720,
@@ -93,7 +94,9 @@ export default {
 
 <template>
     <div class="cropper-container">
-        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
+        <cropper v-if="editorType == 'post'" class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="RectangleStencil"
+            :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
+        <cropper v-else class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
             :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
         <div class="caption-form-container" v-if="editorType === 'post'">
             <div class="label-container">
@@ -104,7 +107,7 @@ export default {
                 maxlength="64" />
         </div>
         <div class="button-container">
-            <button class="cancel-button" @click="this.$emit('exit-upload-form')">Cancel</button>
+            <button class="cancel-button" @click="$emit('exit-upload-form')">Cancel</button>
             <button class="save-button" @click="saveEdit">Save and Upload</button>
         </div>
     </div>

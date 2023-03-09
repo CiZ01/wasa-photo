@@ -13,6 +13,7 @@ type Profile struct {
 	Bio             string `json:"bio"`
 	FollowerCount   int    `json:"followersCount"`
 	FollowingsCount int    `json:"followingsCount"`
+	PostsCount      int    `json:"postsCount"`
 	IsFollowed      bool   `json:"isFollowed"`
 }
 
@@ -27,6 +28,7 @@ func (p *Profile) FromDatabase(dbProfile database.Profile) error {
 	p.Bio = dbProfile.Bio
 	p.FollowerCount = dbProfile.FollowersCount
 	p.FollowingsCount = dbProfile.FollowingsCount
+	p.PostsCount = dbProfile.PostsCount
 
 	if dbProfile.IsFollowed == 1 {
 		p.IsFollowed = true

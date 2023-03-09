@@ -11,7 +11,7 @@ func ImageToBase64(filename string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer imageFile.Close()
+	defer func() { err = imageFile.Close() }()
 
 	imageData, err := io.ReadAll(imageFile)
 	if err != nil {
@@ -19,5 +19,5 @@ func ImageToBase64(filename string) (string, error) {
 	}
 
 	base64 := base64.StdEncoding.EncodeToString(imageData)
-	return base64, nil
+	return base64, err
 }

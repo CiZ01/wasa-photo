@@ -731,7 +731,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
-  /profiles/{profile_user_id}/profile-pic:
+  /profiles/{profile_user_id}/profile-picture:
     parameters:
       - name: profile_user_id
         in: path

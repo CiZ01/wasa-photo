@@ -1,8 +1,8 @@
 <script>
 
-import ProfilesList from './ProfilesList.vue';
-import CommentFooter from '../components/CommentFooter.vue';
-import utils from '../services/utils.js';
+import ProfilesList from '@/components/ProfilesList.vue';
+import CommentFooter from '@/components/CommentFooter.vue';
+import utils from '@/services/utils.js';
 
 import { shallowRef } from 'vue';
 
@@ -10,8 +10,6 @@ export default {
     emits: ['update-like', 'delete-post'],
     components: {
         ProfilesList,
-        LikeHeader,
-        CommentHeader,
         CommentFooter,
     },
     props: {

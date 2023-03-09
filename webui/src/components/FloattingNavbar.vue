@@ -10,7 +10,7 @@ export default {
     },
     data() {
         return {
-            propic64: localStorage.propic64,
+            propic64: '',
             errorMsg: "",
         }
     },
@@ -18,6 +18,10 @@ export default {
         getMyProfile() {
             this.$router.push(`/profiles/${localStorage.userID}`);
         },
+    },
+    beforeMount(){
+        console.log("ciao");
+        this.propic64 = localStorage.propic64;
     },
 }
 </script>

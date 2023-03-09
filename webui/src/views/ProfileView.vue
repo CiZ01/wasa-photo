@@ -1,8 +1,8 @@
 <script>
-import UploadPhotoVue from '../components/UploadPhoto.vue';
+import UploadPhoto from '../components/UploadPhoto.vue';
 export default {
     components: {
-        UploadPhotoVue,
+        UploadPhoto,
     },
     data() {
         return {
@@ -13,6 +13,7 @@ export default {
             username: "",
             followersCount: 0,
             followingsCount: 0,
+            postsCount: 0,
             bio: "This user have notighing to say",
             proPic64: "",
             isFollowed: false,
@@ -52,12 +53,14 @@ export default {
         }
     },
     methods: {
-        getProfile() {
-            this.$axios.get(`profiles/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } }).then(response => {
+        async getProfile() {
+            try {
+                let response = await this.$axios.get(`profiles/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } })
                 this.userID = response.data.user.userID;
                 this.username = response.data.user.username;
                 this.followersCount = response.data.followersCount;
                 this.followingsCount = response.data.followingsCount;
+                this.postsCount = response.data.postsCount;
                 if (response.data.bio != "")
                     this.bio = response.data.bio;
                 this.textCounter = this.bio.length;
@@ -65,10 +68,9 @@ export default {
                 this.isFollowed = response.data.isFollowed;
                 this.followTextButton = this.isFollowed ? "Unfollow" : "Follow";
                 this.isOwner = localStorage.userID == this.userID;
-            })
-                .catch(e => {
-                    this.errorMsg = e.toString();
-                });
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
         },
         async getPosts() {
             try {
@@ -79,7 +81,7 @@ export default {
                 }
                 this.posts.push(...response.data);
             } catch (e) {
-                localStorage.errorMessage = e.toString();
+                this.errorMsg = e.toString();
             };
         },
         editingBio() {
@@ -129,7 +131,7 @@ export default {
         getFollowers() {
             this.showList = true;
             this.textHeader = "Followers";
-            this.componentEntries= "SimpleProfileEntry";
+            this.componentEntries = "SimpleProfileEntry";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/followers?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -146,7 +148,7 @@ export default {
         getFollowings() {
             this.showList = true;
             this.textHeader = "Followings";
-            this.componentEntries= "SimpleProfileEntry";
+            this.componentEntries = "SimpleProfileEntry";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/followings?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -213,10 +215,10 @@ export default {
             localStorage.clear();
             this.$router.push('/login');
         },
-        getBans(){
+        getBans() {
             this.showList = true;
             this.textHeader = "Bans";
-            this.componentEntries= "BanProfileEntry";
+            this.componentEntries = "BanProfileEntry";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/bans?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -225,18 +227,17 @@ export default {
                         return;
                     }
                     profilesArray.push(...response.data);
-                    console.log(profilesArray);
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
             }
         },
-        closeOptions(){
+        closeOptions() {
             setTimeout(() => {
                 this.showOptions = false;
             }, 500);
         },
-        async banUser(){
+        async banUser() {
             try {
                 let _ = await this.$axios.put(`/profiles/${localStorage.userID}/bans/${this.userID}`, {}, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.$router.push(`/profiles/${localStorage.userID}`);
@@ -246,14 +247,19 @@ export default {
             this.showOptions = false;
         },
         async deletePost(postID) {
-			try{
-				let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
-				this.posts = this.posts.filter(post => post.postID != postID);
+            try {
+                let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.posts = this.posts.filter(post => post.postID != postID);
                 this.exitPost();
-			}catch(e){
-				this.errorMsg = e.toString();
-			}
-		},
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
+        },
+        updateProfile() {
+            this.getProfile();
+            localStorage.propic64 = this.proPic64;
+            console.log(localStorage.propic64 === this.proPic64);
+        },
     },
     beforeMount() {
         if (!localStorage.token) {
@@ -297,10 +303,11 @@ export default {
 
 
 <template>
-    <UploadPhotoVue v-if="isEditingPropic" :photoType="'proPic'" @refresh-data="getProfile" @exit-upload-form="isEditingPropic = false" @error-occured="errorMsg = value"/>
+    <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
+        @refresh-data="updateProfile" @error-occured="errorMsg = value"> </UploadPhoto>
     <div class="top-profile-container">
-        <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false" >
-            <div class="edit-propic" v-if="showEditPropic && isOwner">
+        <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false">
+            <div class="edit-propic" v-if="showEditPropic">
                 <button class="edit-propic-button" @click="isEditingPropic = true">
                     <font-awesome-icon icon="fa-regular fa-pen-to-square" size="lg" color="#fff" />
                 </button>
@@ -327,7 +334,7 @@ export default {
                 </div>
                 <div v-else-if="showOptions" class="profile-options-menu">
                     <div class="options-menu-item" @click="banUser">
-                            <span>Ban this user</span>
+                        <span>Ban this user</span>
                     </div>
                 </div>
             </div>
@@ -340,13 +347,17 @@ export default {
                     v-model="bio" class="top-body-profile-bio-text" spellcheck="false" maxlength="100" rows="2"></textarea>
             </div>
             <div class="top-body-profile-stats-container">
-                <div class="followers-stats" @click="getFollowers">
-                    <span class="followers-stats-text">followers</span>
-                    <span class="followers-stats-number">{{ followersCount }}</span>
+                <div class="profile-stats" @click="goToPost">
+                    <span class="profile-stats-text">posts</span>
+                    <span class="profile-stats-number">{{ postsCount }}</span>
                 </div>
-                <div class="followers-stats" @click="getFollowings">
-                    <span class="followers-stats-text">followings</span>
-                    <span class="followers-stats-number">{{ followingsCount }}</span>
+                <div class="profile-stats" @click="getFollowers">
+                    <span class="profile-stats-text">followers</span>
+                    <span class="profile-stats-number">{{ followersCount }}</span>
+                </div>
+                <div class="profile-stats" @click="getFollowings">
+                    <span class="profile-stats-text">followings</span>
+                    <span class="profile-stats-number">{{ followingsCount }}</span>
                 </div>
             </div>
             <div class="top-body-profile-actions" v-if="!isOwner">
@@ -355,8 +366,8 @@ export default {
         </div>
     </div>
 
-    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader"
-        :componentEntries="componentEntries" @exit-list="freeLists"> </ProfilesList>
+    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :componentEntries="componentEntries"
+        @exit-list="freeLists"> </ProfilesList>
 
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">

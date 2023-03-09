@@ -28,27 +28,6 @@ export default {
             this.file = this.$refs.file.files[0];
             this.fileType = this.file.type;
         },
-        dragover(event) {
-            event.preventDefault();
-            // Add some visual fluff to show the user can drop its files
-            if (!event.currentTarget.classList.contains('bg-green-300')) {
-                event.currentTarget.classList.remove('bg-gray-100');
-                event.currentTarget.classList.add('bg-green-300');
-            }
-        },
-        dragleave(event) {
-            // Clean up
-            event.currentTarget.classList.add('bg-gray-100');
-            event.currentTarget.classList.remove('bg-green-300');
-        },
-        drop(event) {
-            event.preventDefault();
-            this.$refs.file.files = event.dataTransfer.files;
-            this.onChange(); // Trigger the onChange event manually
-            // Clean up
-            event.currentTarget.classList.add('bg-gray-100');
-            event.currentTarget.classList.remove('bg-green-300');
-        },
 
         saveData(data) {
             if (this.photoType == 'post') {
@@ -74,7 +53,7 @@ export default {
                 this.$emit('exit-upload-form');
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occurred', this.errorMsg);
+                this.$emit('error-occured', this.errorMsg);
             }
         },
 
@@ -92,7 +71,7 @@ export default {
                 this.$emit('exit-upload-form');
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occurred', this.errorMsg);
+                this.$emit('error-occured', this.errorMsg);
             }
         }
     },
@@ -129,7 +108,7 @@ export default {
         </div>
 
         <EditorPost :image64="file64" :editorType="this.$props.photoType" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')"
-            @save-upload-form="saveData"></EditorPost>
+            @save-upload-form="saveData" />
     </div>
 </template>
 

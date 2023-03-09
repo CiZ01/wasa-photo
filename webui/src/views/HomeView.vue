@@ -1,6 +1,6 @@
 <script>
-import FloatingNavbar from '../components/FloattingNavbar.vue'
-import UploadPhoto from '../components/UploadPhoto.vue';
+import FloatingNavbar from '@/components/FloattingNavbar.vue'
+import UploadPhoto from '@/components/UploadPhoto.vue';
 export default {
 	components: {
 		FloatingNavbar,
@@ -36,6 +36,7 @@ export default {
 			try {
 				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
 				let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
+				if (response.data == null) return;
 				if (response.data.length == 0) {
 					this.dataAvaible = false;
 					return;
@@ -76,7 +77,6 @@ export default {
 			return
 		}
 		this.getMyStream();
-		console.log(this.posts);
 	},
 	mounted() {
 
@@ -93,8 +93,8 @@ export default {
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
 
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
-		@refresh-data="getMyStream()" @error-occured="errorMsg = value"> </UploadPhoto>
-	<FloatingNavbar @show-upload-form="showUploadPhoto = true"> </FloatingNavbar>
+		@refresh-data="getMyStream()" @error-occured="errorMsg = value" />
+	<FloatingNavbar @show-upload-form="showUploadPhoto = true" />
 
 	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost" />
 </template>

@@ -4,7 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 )
 
 var query_ADDUSER = `INSERT INTO User (userID, username, bio)
@@ -46,6 +49,24 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 	// --------CREATE USER FOLDER------------//
 	path := "./storage/" + fmt.Sprint(user.UserID) + "/posts"
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
+		return user, err
+	}
+
+	// --------SET DEFAULT PROPIC------------//
+	source, err := os.Open("./storage/default_propic.jpg")
+	if err != nil {
+		return user, err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(utils.GetProfilePicPath(user.UserID))
+	if err != nil {
+		return user, err
+	}
+	defer destination.Close()
+
+	_, err = io.Copy(destination, source)
+	if err != nil {
 		return user, err
 	}
 
