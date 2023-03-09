@@ -30,5 +30,16 @@ func GetLimitAndOffset(query url.Values) (int, int, error) {
 			return 0, 0, err
 		}
 	}
+
+	if limit > 100 {
+		limit = 100
+	}
+	if limit < 0 {
+		limit = 0
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
 	return limit, offset, nil
 }

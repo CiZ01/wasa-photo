@@ -1,8 +1,6 @@
 <script>
 
 import ProfilesList from './ProfilesList.vue';
-import LikeHeader from '../components/LikeHeader.vue';
-import CommentHeader from '../components/CommentHeader.vue';
 import CommentFooter from '../components/CommentFooter.vue';
 import utils from '../services/utils.js';
 
@@ -79,7 +77,7 @@ export default {
         toggleComment() {
             this.isHoverComment = !this.isHoverComment;
         },
-        async getComments() {
+        getComments() {
             this.showList = true;
             this.textHeader = "Comments";
             this.componentEntries = "CommentEntry";
@@ -109,7 +107,7 @@ export default {
                 }
             };
         },
-        async getLikes() {
+        getLikes() {
             this.showList = true;
             this.textHeader = "Likes";
             this.componentEntries = "SimpleProfileEntry";

@@ -1,0 +1,29 @@
+--- Post.vue	2023-03-09 13:18:14.120961246 +0100
++++ Post.vue	2023-03-09 13:24:07.820906638 +0100
+@@ -1,6 +1,8 @@
+ <script>
+ 
+ import ProfilesList from './ProfilesList.vue';
++import LikeHeader from '../components/LikeHeader.vue';
++import CommentHeader from '../components/CommentHeader.vue';
+ import CommentFooter from '../components/CommentFooter.vue';
+ import utils from '../services/utils.js';
+ 
+@@ -77,7 +79,7 @@
+         toggleComment() {
+             this.isHoverComment = !this.isHoverComment;
+         },
+-        getComments() {
++        async getComments() {
+             this.showList = true;
+             this.textHeader = "Comments";
+             this.componentEntries = "CommentEntry";
+@@ -107,7 +109,7 @@
+                 }
+             };
+         },
+-        getLikes() {
++        async getLikes() {
+             this.showList = true;
+             this.textHeader = "Likes";
+             this.componentEntries = "SimpleProfileEntry";

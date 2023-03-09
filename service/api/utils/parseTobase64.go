@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/base64"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -13,7 +13,7 @@ func ImageToBase64(filename string) (string, error) {
 	}
 	defer imageFile.Close()
 
-	imageData, err := ioutil.ReadAll(imageFile)
+	imageData, err := io.ReadAll(imageFile)
 	if err != nil {
 		return "", err
 	}

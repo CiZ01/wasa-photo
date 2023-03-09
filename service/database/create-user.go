@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 )
@@ -23,8 +24,12 @@ func (db *appdbimpl) CreateUser(u User) (User, error) {
 
 	var maxID int
 	for row.Next() {
+		if row.Err() != nil {
+			return user, err
+		}
+
 		err = row.Scan(&_maxID)
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return user, err
 		}
 

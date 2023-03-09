@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 
 	"git.francescofazzari.it/wasa_photo/service/api/utils"
@@ -53,7 +54,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Read the file
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error parse file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -78,7 +79,12 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Parse the user from the database to the User struct in the api package
 	var user User
-	user.FromDatabase(dbuser)
+	err = user.FromDatabase(dbuser)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error parsing user")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	// Create the new post
 	// The caption is taken from the form, the FormValue function returns an empty string if the key is not present
@@ -100,7 +106,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	// Save the image
-	err = ioutil.WriteFile(dbNewPost.ImageURL, data, 0666)
+	err = os.WriteFile(dbNewPost.ImageURL, data, 0666)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error saving file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

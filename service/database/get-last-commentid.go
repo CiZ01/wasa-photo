@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 )
 
 var query_GETLASTCOMMENTID = `SELECT MAX(commentID) FROM Comment WHERE ownerID=? AND postID=?;`
@@ -21,7 +22,7 @@ func (db *appdbimpl) GetLastCommentID(ownerID int, postID int) (int, error) {
 		}
 
 		err = rows.Scan(&_lastCommentID)
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return 0, err
 		}
 

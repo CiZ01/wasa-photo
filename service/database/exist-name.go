@@ -1,6 +1,9 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
 
 var query_FINDUSERNAME = `SELECT username FROM User
 						WHERE username = ?`
@@ -8,7 +11,7 @@ var query_FINDUSERNAME = `SELECT username FROM User
 func (db *appdbimpl) ExistsName(username string) (bool, error) {
 	var existsName string
 	err := db.c.QueryRow(query_FINDUSERNAME, username).Scan(&existsName)
-	if err != nil && err == sql.ErrNoRows {
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}
 	return existsName != "", err

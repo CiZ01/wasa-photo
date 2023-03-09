@@ -1,6 +1,9 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+)
 
 var query_GETLASPOSTID = `SELECT MAX(postID) FROM Post WHERE userID= ?;`
 
@@ -19,7 +22,7 @@ func (db *appdbimpl) GetLastPostID(userID int) (int, error) {
 		}
 
 		err = res.Scan(&_postID)
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return 0, err
 		}
 

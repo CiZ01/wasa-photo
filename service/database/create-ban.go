@@ -21,7 +21,7 @@ func (db *appdbimpl) CreateBan(bannerID int, bannedID int) error {
 		if rows.Err() != nil {
 			return err
 		}
-		postID := int(0)
+		postID := 0
 		err = rows.Scan(&postID)
 		if err != nil {
 			return err

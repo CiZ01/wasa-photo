@@ -13,7 +13,10 @@ func (rt *_router) CreateUser(u User) (User, error) {
 	}
 
 	// Convert the database user object to the user object and return it.
-	u.FromDatabase(dbUser)
+	err = u.FromDatabase(dbUser)
+	if err != nil {
+		return u, err
+	}
 
 	return u, nil
 

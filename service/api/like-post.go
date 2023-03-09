@@ -1,11 +1,13 @@
 package api
 
 import (
+	"errors"
+	"net/http"
+	"strconv"
+
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 	"github.com/mattn/go-sqlite3"
-	"net/http"
-	"strconv"
 )
 
 func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -23,14 +25,8 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	isBanner, err := rt.db.IsBanned(userID, profileUserID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error checking if user is banner")
-		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
-		return
-	}
 
-	if isBanned || isBanner {
+	if isBanned {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -43,9 +39,9 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	err = rt.db.CreateLike(userID, profileUserID, postID)
 	if err != nil {
-		if sqlite3Err, ok := err.(sqlite3.Error); ok {
-			if sqlite3Err.Code == sqlite3.ErrConstraint &&
-				sqlite3Err.ExtendedCode == 1555 {
+		var sqlite3Err sqlite3.Error
+		if errors.As(err, &sqlite3Err) {
+			if sqlite3Err.Code == sqlite3.ErrConstraint && sqlite3Err.ExtendedCode == 1555 {
 				http.Error(w, "Bad Request like already added", http.StatusBadRequest)
 				return
 			}

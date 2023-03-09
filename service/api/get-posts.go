@@ -2,9 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -33,6 +34,17 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	userID := ctx.UserID
+
+	isBanned, err := rt.db.IsBanned(userID, profileUserID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if isBanned {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
 
 	// Get the posts from the database
 	dbPosts, err := rt.db.GetPosts(userID, profileUserID, offset, limit)

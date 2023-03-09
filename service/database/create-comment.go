@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -13,7 +14,7 @@ func (db *appdbimpl) CreateComment(userID int, ownerID int, postID int, commentT
 	// Get the last commentID
 	var lastCommentID int
 	lastCommentID, err := db.GetLastCommentID(ownerID, postID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return comment, err
 	}
 

@@ -35,18 +35,6 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	// I dont know if this is needed
-	// isBanned, err := rt.db.IsBanned(targetUserID, profileUserID)
-	// if err != nil {
-	// 	ctx.Logger.WithError(err).Error("Error checking if the user is banned")
-	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	// 	return
-	// }
-	// if !isBanned {
-	// 	http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-
 	err = rt.db.DeleteBan(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting ban")

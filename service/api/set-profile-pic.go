@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -43,7 +44,7 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 	}
 
 	// Read the file
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error parse file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

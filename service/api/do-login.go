@@ -58,7 +58,12 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		user.FromDatabase(dbUser)
+		err = user.FromDatabase(dbUser)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("can't convert the user")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 		w.WriteHeader(http.StatusOK)
 	}
 
