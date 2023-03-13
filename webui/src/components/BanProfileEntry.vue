@@ -42,8 +42,8 @@ export default {
 
 
 <template>
-    <div class="profile-entries">
-        <img class="propic-image" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
+    <div class="profile-entries no-click">
+        <img class="propic-image no-click" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
         <span class="profile-entries-username">{{ username }}</span>
         <div class="ban-button-container">
             <button class="ban-button" @click="ban">
@@ -56,30 +56,9 @@ export default {
 
 
 <style>
-.profile-entries {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5em;
-
-    border-top: 0.01em solid rgb(0, 0, 0, 0.3);
-
-    padding: 0.5em 0 0 0.5em;
+.no-click{
+    cursor: default;
 }
-
-.propic-image{
-    width: 2em;
-    height: 2em;
-    border-radius: 100%;
-    margin-right: 0.5em;
-
-    border: 0.1em solid rgb(0, 0, 0, 0.1);
-}
-
-.profile-entries-username {
-    font-size: 1em;
-    font-weight: 500;
-}
-
 .ban-button-container{
     margin-left: auto;
 }
@@ -97,5 +76,6 @@ export default {
 .ban-button:hover{
     background-color: rgb(0, 0, 0, 0.1);
     color: rgb(0, 0, 0, 0.5);
+
 }
 </style>

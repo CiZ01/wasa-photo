@@ -176,3 +176,13 @@ PUT http://localhost:3000/profiles/2/propic HTTP/1.1
 Authorization: 2
 Content-Type: image/png
 
+###
+
+# DELETE USER #
+DELETE http://localhost:3000/profiles/2 HTTP/1.1
+Authorization: 2
+
+###
+
+# check for#
+GET http://localhost:3000/check_foreign_keys HTTP/1.1

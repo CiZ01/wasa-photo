@@ -69,8 +69,6 @@
     border-radius: 0.2em;
 
     position: absolute;
-    top: 15em;
-
     
     z-index: 1;
 }
@@ -96,8 +94,8 @@
 }
 
 .top-profile-picture {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     scale: 0.8;
 
     border-radius: 100%;

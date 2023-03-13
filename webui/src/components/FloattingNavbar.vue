@@ -5,12 +5,11 @@ export default {
         SearchBar,
     },
     emits: ['show-upload-form'],
-    props: {
 
-    },
     data() {
         return {
-            propic64: '',
+            propic64: "",
+
             errorMsg: "",
         }
     },
@@ -18,10 +17,18 @@ export default {
         getMyProfile() {
             this.$router.push(`/profiles/${localStorage.userID}`);
         },
+        async getPropic(){
+            try{
+                let response = await this.$axios.get(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.propic64 = response.data.user.userPropic64;
+
+            } catch(e){
+                this.errorMsg = e.toString();
+            }
+        }
     },
     beforeMount(){
-        console.log("ciao");
-        this.propic64 = localStorage.propic64;
+        this.getPropic();
     },
 }
 </script>

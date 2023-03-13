@@ -1,16 +1,12 @@
 <script>
 
 import ProfilesList from '@/components/ProfilesList.vue';
-import CommentFooter from '@/components/CommentFooter.vue';
 import utils from '@/services/utils.js';
-
-import { shallowRef } from 'vue';
 
 export default {
     emits: ['update-like', 'delete-post'],
     components: {
         ProfilesList,
-        CommentFooter,
     },
     props: {
         postData: { type: Object, required: true },
@@ -39,8 +35,7 @@ export default {
             textCounter: 0,
             showList: false,
             textHeader: "",
-            componentEntries: "",
-            customFooter: null,
+            typeList: "",
             dataGetter: () => { },
             dataUpdater: () => { },
             additionalData: {},
@@ -78,8 +73,7 @@ export default {
         getComments() {
             this.showList = true;
             this.textHeader = "Comments";
-            this.componentEntries = "CommentEntry";
-            this.customFooter = shallowRef(CommentFooter);
+            this.typeList = "comment";
             this.additionalData = { 'commentsCount': this.commentsCount, 'postID': this.postID, 'ownerID': this.ownerID };
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
@@ -94,7 +88,6 @@ export default {
                 }
             };
             this.dataUpdater = (entries, values) => {
-                console.log(values);
                 if (values['opType'] == 'insert') {
                     entries.push(values['value']);
                     this.commentsCount++;
@@ -108,9 +101,8 @@ export default {
         getLikes() {
             this.showList = true;
             this.textHeader = "Likes";
-            this.componentEntries = "SimpleProfileEntry";
+            this.typeList = "simple";
 
-            this.customFooter = null;
             this.additionalData = { 'likesCount': this.likesCount };
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
@@ -199,8 +191,8 @@ export default {
                     </span>
                 </button>
                 <button class="post-tail-button fa-layers fa-fw" name="comment" @click="getComments">
-                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" v-on:mouseover="toggleComment" />
-                    <font-awesome-icon v-else icon="fa-solid fa-comment" v-on:mouseout="toggleComment"
+                    <font-awesome-icon v-if="!isHoverComment" icon="fa-regular fa-comment" @mouseover="toggleComment" />
+                    <font-awesome-icon v-else icon="fa-solid fa-comment" @mouseout="toggleComment"
                         style="opacity:0.9" />
                     <span class="fa-layers-counter bg-secondary h2">{{ commentsCount }}</span>
                     <span class="title-button">
@@ -217,8 +209,7 @@ export default {
         </div>
     </div>
     <ProfilesList @exit-list="showList = false" v-if="showList" :textHeader="textHeader" :dataGetter="dataGetter"
-        :dataUpdater="dataUpdater" :componentEntries="componentEntries" :componentFooter="customFooter"
-        :argv="additionalData" />
+        :dataUpdater="dataUpdater" :typeList="typeList" :argv="additionalData" />
 </template>
 
 

@@ -8,8 +8,6 @@ import (
 )
 
 var query_DELETEPHOTO = `DELETE FROM Post WHERE userID=? AND postID=?`
-var query_DELETEPHOTO_LIKES = `DELETE FROM Like WHERE userID=? AND postID=?`
-var query_DELETEPHOTO_COMMENTS = `DELETE FROM Comment WHERE userID=? AND postID=?`
 
 /*
 DeletePost deletes a post from the database.
@@ -29,18 +27,6 @@ func (db *appdbimpl) DeletePost(userID int, postID int) error {
 		}
 		err = tx.Commit()
 	}()
-
-	// Delete all the likes
-	_, err = tx.Exec(query_DELETEPHOTO_LIKES, userID, postID)
-	if err != nil {
-		return err
-	}
-
-	// Delete all the comments
-	_, err = tx.Exec(query_DELETEPHOTO_COMMENTS, userID, postID)
-	if err != nil {
-		return err
-	}
 
 	// Delete the post
 	_, err = tx.Exec(query_DELETEPHOTO, userID, postID)

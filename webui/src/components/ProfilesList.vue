@@ -1,26 +1,29 @@
 <script>
-import { defineAsyncComponent, shallowRef } from 'vue';
-
-
+import CommentFooter from '@/components/CommentFooter.vue';
+import CommentEntry from '@/components/CommentEntry.vue';
+import SimpleProfileEntry from '@/components/SimpleProfileEntry.vue';
+import BanEntry from '@/components/BanProfileEntry.vue';
 export default {
     emits: ["exit-list"],
+    components: {
+        CommentFooter,
+        CommentEntry,
+        SimpleProfileEntry,
+        BanEntry,
+    },
     props: {
         dataGetter: { type: Function, required: true },
         dataUpdater: { type: Function, required: false },
 
-        textHeader: { type: String, required: true },
-        componentHeader: { type: Object, required: false },
-        componentEntries: { type: String, required: true },
+        typeList: { type: String, required: true, validator: (value) => ['comment', 'simple', 'ban'].includes(value) },
 
-        componentFooter: { type: Object, required: false },
+        textHeader: { type: String, required: true },
         argv: { type: Object, required: false },
     },
     data() {
         return {
-            customLevel: 0,
-            customEntries: "",
             entries: [],
-
+            customEntries: '',
 
             // Load More
             limit: 10,
@@ -36,14 +39,14 @@ export default {
     },
     methods: {
         getID(entry) {
-            if (this.componentEntries == 'CommentEntry'){
+            if (this.typeList == 'comment') {
                 return entry.commentID;
-            } else if (this.componentEntries == 'SimpleProfileEntry')
+            } else if (['comment', 'simple', 'ban'].includes(this.typeList)){
                 return entry.userID;
+            }
         },
         loadMoreContents() {
             if (this.busy || !this.dataAvaible) return;
-            console.log("Loading more contents");
             this.busy = true;
             this.offset += this.limit;
             this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
@@ -61,11 +64,6 @@ export default {
             }
         },
     },
-    beforeMount() {
-        this.customEntries = shallowRef(defineAsyncComponent(() =>
-            import(`../components/${this.componentEntries}.vue`))
-        )
-    },
     mounted() {
         this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
 
@@ -75,6 +73,12 @@ export default {
                 this.loadMoreContents();
             }
         });
+
+        if (this.typeList == 'comment') {
+            this.customEntries = CommentEntry;
+        } else if (this.typeList == 'simple') {
+            this.customEntries = SimpleProfileEntry;
+        }
     }
 }
 </script>
@@ -86,22 +90,26 @@ export default {
 
     <div class="list-container-background" @click.self="$emit('exit-list')">
         <div class="list-container">
-
-            <div class="list-entries">
-                <div class="list-container-header">
-                    <component :is="componentHeader" :data="additionalData" v-if="componentHeader"></component>
-                    <span class="list-header-text">{{ textHeader }}</span>
-                </div>
-                <component class="list-entry" v-for="entry in entries" :key="getID(entry)" :is="customEntries" :data="entry"
-                    @exit-list-from-entry="$emit('exit-list')" @data-update="dataUpdaterEvent" @error-occured="handleError">
-                </component>
-
-                <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
+            <span class="list-header-text">{{ textHeader }}</span>
+            <div v-if="typeList == 'simple'" class="list-entries">
+                <SimpleProfileEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
+                @exit-list-from-entr="$emit('exit-list')" @error-occured="handleError" />
+            </div>
+            <div v-else-if="typeList == 'comment'" class="list-entries">
+                <CommentEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
+                    @exit-list-from-entry="$emit('exit-list')" @data-update="dataUpdaterEvent"
+                    @error-occured="handleError" />
+            </div>
+            <div v-else class="list-entries">
+                <BanEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
+                @exit-list-from-entry="$emit('exit-list')" @error-occured="handleError" />
             </div>
 
-            <component class="component-footer" :is="componentFooter" v-if="componentFooter" :data="additionalData"
-                @data-update="dataUpdaterEvent" @error-occured="handleError"></component>
+            <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
+            <CommentFooter v-if="typeList == 'comment'" :data="additionalData" @data-update="dataUpdaterEvent"
+                @error-occured="handleError" />
         </div>
+
     </div>
 </template>
 
@@ -149,6 +157,10 @@ export default {
     background-color: #fff;
 
     padding: 2em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     z-index: 2;
 

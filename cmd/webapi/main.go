@@ -99,11 +99,7 @@ func run() error {
 		logger.WithError(err).Error("error opening SQLite DB")
 		return fmt.Errorf("opening SQLite: %w", err)
 	}
-	_, err = dbconn.Exec("PRAGMA foreign_keys = ON")
-	if err != nil {
-		logger.WithError(err).Error("error enabling foreign keys")
-		return fmt.Errorf("enabling foreign keys: %w", err)
-	}
+
 	defer func() {
 		logger.Debug("database stopping")
 		_ = dbconn.Close()

@@ -7,7 +7,7 @@ export default {
     data() {
         return {
             errorMsg: "",
-            componentEntries: "",
+            typeList: "",
             // Profile data
             userID: parseInt(this.$route.params.userID),
             username: "",
@@ -131,7 +131,7 @@ export default {
         getFollowers() {
             this.showList = true;
             this.textHeader = "Followers";
-            this.componentEntries = "SimpleProfileEntry";
+            this.typeList = "simple";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/followers?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -148,7 +148,7 @@ export default {
         getFollowings() {
             this.showList = true;
             this.textHeader = "Followings";
-            this.componentEntries = "SimpleProfileEntry";
+            this.typeList = "simple";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/followings?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -218,7 +218,7 @@ export default {
         getBans() {
             this.showList = true;
             this.textHeader = "Bans";
-            this.componentEntries = "BanProfileEntry";
+            this.typeList = "ban";
             this.dataGetter = async (profilesArray, limit, offset, dataAvaible) => {
                 try {
                     let response = await this.$axios.get(`/profiles/${this.userID}/bans?limit=${limit}&offset=${offset}`, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -258,8 +258,15 @@ export default {
         updateProfile() {
             this.getProfile();
             localStorage.propic64 = this.proPic64;
-            console.log(localStorage.propic64 === this.proPic64);
         },
+        async deleteProfile(){
+            try {
+                let _ = await this.$axios.delete(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.doLogout();
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
+        }
     },
     beforeMount() {
         if (!localStorage.token) {
@@ -303,6 +310,7 @@ export default {
 
 
 <template>
+    <ErrorMsg v-if="errorMsg" :errorMsg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
         @refresh-data="updateProfile" @error-occured="errorMsg = value"> </UploadPhoto>
     <div class="top-profile-container">
@@ -324,7 +332,7 @@ export default {
                         <div class="options-menu-item" @click="getBans">
                             <span>Bans list</span>
                         </div>
-                        <div class="options-menu-item" @click="">
+                        <div class="options-menu-item" @click="deleteProfile">
                             <span>Delete profile</span>
                         </div>
                         <div class="options-menu-item" @click="doLogout">
@@ -366,8 +374,7 @@ export default {
         </div>
     </div>
 
-    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :componentEntries="componentEntries"
-        @exit-list="freeLists"> </ProfilesList>
+    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :typeList="typeList" @exit-list="freeLists" />
 
     <div class="posts-grid-container">
         <div v-for="post in posts" :key="post.postID" class="posts-grid-post">

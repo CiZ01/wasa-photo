@@ -7,4 +7,4 @@
 // API.
 package httpsnoop
 
-//go:generate go run codegen/main.go
+// go:generate go run codegen/main.go

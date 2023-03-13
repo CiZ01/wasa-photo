@@ -8,7 +8,7 @@ export default {
         return {
             userID: localStorage.userID,
             username: localStorage.username,
-            propic64: localStorage.propic64,
+            propic64: '',
 
             ownerID: this.data.ownerID,
             postID: this.data.postID,
@@ -17,6 +17,14 @@ export default {
         }
     },
     methods: {
+        async getPropic() {
+            try {
+                let response = await this.$axios.get(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.propic64 = response.data.user.userPropic64;
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
+        },
         writingComment() {
             document.getElementsByClassName("comment-input")[0].style.outline = "auto";
             document.getElementsByClassName("comment-input")[0].style.outlineColor = "#03C988";
@@ -37,15 +45,15 @@ export default {
                 let response = await this.$axios.post(`profiles/${this.ownerID}/posts/${this.postID}/comments`,
                     body,
                     { headers: { 'Authorization': `${localStorage.token}` } });
-                this.$emit('data-update', {'value': response.data, 'opType': 'insert'});
+                this.$emit('data-update', { 'value': response.data, 'opType': 'insert' });
                 this.commentText = '';
             } catch (e) {
                 this.$emit('error-occured', e.toString());
             }
         }
     },
-    mounted(){
-        console.log(this.data);
+    mounted() {
+        this.getPropic();
     }
 }
 </script>

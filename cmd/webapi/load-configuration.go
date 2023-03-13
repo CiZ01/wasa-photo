@@ -26,7 +26,7 @@ type WebAPIConfiguration struct {
 	}
 	Debug bool
 	DB    struct {
-		Filename string `conf:"default: /tmp/wasa_TEST.db"`
+		Filename string `conf:"default: /tmp/wasa_TEST.db?_foreign_keys=on"`
 	}
 }
 

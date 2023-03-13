@@ -58,9 +58,6 @@ type AppDatabase interface {
 	// Set/Change the bio of a user
 	SetBio(userID int, bio string) error
 
-	// Change the profile picture of a user
-	// ChangeProfilePic(userID int, newProfilePicURL string) error
-
 	// Get a user profile
 	GetUserProfile(profileUserID int, userID int) (Profile, error)
 
@@ -136,6 +133,9 @@ type AppDatabase interface {
 	// Return true if a username already exists, false otherwise
 	ExistsName(username string) (bool, error)
 
+	CheckForeignKeys() error
+
+	// Ping the database to check if it is alive
 	Ping() error
 }
 

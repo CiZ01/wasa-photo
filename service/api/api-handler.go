@@ -84,5 +84,8 @@ func (rt *_router) Handler() http.Handler {
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 
+	// Check foreign keys
+	rt.router.GET("/check_foreign_keys", rt.checkForeignKeys)
+
 	return rt.router
 }

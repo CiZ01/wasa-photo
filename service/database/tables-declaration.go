@@ -35,9 +35,6 @@ var sql_TABLEPOST = `CREATE TABLE IF NOT EXISTS Post
 		ON DELETE CASCADE
 );`
 
-// secondo me non serve salvarsi la preview in db, la previw avrà lo stesso nome del post originale
-// e sarà salvata nella stessa cartella con un nome tipo URL280x280.jpg, quindi non serve salvarla in db
-
 // --------LIKE TABLE--------//
 /*
 	- userID: the ID of the user who liked the post. It's the primary key of the table
@@ -54,8 +51,9 @@ var sql_TABLELIKE = `CREATE TABLE IF NOT EXISTS Like
 	PRIMARY KEY(userID, ownerID, postID),
 	CONSTRAINT fk_like
 		FOREIGN KEY (ownerID, postID) REFERENCES Post(userID, postID)
+			ON DELETE CASCADE,
 		FOREIGN KEY (userID) REFERENCES User(userID)
-		ON DELETE CASCADE
+			ON DELETE CASCADE
 );`
 
 // --------COMMENT TABLE--------//
@@ -80,8 +78,9 @@ var sql_TABLECOMMENT = `CREATE TABLE IF NOT EXISTS Comment
 	PRIMARY KEY(commentID, ownerID, postID),
 	CONSTRAINT fk_comment
 		FOREIGN KEY (ownerID, postID) REFERENCES Post(userID, postID)
+			ON DELETE CASCADE,
 		FOREIGN KEY (userID) REFERENCES User(userID)
-		ON DELETE CASCADE
+			ON DELETE CASCADE
 );`
 
 // --------FOLLOW TABLE--------//
@@ -96,6 +95,7 @@ var sql_TABLEFOLLOW = `CREATE TABLE IF NOT EXISTS Follow
 	PRIMARY KEY(followerID, followedID),
 	CONSTRAINT fk_follow
 	FOREIGN KEY (followerID) REFERENCES User(userID)
+		ON DELETE CASCADE,
 	FOREIGN KEY (followerID) REFERENCES User(userID)
 		ON DELETE CASCADE
 );`
@@ -112,6 +112,8 @@ var sql_TABLEBAN = `CREATE TABLE IF NOT EXISTS Ban
 	PRIMARY KEY(bannedID, bannerID),
 	CONSTRAINT fk_ban
 		FOREIGN KEY (bannerID) REFERENCES User(userID)
+			ON DELETE CASCADE,
+	CONSTRAINT fk_ban
 		FOREIGN KEY (bannedID) REFERENCES User(userID)
-		ON DELETE CASCADE
+			ON DELETE CASCADE
 );`
