@@ -66,7 +66,10 @@ paths:
       tags: [User]
       summary: Set my new username
       description: |-
-        Set new my username
+        Set new username for the user with the given user ID.
+        If the new username is already taken, the request will fail.
+        If the user is not authorized, the request will fail.
+        If the username is not valid, the request will fail.
       operationId: setMyUserName
       security:
         - bearerAuth: []
@@ -88,8 +91,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "403": { $ref: "#/components/responses/Forbidden" }
 
   /profiles/{profile_user_id}/feed:
     parameters:
@@ -117,7 +119,7 @@ paths:
               schema: { $ref: "#/components/schemas/PostsList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/followings/{target_user_id}:
@@ -139,6 +141,13 @@ paths:
       summary: Follow user
       description: |-
         Follow the user with the target_user_id.
+        <details>
+        <summary> Status code info </summary>
+        It returns 400 if the user is trying to follow himself
+        It returns 400 if the user is already following the target user
+        It returns 400 if the target user has banned the user
+        It returns 500 if there is an error while checking if the user is already following the target user
+        </details>
       security:
         - bearerAuth: []
       responses:
@@ -151,7 +160,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -160,6 +169,15 @@ paths:
       summary: Unfollow user
       description: |-
         Unfollow the user with the given user ID and delete it from the follower list.
+        <details>
+        <summary> Status code info </summary>
+        It return 200 if the user is unfollowed
+        It return 400 if the user trying to unfollow himself
+        It return 400 if the user is not followed
+        It return 400 if the target user has banned the user
+        It return 403 if the user is not authorized
+        It return 500 if there is an internal error
+        </details>
       security:
         - bearerAuth: []
       responses:
@@ -172,8 +190,9 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+
   /profiles/{profile_user_id}/followings:
     parameters:
       - name: profile_user_id
@@ -202,7 +221,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/followers:
@@ -232,7 +251,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bans/{target_user_id}:
@@ -266,7 +285,7 @@ paths:
               schema: { $ref: "#/components/schemas/User" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -286,7 +305,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bans:
@@ -317,7 +336,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}:
@@ -351,7 +370,7 @@ paths:
               schema: { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -371,7 +390,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts:
@@ -415,7 +434,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -438,7 +457,7 @@ paths:
               schema: { $ref: "#/components/schemas/PostsList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}:
@@ -472,7 +491,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
@@ -509,7 +528,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -528,7 +547,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes:
@@ -564,7 +583,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments:
@@ -600,7 +619,7 @@ paths:
               schema: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -621,7 +640,7 @@ paths:
 
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments/{comment_id}:
@@ -658,7 +677,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles:
@@ -697,14 +716,14 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-        "404": { $ref: "#/components/responses/NotFound" }
+       
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bio:
     parameters:
       - name: profile_user_id
         in: path
-        description: The user Id of the owner of the post.
+        description: The user Id of the owner of the profile.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
@@ -735,7 +754,7 @@ paths:
     parameters:
       - name: profile_user_id
         in: path
-        description: The user Id of the owner of the post.
+        description: The user Id of the owner of the profile.
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
 
@@ -769,11 +788,38 @@ paths:
                 type: object
                 description: The url of the profile picture
                 properties:
-                  schema: { $ref: "#/components/schemas/ImgURL" }
+                  schema: { $ref: "#/components/schemas/Img64" }
                 example:
                   {
                     "img_url": "https://www.example.com/storage/2/profile_pic_250x250.jpeg",
                   }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /profiles/{profile_user_id}/reset-profile-picture:
+    parameters:
+      - name: profile_user_id
+        in: path
+        description: The user Id of the owner of the profile.
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+
+    put:
+      tags: ["User"]
+      operationId: resetMyProfilePic
+      summary: Set the profile picture of the user to the default one
+      description: |-
+        Set the profile picture of the user to the default one
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Profile picture setted successful
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -829,8 +875,8 @@ components:
       title: Username
       description: Username of the user, not accepted upper case characters
       type: string
-      pattern: ^[a-z][a-z0-9_]{2,13}$
-      example: "haru_22"
+      pattern: ^[a-z0-9]{3,13}$
+      example: "haru22"
       minLength: 3
       maxLength: 13
     User:
@@ -840,7 +886,7 @@ components:
       properties:
         user_id: { $ref: "#/components/schemas/UserID" }
         username: { $ref: "#/components/schemas/Username" }
-        propic_url: { $ref: "#/components/schemas/ImgURL" }
+        propic_64: { $ref: "#/components/schemas/Img64" }
     Profile:
       title: Profile
       description: Profile of the user
@@ -848,19 +894,26 @@ components:
       properties:
         user: { $ref: "#/components/schemas/User" }
         bio: { $ref: "#/components/schemas/Bio" }
-        profile_pic: { $ref: "#/components/schemas/ImgURL" }
-        followers:
+        profile_pic: { $ref: "#/components/schemas/Img64" }
+        followers_count:
           type: integer
           description: Number of followers
           example: 10
           minimum: 0
-        followings:
+        followings_count:
           type: integer
           description: Number of followings
           example: 10
           minimum: 0
-        #non ritorna posts, i posts verrano ritornati con un'altra chiamata
-        #forse si potrebbe usare link nei responses.
+        posts_count:
+          type: integer
+          description: Number of posts
+          example: 10
+          minimum: 0
+        is_followed:
+          type: boolean
+          description: True if the user is followed by the logged user
+          example: true
     PostID:
       title: PostID
       description: |-
@@ -882,15 +935,16 @@ components:
       description: Comment of the post
       type: object
       properties:
-        user: { $ref: "#/components/schemas/User" }
         comment_id: { $ref: "#/components/schemas/CommentID" }
+        owner_id: { $ref: "#/components/schemas/UserID" }
+        user: { $ref: "#/components/schemas/User" }
         comment:
           type: string
           description: Text of the comment
           example: "Bella foto!"
-          pattern: '^[^\/\\]{1,100}$'
+          pattern: '^[^\/\\]{1,64}$'
           minLength: 1
-          maxLength: 100
+          maxLength: 64
         timestamp: { $ref: "#/components/schemas/Timestamp" }
     CommentsList:
       title: Comment List
@@ -904,7 +958,7 @@ components:
       description: The post is a collection of post, like count and comment cou. Contain a timestamp.
       type: object
       properties:
-        photo_url: { $ref: "#/components/schemas/ImgURL" }
+        photo64: { $ref: "#/components/schemas/Img64" }
         caption: { $ref: "#/components/schemas/Caption" }
         likes_count:
           type: integer
@@ -914,6 +968,10 @@ components:
           type: integer
           description: Number of comments of the post.
           minimum: 0
+        is_liked:
+          type: boolean
+          description: True if the post is liked by the logged user
+          example: true
         timestamp: { $ref: "#/components/schemas/Timestamp" }
     PostsList:
       title: Posts List
@@ -945,7 +1003,7 @@ components:
         description: User
         properties:
           user: { $ref: "#/components/schemas/User" }
-          pro_pic: { $ref: "#/components/schemas/ImgURL" }
+          pro_pic: { $ref: "#/components/schemas/Img64" }
       minItems: 0
       maxItems: 100
     Bio:
@@ -971,7 +1029,7 @@ components:
       description: The authorization code is the user_id.
       type: object
       properties:
-        user_id: { $ref: "#/components/schemas/UserID" }
+        user: { $ref: "#/components/schemas/User" }
         auth: { $ref: "#/components/schemas/Auth" }
       example: { "user_id": 10, "auth": 10 }
     OK:
@@ -980,17 +1038,12 @@ components:
       type: string
       example: "OK, action successfully completed"
       minLength: 2
-      maxLength: 50
-    ImgURL:
-      title: ImgURL
-      description: Image URL specification.
+      maxLength: 200
+    Img64:
+      title: Img64
+      description: base 64 image.
       type: string
-      format: url
-      #vorrei usare l'estensione webp
-      pattern: '^https:\/\/[a-zA-Z.-_\/]*\/users\/[0-9]{5}\/(propic|posts)\/[a-zA-Z]{3}\.jpg$'
-      minLength: 34
-      maxLength: 128
-      example: "https://www.example.com/users/00001/posts/aAk.jpg"
+      format: byte
     Timestamp:
       title: Timestamp
       description: The timestamp of the post.
@@ -1002,17 +1055,6 @@ components:
       maxLength: 19
 
   responses:
-    #403
-    Unauthorized:
-      description: The access token is missing or it's expired.
-      content:
-        text/plain:
-          schema:
-            description: Unauthorized
-            type: string
-            example: "Unauthorized"
-            minLength: 12
-            maxLength: 30
     #400
     BadRequest:
       description: The request was not compliant with the documentation (eg. missing fields, etc).
@@ -1024,6 +1066,31 @@ components:
             example: "Bad Request"
             minLength: 11
             maxLength: 30
+
+    #401
+    Unauthorized:
+      description: The access token is missing or it's expired.
+      content:
+        text/plain:
+          schema:
+            description: Unauthorized
+            type: string
+            example: "Unauthorized"
+            minLength: 12
+            maxLength: 30
+
+    #403
+    Forbidden:
+      description: The user is not allowed to perform the action.
+      content:
+        text/plain:
+          schema:
+            description: Forbidden
+            type: string
+            example: "Forbidden"
+            minLength: 9
+            maxLength: 30
+
     #500
     InternalServerError:
       description: The server encountered an internal error. Further info in server logs.
@@ -1034,17 +1101,6 @@ components:
             type: string
             example: "Internal Server Error"
             minLength: 21
-            maxLength: 30
-    #404
-    NotFound:
-      description: The resource was not found.
-      content:
-        text/plain:
-          schema:
-            description: NotFound
-            type: string
-            example: "Not Found"
-            minLength: 9
             maxLength: 30
   securitySchemes:
     bearerAuth:

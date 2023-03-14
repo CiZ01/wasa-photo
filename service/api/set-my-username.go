@@ -63,10 +63,4 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 
 	// Return a success message
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("content-type", "plain/text")
-	if err := json.NewEncoder(w).Encode("Username changed"); err != nil {
-		ctx.Logger.WithError(err).Error("can't encode the response")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 }

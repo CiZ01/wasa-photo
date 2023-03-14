@@ -2,20 +2,33 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
+
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
 // MISSING LOGGER ERRORS
+
+/*
+getMyFollowings is the handler for GET /users/:profileUserID/followings
+Return the followings of the user with the given profileUserID.
+Only the user with the given profileUserID can access this endpoint.
+*/
 func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Check if the user is authorized
+	if profileUserID != ctx.UserID {
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -47,8 +60,8 @@ func (rt *_router) getMyFollowings(w http.ResponseWriter, r *http.Request, ps ht
 	}
 
 	// Write the response
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(followings); err != nil {
 		ctx.Logger.WithError(err).Error("Error while encoding the response")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

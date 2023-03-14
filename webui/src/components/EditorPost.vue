@@ -7,7 +7,6 @@ export default {
     emits: ['exit-upload-form', 'save-upload-form'],
     components: {
         Cropper,
-        RectangleStencil,
     },
     props: {
         image64: {

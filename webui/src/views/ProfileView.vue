@@ -7,7 +7,6 @@ export default {
     data() {
         return {
             errorMsg: "",
-            typeList: "",
             // Profile data
             userID: parseInt(this.$route.params.userID),
             username: "",
@@ -205,6 +204,7 @@ export default {
             });
         },
         loadMoreContents() {
+            console.log("ciaos");
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
             this.postOffset += this.postLimit;
@@ -259,10 +259,19 @@ export default {
             this.getProfile();
             localStorage.propic64 = this.proPic64;
         },
-        async deleteProfile(){
+        async deleteProfile() {
             try {
                 let _ = await this.$axios.delete(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.doLogout();
+            } catch (e) {
+                this.errorMsg = e.toString();
+            }
+        },
+        async resetProfilePic() {
+            try {
+                let response = await this.$axios.put(`profiles/${localStorage.userID}/reset-profile-picture`, {}, { headers: { 'Authorization': `${localStorage.token}` } });
+                this.proPic64 = response.data.userPropic64;
+                this.updateProfile();
             } catch (e) {
                 this.errorMsg = e.toString();
             }
@@ -289,7 +298,7 @@ export default {
         }
 
         document.addEventListener('scroll', e => {
-            if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight) {
+            if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight*0.8) {
                 this.loadMoreContents();
             }
         });
@@ -310,12 +319,15 @@ export default {
 
 
 <template>
-    <ErrorMsg v-if="errorMsg" :errorMsg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
         @refresh-data="updateProfile" @error-occured="errorMsg = value"> </UploadPhoto>
     <div class="top-profile-container">
         <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false">
             <div class="edit-propic" v-if="showEditPropic">
+                <button class="reset-propic-button">
+                    <font-awesome-icon icon="fa-solid fa-xmark" size="lg" color="#fff" @click="resetProfilePic" />
+                </button>
                 <button class="edit-propic-button" @click="isEditingPropic = true">
                     <font-awesome-icon icon="fa-regular fa-pen-to-square" size="lg" color="#fff" />
                 </button>
@@ -374,18 +386,21 @@ export default {
         </div>
     </div>
 
-    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :typeList="typeList" @exit-list="freeLists" />
-
-    <div class="posts-grid-container">
-        <div v-for="post in posts" :key="post.postID" class="posts-grid-post">
-            <img @click="openPost(post)" :src="`data:image/jpg;base64,${post.image}`" loading="lazy"
-                class="posts-grid-post-image" :id="post.postID">
+    <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :typeList="typeList"
+        @exit-list="freeLists" />
+        <div v-if="showPost" class="post-view" @click.self="exitPost">
+            <Post :postData="postViewData" @delete-post="deletePost" />
         </div>
-        <span v-if="(posts.length === 0)" class="posts-grid-nopost-text"> There are no posts yet </span>
-    </div>
 
-    <div v-if="showPost" class="post-view" @click.self="exitPost">
-        <Post :postData="postViewData" @delete-post="deletePost" />
+    <div class="posts-container">
+        <span v-if="(posts.length === 0)" class="posts-grid-nopost-text"> There are no posts yet </span>
+        <div class="posts-grid-container" v-if="posts.length > 0">
+            <div v-for="post in posts" :key="post.postID" class="posts-grid-post" @click="openPost(post)">
+                <img :src="`data:image/jpg;base64,${post.image}`" loading="lazy" class="posts-grid-post-image"
+                    :id="post.postID">
+            </div>
+        </div>
+
     </div>
 </template>
 

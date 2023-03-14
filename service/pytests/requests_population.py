@@ -53,9 +53,9 @@ def create_posts(count: int):
 
 def create_likes(count: int) -> None:
     for i in range(1, count):
-        header = {'Authorization': str(i)}
+        header = {'Authorization': str((i%23)+1)}
         response = r.put(
-            f"http://localhost:3000/profiles/{random.randint(0,20)}/posts/{random.randint(0,4)}/likes/{i}", headers=header)
+            f"http://localhost:3000/profiles/21/posts/{random.randint(0,10)}/likes/{(i%23)+1}", headers=header)
         if response.status_code != 200:
             print("Error creating like " + str(i))
             print(response.text)
@@ -70,9 +70,9 @@ def create_comments(count):
             'text': text
         }
 
-        header = {'Authorization': str(i)}
+        header = {'Authorization': str((i%23)+1)}
         response = r.post(
-            f"http://localhost:3000/profiles/{i}/posts/2/comments", json=body, headers=header)
+            f"http://localhost:3000/profiles/{random.randint(0,22)}/posts/{random.randint(0,5)}/comments", json=body, headers=header)
         if response.status_code != 201:
             print("Error creating comment " + str(i))
             print(response.text)
@@ -133,10 +133,10 @@ def create_propic(count: int):
 def main():
     #create_users(20)
     #create_propic(20)
-    create_posts(20)
-    #create_likes(40)
-    #create_comments(30)
-    #create_follows(40)
+    #create_posts(22)
+    create_likes(100)
+    create_comments(30)
+    create_follows(40)
     # create_ban(20)
 
 

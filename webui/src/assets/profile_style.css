@@ -6,11 +6,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-
-    margin-bottom: 3em;
 }
 
-.edit-propic-button{
+.edit-propic{
     width: 100%;
     height: 100%;
 
@@ -20,10 +18,37 @@
 
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
+    z-index: 1;
+
     position: absolute;
-    top: 0;
-    left: 0;
-    
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.reset-propic-button{
+    width: auto;
+    height: auto;
+
+    border: none;
+    background-color: transparent;
+
+    position: relative;
+    bottom: 4em;
+
+    z-index: 1;
+}
+
+.edit-propic-button{
+    width: auto;
+    height: auto;
+
+    border: none;
+    background-color: transparent;
+    position: relative;
+    bottom: 1em;
 
     z-index: 1;
 }
@@ -298,24 +323,35 @@
 
 /* ------------------------ POSTS ------------------------ */
 
-.posts-grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+.posts-container{
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
 
     width: 40em;
-    height: fit-content;
-    padding: 2em;
+    height: auto;
 
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
     background-color: #fff;
-
     border-radius: 0.5em;
 
+    padding: 2em;
 
     position: relative;
-    top: -6em;
+    top: -2em;
+}
+
+.posts-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    justify-items: center;
+    flex-direction: row;
+
+    width: auto;
+    height: fit-content;
 }
 
 .posts-grid-post {
@@ -333,11 +369,12 @@
     font-size: 1.5em;
     font-weight: bold;
 
-    color: rgb(0, 0, 0, 0.7);
+    width: 18rem;
 
+    color: rgb(0, 0, 0, 0.6);
+
+    text-align: center;
     position: relative;
-
-
 }
 
 .posts-grid-post-image {
@@ -347,40 +384,9 @@
     object-fit: cover;
 }
 
-.delete-account-button {
-    width: 12em;
-    height: 3em;
-
-    background-color: rgb(255, 56, 56);
-    border: 1px solid #000;
-
-    border-radius: 0.5em;
-
-    font-size: 1.2em;
-    font-weight: bold;
-
-    color: rgb(0, 0, 0, 0.7);
-
-    position: relative;
-}
-
-.delete-account-button-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    width: 40em;
-    height: 5em;
-
-    position: relative;
-    top: 6em;
-}
-
-
 .post-view {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.2);
 
     display: flex;
@@ -391,5 +397,6 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+
+    z-index: 2;
 }

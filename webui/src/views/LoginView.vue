@@ -7,40 +7,41 @@ export default {
         }
     },
     methods: {
-        doLogin() {
-            this.$axios.post('/session', { username: this.username }).then((response) => {
-                localStorage.setItem('userID', response.data.user['userID']);
-                localStorage.setItem('username', response.data.user['username']);
-                localStorage.setItem('propic64', response.data.user['userPropic64']);
-                localStorage.setItem('token', response.data.token)
+        async doLogin() {
+            try {
+                let response = await this.$axios.post('/session', {
+                    username: this.username,
+                });
+                console.log(response.data);
+                localStorage.userID = response.data.user.userID;
+                localStorage.username = response.data.user.username;
+                localStorage.propic64 = response.data.user.userPropic64;
 
-                this.$router.push("/home");
-            }).catch((error) => {
-                localStorage.setItem('errorMessage', error.response.data);
+                localStorage.token = response.data.token;
+                this.$router.push({ name: 'Home' });
+            } catch (e) {
+                this.errorMsg = e.message;
+                document.getElementsByTagName("input")[0].style.outline = "auto";
+                document.getElementsByTagName("input")[0].style.outlineColor = "red";
             }
-            );}
         },
-    beforeMount() {
-    },
-    mounted() {
-    },
     }
 
+}
 </script>
 
 <template>
+    <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <div class="login-container">
         <div class="top-login-container">
             <span class="top-container-login-title"> Login </span>
         </div>
         <div class="form-container-login">
             <span class="form-text-container-login">Username</span>
-            <input :on-submit="doLogin" type="text" name="username-form" spellcheck="false" v-model="username">     
-            <span class="form-text-container-login-error">{{ errorMsg }}</span>
+            <input type="text" name="username-form" spellcheck="false" v-model="username">
         </div>
         <div class="bottom-login-container">
             <button @click="doLogin" type="submit"> Login </button>
         </div>
-
     </div>
 </template>

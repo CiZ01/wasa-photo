@@ -9,7 +9,7 @@ import (
 )
 
 /*
-unfollowUser unfollows the user “ followed by .
+unfollowUser is the handler for the DELETE /users/:profileUserID/followings/:targetUserID endpoint
 */
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
@@ -25,6 +25,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Check if the user is authorized
 	if profileUserID != ctx.UserID {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
@@ -35,6 +36,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Check if the users are banned
 	isBanned, err := rt.db.IsBanned(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if the user is banned")
@@ -46,6 +48,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Check if the user is following the target user
 	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error checking if the user is following the target user")
@@ -57,6 +60,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Delete the follow
 	err = rt.db.DeleteFollow(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting follow")

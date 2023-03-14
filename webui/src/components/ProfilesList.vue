@@ -93,7 +93,7 @@ export default {
             <span class="list-header-text">{{ textHeader }}</span>
             <div v-if="typeList == 'simple'" class="list-entries">
                 <SimpleProfileEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
-                @exit-list-from-entr="$emit('exit-list')" @error-occured="handleError" />
+                @exit-list-from-entry="$emit('exit-list')" @error-occured="handleError" />
             </div>
             <div v-else-if="typeList == 'comment'" class="list-entries">
                 <CommentEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"

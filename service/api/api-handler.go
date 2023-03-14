@@ -24,6 +24,9 @@ func (rt *_router) Handler() http.Handler {
 	// --------CHANGE PROFILE PIC-------//
 	rt.router.PUT("/profiles/:profileUserID/profile-picture", rt.wrap(rt.setMyProfilePic, true))
 
+	// --------DELETE PROFILE PIC---------//
+	rt.router.PUT("/profiles/:profileUserID/reset-profile-picture", rt.wrap(rt.resetMyProfilePic, true))
+
 	// ----------FOLLOW USER-----------//
 	rt.router.PUT("/profiles/:profileUserID/followings/:targetUserID", rt.wrap(rt.followUser, true))
 
@@ -83,9 +86,6 @@ func (rt *_router) Handler() http.Handler {
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
-
-	// Check foreign keys
-	rt.router.GET("/check_foreign_keys", rt.checkForeignKeys)
 
 	return rt.router
 }

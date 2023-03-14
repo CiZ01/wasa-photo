@@ -133,8 +133,6 @@ type AppDatabase interface {
 	// Return true if a username already exists, false otherwise
 	ExistsName(username string) (bool, error)
 
-	CheckForeignKeys() error
-
 	// Ping the database to check if it is alive
 	Ping() error
 }
