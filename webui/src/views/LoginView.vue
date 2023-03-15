@@ -16,15 +16,22 @@ export default {
                 localStorage.userID = response.data.user.userID;
                 localStorage.username = response.data.user.username;
                 localStorage.propic64 = response.data.user.userPropic64;
-
+                console.log("ciao");
                 localStorage.token = response.data.token;
-                this.$router.push({ name: 'Home' });
+                console.log("ciao2");
+                this.$router.push("/home");
+
+                console.log("ciao3");
             } catch (e) {
-                this.errorMsg = e.message;
+                console.log(e);
+                this.errorMsg = e.toString();
                 document.getElementsByTagName("input")[0].style.outline = "auto";
                 document.getElementsByTagName("input")[0].style.outlineColor = "red";
             }
         },
+    },
+    beforeMount(){
+        localStorage.clear();
     }
 
 }

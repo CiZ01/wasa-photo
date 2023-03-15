@@ -1,0 +1,8 @@
+FROM node:lts as frontend_compiler
+WORKDIR /src/webui
+COPY webui .
+RUN npm run build-prod
+
+FROM nginx:latest
+COPY --from=frontend_compiler /src/webui/dist /usr/share/nginx/html
+EXPOSE 5173
