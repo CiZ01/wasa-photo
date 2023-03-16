@@ -1,8 +1,16 @@
-FROM node:lts as frontend_compiler
-WORKDIR /src/webui
-COPY webui .
+FROM node:lts as builder
+
+### Copy Vue.js code
+WORKDIR /app
+COPY webui webui
+
+### Build Vue.js into plain HTML/CSS/JS
+WORKDIR /app/webui
 RUN npm run build-prod
 
-FROM nginx:latest
-COPY --from=frontend_compiler /src/webui/dist /usr/share/nginx/html
-EXPOSE 5173
+
+### Create final container
+FROM nginx:stable
+
+### Copy the (built) app from the builder image
+COPY --from=builder /app/webui/dist /usr/share/nginx/html

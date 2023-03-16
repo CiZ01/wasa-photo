@@ -49,10 +49,13 @@ export default {
 
             // Options data
             showOptions: false,
+
+            isLoading: false,
         }
     },
     methods: {
         async getProfile() {
+            this.isLoading = true;
             try {
                 let response = await this.$axios.get(`profiles/${this.userID}`, { headers: { 'Authorization': `${localStorage.token}` } })
                 this.userID = response.data.user.userID;
@@ -70,8 +73,10 @@ export default {
             } catch (e) {
                 this.errorMsg = e.toString();
             }
+            this.isLoading = false;
         },
         async getPosts() {
+            this.isLoading = true;
             try {
                 let response = await this.$axios.get(`/profiles/${this.userID}/posts?limit=${this.postLimit}&offset=${this.postOffset}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 if (response.data == null) {
@@ -82,6 +87,7 @@ export default {
             } catch (e) {
                 this.errorMsg = e.toString();
             };
+            this.isLoading = false;
         },
         editingBio() {
             if (this.isOwner) {
@@ -97,12 +103,14 @@ export default {
                     this.bio = "This user have notighing to say";
                 }
                 document.getElementsByClassName("top-body-profile-bio-text")[0].style.outline = "none";
+                this.isLoading = true;
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
                 document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "#fff";
+                this.isLoading = false;
             }
         },
         editingUsername() {
@@ -118,6 +126,7 @@ export default {
                     this.username = localStorage.username;
                     return
                 }
+                this.isLoading = true;
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/username`, { username: this.username }, { headers: { 'Authorization': `${localStorage.token}` } });
                     localStorage.username = this.username;
@@ -125,6 +134,7 @@ export default {
                     this.errorMsg = e.toString();
                     this.username = localStorage.username;
                 }
+                this.isLoading = false;
             }
         },
         getFollowers() {
@@ -204,12 +214,13 @@ export default {
             });
         },
         loadMoreContents() {
-            console.log("ciaos");
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
+            this.isLoading = true;
             this.postOffset += this.postLimit;
             this.getPosts();
             this.busy = false;
+            this.isLoading = false;
         },
         doLogout() {
             localStorage.clear();
@@ -247,6 +258,7 @@ export default {
             this.showOptions = false;
         },
         async deletePost(postID) {
+            this.isLoading = true;
             try {
                 let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.posts = this.posts.filter(post => post.postID != postID);
@@ -254,18 +266,21 @@ export default {
             } catch (e) {
                 this.errorMsg = e.toString();
             }
+            this.isLoading = false;
         },
         updateProfile() {
             this.getProfile();
             localStorage.propic64 = this.proPic64;
         },
         async deleteProfile() {
+            this.isLoading = true;
             try {
                 let _ = await this.$axios.delete(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.doLogout();
             } catch (e) {
                 this.errorMsg = e.toString();
             }
+            this.isLoading = false;
         },
         async resetProfilePic() {
             try {
@@ -319,9 +334,10 @@ export default {
 
 
 <template>
+	<LoadingSpinner :loading=isLoading />
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
-        @refresh-data="updateProfile" @error-occured="errorMsg = value"> </UploadPhoto>
+        @refresh-data="updateProfile" @error-occured="errorMsg = value" />
     <div class="top-profile-container">
         <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false">
             <div class="edit-propic" v-if="showEditPropic">

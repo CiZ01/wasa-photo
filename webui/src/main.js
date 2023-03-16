@@ -2,12 +2,11 @@ import {createApp, reactive} from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from './services/axios.js';
+import LoadingSpinner from './components/LoadingSpinner.vue'
 
 import ErrorMsg from './components/ErrorMsg.vue'
-import LoadingSpinner from './components/LoadingSpinner.vue'
 import Post from './components/Post.vue'
 import ProfilesList from './components/ProfilesList.vue'
-import LoadingPulse from './components/LoadingPulse.vue'
 
 import './assets/main.css'
 import './assets/home.css'
@@ -25,10 +24,9 @@ app.config.globalProperties.$axios = axios;
 
 //--- COMPONENT ---//
 app.component("ErrorMsg", ErrorMsg);
-app.component("LoadingSpinner", LoadingSpinner);
 app.component("Post", Post);
 app.component("ProfilesList", ProfilesList);
-app.component("LoadingPulse", LoadingPulse);
+app.component("LoadingSpinner", LoadingSpinner);
 //---------------//
 
 

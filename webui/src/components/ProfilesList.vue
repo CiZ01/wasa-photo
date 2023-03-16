@@ -34,6 +34,7 @@ export default {
             additionalData: this.$props.argv,
 
             errorMsg: '',
+            isLoading: false,
 
         }
     },
@@ -48,8 +49,10 @@ export default {
         loadMoreContents() {
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
+            this.isLoading = true;
             this.offset += this.limit;
             this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
+            this.isLoading = false;
             this.busy = false;
 
         },
@@ -65,7 +68,9 @@ export default {
         },
     },
     mounted() {
+        this.isLoading = true;
         this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
+        this.isLoading = false;
 
         const el = document.getElementsByClassName("list-entries")[0];
         el.addEventListener('scroll', e => {
@@ -86,6 +91,7 @@ export default {
 
 <template>
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
+	<LoadingSpinner :loading=isLoading />
 
 
     <div class="list-container-background" @click.self="$emit('exit-list')">

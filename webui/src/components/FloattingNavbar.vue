@@ -15,7 +15,7 @@ export default {
     },
     methods: {
         getMyProfile() {
-            this.$router.push(`/profiles/${localStorage.userID}`);
+            this.$router.replace(`/profiles/${localStorage.userID}`);
         },
         async getPropic(){
             try{

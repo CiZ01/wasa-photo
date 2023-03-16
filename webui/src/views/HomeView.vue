@@ -26,6 +26,8 @@ export default {
 			// Load More 
 			busy: false,
 			dataAvaible: true,
+
+			isLoading: false,
 		}
 	},
 	methods: {
@@ -33,6 +35,7 @@ export default {
 			return `${post.user.userID}`+ `${post.postID}`;
 		},
 		async getMyStream() {
+			this.isLoading = true;
 			try {
 				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
 				let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
@@ -45,6 +48,7 @@ export default {
 			} catch (e) {
 				this.errorMsg = e.toString();
 			}
+			this.isLoading = false;
 		},
 		updateLike(data) {
 			this.posts.forEach(post => {
@@ -85,16 +89,26 @@ export default {
 				this.loadMoreContents();
 			}
 		});
-	}
+	},
+	beforeRouteUpdate(to, from) {
+		console.log("beforeRouteUpdate");
+		document.removeEventListener('scroll', e => {
+			if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight * (0.7)) {
+				this.loadMoreContents();
+			}
+		});
+	},
 }
 </script>
 
 <template>
 	<ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
 
+	<LoadingSpinner :loading=isLoading />
+
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
-		@refresh-data="getMyStream()" @error-occured="errorMsg = value" />
+		@refresh-data="$router.go(0)" @error-occured="errorMsg = value" />
 	<FloatingNavbar @show-upload-form="showUploadPhoto = true" />
 
-	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost" />
+	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost" @error-occured="errorMsg = value"/>
 </template>

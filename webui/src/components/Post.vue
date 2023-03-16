@@ -4,7 +4,7 @@ import ProfilesList from '@/components/ProfilesList.vue';
 import utils from '@/services/utils.js';
 
 export default {
-    emits: ['update-like', 'delete-post'],
+    emits: ['update-like', 'delete-post', 'error-occured'],
     components: {
         ProfilesList,
     },
@@ -55,6 +55,7 @@ export default {
                 this.likesCount++;
             } catch (e) {
                 this.errorMsg = e.toString();
+                this.$emit('error-occured', this.errorMsg);
             }
         },
         async unlike() {
@@ -65,6 +66,7 @@ export default {
                 this.likesCount--;
             } catch (e) {
                 this.errorMsg = e.toString();
+                this.$emit('error-occured', this.errorMsg);
             }
         },
         toggleComment() {
@@ -135,6 +137,7 @@ export default {
                 }
                 catch (e) {
                     this.errorMsg = e.toString();
+                    this.$emit('error-occured', this.errorMsg);
                 }
                 document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
             }
@@ -171,7 +174,6 @@ export default {
 </script>
 
 <template>
-    <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''" />
     <div class="post-containter">
         <div class="post-header">
             <img class="post-header-propic-img" :src="`data:image/jpg;base64,${proPic64}`" alt="" loading="lazy">

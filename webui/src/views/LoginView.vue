@@ -4,10 +4,13 @@ export default {
         return {
             username: "",
             errorMsg: "",
+
+            isLoading: false,
         }
     },
     methods: {
         async doLogin() {
+            this.isLoading = true;
             try {
                 let response = await this.$axios.post('/session', {
                     username: this.username,
@@ -16,18 +19,16 @@ export default {
                 localStorage.userID = response.data.user.userID;
                 localStorage.username = response.data.user.username;
                 localStorage.propic64 = response.data.user.userPropic64;
-                console.log("ciao");
                 localStorage.token = response.data.token;
-                console.log("ciao2");
                 this.$router.push("/home");
 
-                console.log("ciao3");
             } catch (e) {
                 console.log(e);
                 this.errorMsg = e.toString();
                 document.getElementsByTagName("input")[0].style.outline = "auto";
                 document.getElementsByTagName("input")[0].style.outlineColor = "red";
             }
+            this.isLoading = false;
         },
     },
     beforeMount(){
@@ -38,6 +39,7 @@ export default {
 </script>
 
 <template>
+	<LoadingSpinner :loading=isLoading />
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <div class="login-container">
         <div class="top-login-container">

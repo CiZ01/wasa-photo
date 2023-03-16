@@ -49,8 +49,8 @@ export default {
                         'content-type': 'multipart/form-data'
                     }
                 });
-                this.$emit('refresh-data');
-                this.$emit('exit-upload-form');
+                this.$emit('refresh-data')
+                setTimeout(this.$emit('exit-upload-form'), 1000);
             } catch (e) {
                 this.errorMsg = e.toString();
                 this.$emit('error-occured', this.errorMsg);
@@ -107,8 +107,8 @@ export default {
             </div>
         </div>
 
-        <EditorPost :image64="file64" :editorType="this.$props.photoType" v-if="file64" @exit-upload-form="this.$emit('exit-upload-form')"
-            @save-upload-form="saveData" />
+        <EditorPost :image64="file64" :editorType="this.$props.photoType" v-if="file64"
+            @exit-upload-form="this.$emit('exit-upload-form')" @save-upload-form="saveData" />
     </div>
 </template>
 
