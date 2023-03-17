@@ -34,7 +34,6 @@ export default {
             additionalData: this.$props.argv,
 
             errorMsg: '',
-            isLoading: false,
 
         }
     },
@@ -49,10 +48,8 @@ export default {
         loadMoreContents() {
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
-            this.isLoading = true;
             this.offset += this.limit;
             this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
-            this.isLoading = false;
             this.busy = false;
 
         },
@@ -68,9 +65,7 @@ export default {
         },
     },
     mounted() {
-        this.isLoading = true;
         this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
-        this.isLoading = false;
 
         const el = document.getElementsByClassName("list-entries")[0];
         el.addEventListener('scroll', e => {
@@ -91,7 +86,6 @@ export default {
 
 <template>
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
-	<LoadingSpinner :loading=isLoading />
 
 
     <div class="list-container-background" @click.self="$emit('exit-list')">
@@ -99,7 +93,7 @@ export default {
             <span class="list-header-text">{{ textHeader }}</span>
             <div v-if="typeList == 'simple'" class="list-entries">
                 <SimpleProfileEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
-                @exit-list-from-entry="$emit('exit-list')" @error-occured="handleError" />
+                @exit-list-from-entr="$emit('exit-list')" @error-occured="handleError" />
             </div>
             <div v-else-if="typeList == 'comment'" class="list-entries">
                 <CommentEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"

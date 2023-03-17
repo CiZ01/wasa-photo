@@ -4,7 +4,7 @@ export default {
     components: {
         SearchBar,
     },
-    emits: ['show-upload-form'],
+    emits: ['show-upload-form', 'error-occurred'],
 
     data() {
         return {
@@ -15,7 +15,7 @@ export default {
     },
     methods: {
         getMyProfile() {
-            this.$router.replace(`/profiles/${localStorage.userID}`);
+            this.$router.push(`/profiles/${localStorage.userID}`);
         },
         async getPropic(){
             try{
@@ -24,6 +24,7 @@ export default {
 
             } catch(e){
                 this.errorMsg = e.toString();
+                this.$emit('error-occurred', this.errorMsg);
             }
         }
     },

@@ -8,6 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+deletePhoto is the hanlder for the DELETE /users/:profileUserID/posts/:postID endpoint.
+It deletes a photo from the database and returns a 200 OK if the photo is deleted.
+*/
 func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -38,4 +42,6 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	// Write the response
+	w.WriteHeader(http.StatusOK)
 }

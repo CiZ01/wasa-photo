@@ -8,6 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+UnbanUser is the handler for the DELETE /users/{profileUserID}/bans/{targetUserID} endpoint
+It deletes the ban between the profileUserID and the targetUserID
+*/
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -30,11 +34,13 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
+	// Check if the user is authorized
 	if profileUserID != userID {
 		http.Error(w, "Forbidden", http.StatusBadRequest)
 		return
 	}
 
+	// Delete the ban in the database
 	err = rt.db.DeleteBan(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting ban")

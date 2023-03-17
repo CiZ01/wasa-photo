@@ -15,14 +15,7 @@ import (
 
 /*
 UploadPhoto is the handler for the POST /users/:profileUserID/posts endpoint.
-It creates a new post and returns a JSON representation of the new post and 201 response.
-The JSON response body is of the form:
-- User: the user who created the post, represented as a JSON object, with the following fields:
-  - ID: the user ID
-  - Username: the username
-  - profilePicURL: the URL of the profile picture
-
-- Caption: the caption of the post
+It creates a new post
 */
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
@@ -32,6 +25,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	// Check if the user is authorized
 	if profileUserID != ctx.UserID {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return

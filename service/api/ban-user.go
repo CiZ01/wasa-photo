@@ -8,6 +8,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+banUser is the handler for the POST /users/{profileUserID}/bans/{targetUserID} endpoint.
+It bans a user.
+A banned user cannot see anything about the user who banned him.
+*/
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -24,8 +29,9 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	userID := ctx.UserID
 
+	// Check if the user is authorized
 	if profileUserID != userID {
-		http.Error(w, "Forbidden", http.StatusBadRequest)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -35,6 +41,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	// Create the ban in the database
 	err = rt.db.CreateBan(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error creating ban")

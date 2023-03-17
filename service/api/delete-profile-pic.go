@@ -11,6 +11,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+resetMyProfilePic is the handler for the PUT /users/:profileUserID/reset-profile-pic endpoint.
+It reset the profile pic to default of the user with the given ID.
+*/
 func (rt *_router) resetMyProfilePic(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))

@@ -81,6 +81,7 @@ export default {
                 let response = await this.$axios.get(`/profiles/${this.userID}/posts?limit=${this.postLimit}&offset=${this.postOffset}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 if (response.data == null) {
                     this.dataAvaible = false;
+                    this.isLoading = false;
                     return;
                 }
                 this.posts.push(...response.data);

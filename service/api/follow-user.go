@@ -9,13 +9,15 @@ import (
 )
 
 /*
-* FollowUser is the handler for the PUT /profiles/:profileUserID/followings/:targetUser
+* FollowUser is the handler for the PUT /profiles/:profileUserID/followings/:targetUser API
 * It allows a user to follow another user
 * It returns 400 if the user is trying to follow himself
 * It returns 400 if the user is already following the target user
 * It returns 400 if the target user has banned the user
 * It returns 500 if there is an error while checking if the user is already following the target user
- */
+
+DA RIVEDERE
+*/
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and targetUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -30,9 +32,8 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Check if the user is authorized
 	if profileUserID != ctx.UserID {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		http.Error(w, "Forbidden", http.StatusBadRequest)
 		return
 	}
 
@@ -41,7 +42,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Check if the user is already following the target user
 	isFollowing, err := rt.db.IsFollowing(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while checking if the user is following")
@@ -53,7 +53,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Check if the target user has banned the user
 	isBanned, err := rt.db.IsBanned(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while checking if the user is banned")
@@ -65,7 +64,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Create the follow
 	err = rt.db.CreateFollow(profileUserID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while creating the follow")

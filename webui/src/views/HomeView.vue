@@ -32,16 +32,16 @@ export default {
 	},
 	methods: {
 		getID(post) {
-			return `${post.user.userID}`+ `${post.postID}`;
+			return `${post.user.userID}` + `${post.postID}`;
 		},
 		async getMyStream() {
 			this.isLoading = true;
 			try {
 				const url = `profiles/${localStorage.userID}/feed?limit=${this.feedLimit}&offset=${this.feedOffeset}`;
 				let response = await this.$axios.get(url, { headers: { 'Authorization': `${localStorage.token}` } });
-				if (response.data == null) return;
-				if (response.data.length == 0) {
+				if (response.data == null) {
 					this.dataAvaible = false;
+					this.isLoading = false;
 					return;
 				}
 				this.posts.push(...response.data);
@@ -67,10 +67,10 @@ export default {
 		},
 		async deletePost(postID) {
 			const index = this.posts.findIndex(post => post.postID == postID && post.user.userID == localStorage.userID);
-			try{
+			try {
 				await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
 				this.posts.splice(index, 1);
-			}catch(e){
+			} catch (e) {
 				this.errorMsg = e.toString();
 			}
 		},
@@ -90,14 +90,6 @@ export default {
 			}
 		});
 	},
-	beforeRouteUpdate(to, from) {
-		console.log("beforeRouteUpdate");
-		document.removeEventListener('scroll', e => {
-			if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight * (0.7)) {
-				this.loadMoreContents();
-			}
-		});
-	},
 }
 </script>
 
@@ -110,5 +102,8 @@ export default {
 		@refresh-data="$router.go(0)" @error-occured="errorMsg = value" />
 	<FloatingNavbar @show-upload-form="showUploadPhoto = true" />
 
-	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost" @error-occured="errorMsg = value"/>
+	<span v-if="posts.length == 0" class="no-posts-text"> There are no posts yet </span>
+	<span v-if="posts.length == 0" class="no-posts-text fw-500 fs-6"> Start to follow someone!</span>
+	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost"
+		@error-occured="errorMsg = value" />
 </template>

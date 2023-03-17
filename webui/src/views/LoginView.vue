@@ -15,31 +15,28 @@ export default {
                 let response = await this.$axios.post('/session', {
                     username: this.username,
                 });
-                console.log(response.data);
                 localStorage.userID = response.data.user.userID;
                 localStorage.username = response.data.user.username;
                 localStorage.propic64 = response.data.user.userPropic64;
                 localStorage.token = response.data.token;
                 this.$router.push("/home");
-
             } catch (e) {
-                console.log(e);
                 this.errorMsg = e.toString();
                 document.getElementsByTagName("input")[0].style.outline = "auto";
                 document.getElementsByTagName("input")[0].style.outlineColor = "red";
-            }
+            };
             this.isLoading = false;
-        },
+        }
     },
-    beforeMount(){
+    mounted() {
         localStorage.clear();
-    }
-
+    },
 }
+
 </script>
 
 <template>
-	<LoadingSpinner :loading=isLoading />
+    <LoadingSpinner :loading="isLoading"></LoadingSpinner>
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <div class="login-container">
         <div class="top-login-container">
@@ -47,10 +44,12 @@ export default {
         </div>
         <div class="form-container-login">
             <span class="form-text-container-login">Username</span>
-            <input type="text" name="username-form" spellcheck="false" v-model="username">
+            <input :on-submit="doLogin" type="text" name="username-form" spellcheck="false" v-model="username"
+                maxlength="13">
         </div>
         <div class="bottom-login-container">
-            <button @click="doLogin" type="submit"> Login </button>
+            <button @click="doLogin"> Login </button>
         </div>
+
     </div>
 </template>

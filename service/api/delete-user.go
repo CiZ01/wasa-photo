@@ -8,6 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+deleteUser id the handler for the DELETE /users/:profileUserID endpoint
+It deletes the user with the given profileUserID if the user is authorized
+*/
 func (rt *_router) deleteUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {
@@ -23,6 +27,7 @@ func (rt *_router) deleteUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+	// Delete the user from the database
 	err = rt.db.DeleteUser(profileUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while deleting the user")

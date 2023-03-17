@@ -2,19 +2,14 @@ package api
 
 import (
 	"encoding/json"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"net/http"
 	"strconv"
-
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
-/*
-getMyStream is the handler for the GET /users/:profileUserID/feed endpoint.
-It returns the posts of the followed users of the user with the profileUserID.
-*/
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -47,7 +42,6 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 
 	var posts []Post
 
-	// Convert the posts from database.Post to api.Post
 	for _, dbPost := range dbStream {
 		var post Post
 		err = post.FromDatabase(dbPost)
