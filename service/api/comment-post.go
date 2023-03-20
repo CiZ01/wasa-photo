@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -46,8 +45,9 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	if strings.Contains(tmpComment.Text, "\\") || strings.Contains(tmpComment.Text, "/") || len(tmpComment.Text) > 100 || len(tmpComment.Text) == 0 {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	// Check if the comment text is valid
+	if !tmpComment.isValid() {
+		http.Error(w, "Bad reequest invalid comment", http.StatusBadRequest)
 		return
 	}
 

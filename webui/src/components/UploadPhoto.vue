@@ -4,7 +4,7 @@ export default {
     components: {
         EditorPost,
     },
-    emits: ['exit-upload-form', 'refresh-data', 'error-occured'],
+    emits: ['exit-upload-form', 'refresh-data', 'error-occurred'],
     props: {
         photoType: {
             type: String,
@@ -53,7 +53,7 @@ export default {
                 setTimeout(this.$emit('exit-upload-form'), 1000);
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occured', this.errorMsg);
+                this.$emit('error-occurred', this.errorMsg);
             }
         },
 
@@ -71,7 +71,7 @@ export default {
                 this.$emit('exit-upload-form');
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occured', this.errorMsg);
+                this.$emit('error-occurred', this.errorMsg);
             }
         }
     },

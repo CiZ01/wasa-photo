@@ -9,7 +9,6 @@ export default {
 	},
 	data() {
 		return {
-			errorMsg: '',
 		}
 	},
 	methods: {
@@ -29,8 +28,6 @@ export default {
 
 <template>
 	<main>
-		<ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
-
 		<div class="navbar-header">
 			<span @click="goHome">Wasa Photo</span>
 		</div>

@@ -35,7 +35,8 @@ func (u *User) FromDatabase(dbUser database.User) error {
 	return nil
 }
 
-func IsValid(username string) bool {
+func (u *User) IsValid() bool {
+	username := u.Username
 	validUser := regexp.MustCompile(`^[a-z][a-z0-9_]{2,13}$`)
 	return validUser.MatchString(username)
 }

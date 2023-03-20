@@ -2,7 +2,7 @@
 import utils from "../services/utils.js";
 
 export default {
-    emits: ["exit-list-from-entry", 'error-occured', 'data-update'],
+    emits: ["exit-list-from-entry", 'error-occurred', 'data-update'],
     props: {
         /*
         {
@@ -49,7 +49,7 @@ export default {
                     { headers: { 'Authorization': `${localStorage.token}` } });
                 this.$emit('data-update', {'value': this.commentID, 'opType:': 'delete'});
             } catch (e) {
-                this.$emit('error-occured', e.response.data.message);
+                this.$emit('error-occurred', e.response.data.message);
             }
         }
     },

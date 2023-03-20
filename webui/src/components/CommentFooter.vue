@@ -1,6 +1,6 @@
 <script>
 export default {
-    emits: ['data-update', 'error-occured'],
+    emits: ['data-update', 'error-occurred'],
     props: {
         data: { type: Object, required: true },
     },
@@ -26,16 +26,16 @@ export default {
             }
         },
         writingComment() {
-            document.getElementsByClassName("comment-input")[0].style.outline = "auto";
-            document.getElementsByClassName("comment-input")[0].style.outlineColor = "#03C988";
+            document.querySelectorAll(".comment-input")[0].style.outline = "auto";
+            document.querySelectorAll(".comment-input")[0].style.outlineColor = "#03C988";
         },
         noWritingComment() {
-            document.getElementsByClassName("comment-input")[0].style.outline = "none";
+            document.querySelectorAll(".comment-input")[0].style.outline = "none";
         },
         async sendComment() {
             if (this.commentText.length == 0) {
-                document.getElementsByClassName("comment-input")[0].style.outline = "auto";
-                document.getElementsByClassName("comment-input")[0].style.outlineColor = "red";
+                document.querySelectorAll(".comment-input")[0].style.outline = "auto";
+                document.querySelectorAll(".comment-input")[0].style.outlineColor = "red";
                 return;
             }
             try {
@@ -48,7 +48,7 @@ export default {
                 this.$emit('data-update', { 'value': response.data, 'opType': 'insert' });
                 this.commentText = '';
             } catch (e) {
-                this.$emit('error-occured', e.toString());
+                this.$emit('error-occurred', e.toString());
             }
         }
     },

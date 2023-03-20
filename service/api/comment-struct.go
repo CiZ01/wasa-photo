@@ -1,6 +1,7 @@
 package api
 
 import (
+	"regexp"
 	"time"
 
 	"git.francescofazzari.it/wasa_photo/service/database"
@@ -33,4 +34,11 @@ func (c *Comment) FromDatabase(dbcomment database.Comment) error {
 	}
 	c.User = user
 	return nil
+}
+
+func (c *Comment) isValid() bool {
+	text := c.Text
+	validComment := regexp.MustCompile(`^[^\/\\]{1,64}$`)
+	return validComment.MatchString(text)
+
 }

@@ -65,7 +65,7 @@ type AppDatabase interface {
 	GetUserByName(username string) (User, error)
 
 	// Create a new post in the database
-	CreatePost(p Post) (Post, error)
+	CreatePost(p Post, data []byte) (Post, error)
 
 	// Change the post's caption
 	UpdateCaption(ownerID int, postID int, newCaption string) error

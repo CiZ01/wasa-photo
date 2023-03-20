@@ -99,11 +99,11 @@ export default {
 	<LoadingSpinner :loading=isLoading />
 
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
-		@refresh-data="$router.go(0)" @error-occured="errorMsg = value" />
-	<FloatingNavbar @show-upload-form="showUploadPhoto = true" />
+		@refresh-data="$router.go(0)" @error-occurred="errorMsg = value" />
+	<FloatingNavbar @show-upload-form="showUploadPhoto = true" @error-occurred="errorMsg = value" />
 
 	<span v-if="posts.length == 0" class="no-posts-text"> There are no posts yet </span>
 	<span v-if="posts.length == 0" class="no-posts-text fw-500 fs-6"> Start to follow someone!</span>
 	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost"
-		@error-occured="errorMsg = value" />
+		@error-occurred="errorMsg = value" />
 </template>

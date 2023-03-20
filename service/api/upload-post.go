@@ -4,10 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
-
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -92,25 +89,9 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	// Create the post in the database
 	// Here the new post is returned from the database package
-	dbNewPost, err := rt.db.CreatePost(dbPost)
+	dbNewPost, err := rt.db.CreatePost(dbPost, data)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error creating post")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// Save the image
-	err = os.WriteFile(dbNewPost.ImageURL, data, 0666)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error saving file")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// Crop the image
-	err = utils.SaveAndCrop(dbNewPost.ImageURL, 720, 720)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error cropping file")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

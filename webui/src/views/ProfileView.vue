@@ -92,9 +92,9 @@ export default {
         },
         editingBio() {
             if (this.isOwner) {
-                document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
-                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outline = "auto";
-                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outlineColor = "#03C988";
+                document.querySelectorAll(".top-body-profile-bio-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
+                document.querySelectorAll(".top-body-profile-bio-text")[0].style.outline = "auto";
+                document.querySelectorAll(".top-body-profile-bio-text")[0].style.outlineColor = "#03C988";
 
             }
         },
@@ -103,26 +103,26 @@ export default {
                 if (this.bio == "") {
                     this.bio = "This user have notighing to say";
                 }
-                document.getElementsByClassName("top-body-profile-bio-text")[0].style.outline = "none";
+                document.querySelectorAll(".top-body-profile-bio-text")[0].style.outline = "none";
                 this.isLoading = true;
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
-                document.getElementsByClassName("top-body-profile-bio-text-counter")[0].style.color = "#fff";
+                document.querySelectorAll(".top-body-profile-bio-text-counter")[0].style.color = "#fff";
                 this.isLoading = false;
             }
         },
         editingUsername() {
             if (this.isOwner) {
-                document.getElementsByClassName("top-body-profile-username")[0].style.outline = "auto";
-                document.getElementsByClassName("top-body-profile-username")[0].style.outlineColor = "#03C988";
+                document.querySelectorAll(".top-body-profile-username")[0].style.outline = "auto";
+                document.querySelectorAll(".top-body-profile-username")[0].style.outlineColor = "#03C988";
             }
         },
         async saveChangeUsername() {
             if (this.isOwner) {
-                document.getElementsByClassName("top-body-profile-username")[0].style.outline = "none";
+                document.querySelectorAll(".top-body-profile-username")[0].style.outline = "none";
                 if (this.username == "" | this.username.length < 3) {
                     this.username = localStorage.username;
                     return
@@ -263,6 +263,7 @@ export default {
             try {
                 let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.posts = this.posts.filter(post => post.postID != postID);
+                this.postsCount--;
                 this.exitPost();
             } catch (e) {
                 this.errorMsg = e.toString();
@@ -307,10 +308,10 @@ export default {
         this.getPosts();
 
         if (this.isOwner) {
-            document.getElementsByClassName("top-body-profile-bio-text")[0].style.cursor = "text";
-            document.getElementsByClassName("top-body-profile-username")[0].style.cursor = "text";
+            document.querySelectorAll(".top-body-profile-bio-text")[0].style.cursor = "text";
+            document.querySelectorAll(".top-body-profile-username")[0].style.cursor = "text";
 
-            document.getElementsByClassName("top-profile-picture")[0].style.cursor = "pointer";
+            document.querySelectorAll(".top-profile-picture")[0].style.cursor = "pointer";
         }
 
         document.addEventListener('scroll', e => {
@@ -338,7 +339,7 @@ export default {
 	<LoadingSpinner :loading=isLoading />
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
-        @refresh-data="updateProfile" @error-occured="errorMsg = value" />
+        @refresh-data="updateProfile" @error-occurred="errorMsg = value" />
     <div class="top-profile-container">
         <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false">
             <div class="edit-propic" v-if="showEditPropic">

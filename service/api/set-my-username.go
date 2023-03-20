@@ -35,28 +35,20 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	// Read the request body, save the new username in the variable newUsername
-	type NewUsernameBody struct {
-		NewUsername string `json:"username"`
-	}
+	user := User{Username: ""}
 
-	var newUsernameBody NewUsernameBody
-
-	if err := json.NewDecoder(r.Body).Decode(&newUsernameBody); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&user.Username); err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Check if the new username is valid
-	newUsername := newUsernameBody.NewUsername
-
-	if !IsValid(newUsername) {
+	if !user.IsValid() {
 		http.Error(w, "Invalid username", http.StatusBadRequest)
 		return
 	}
 
 	// Change the username, if the new username is already taken, the request will fail
-	if err := rt.db.ChangeUsername(userID, newUsername); err != nil {
+	if err := rt.db.ChangeUsername(userID, user.Username); err != nil {
 		http.Error(w, "Username already taken. Username must be unique", http.StatusBadRequest)
 		return
 	}

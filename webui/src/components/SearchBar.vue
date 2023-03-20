@@ -53,8 +53,8 @@ export default {
         },
     },
     mounted() {
-        const el = document.getElementsByClassName('users-list')[0];
-        el.addEventListener('scroll', () => {
+        const el = document.querySelectorAll(".users-list")[0];
+        el.addEventListener('scroll', e => {
             if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
                 this.loadMoreContents();
             }
@@ -68,7 +68,7 @@ export default {
     <div class="search-navbar-container">
         <input placeholder="Search..." class="search-bar" @input="() => { usernameList = []; updateSearch() }"
             v-model="search" @focusout="exitList" maxlength="13">
-        <div class="users-list" v-if="usernameList.length">
+        <div class="users-list" v-show="usernameList.length">
             <SimpleProfileEntry v-for="user in usernameList" :key="user.userID" :data="user"
                 @exit-list-from-entry="exitList" />
         </div>

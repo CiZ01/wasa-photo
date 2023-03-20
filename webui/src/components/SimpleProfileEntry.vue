@@ -1,6 +1,6 @@
 <script>
 export default {
-    emits: ["exit-list-from-entry", 'error-occured', 'data-update'],
+    emits: ["exit-list-from-entry", 'error-occurred', 'data-update'],
     props: {
         data: { type: Object, required: true },
     },

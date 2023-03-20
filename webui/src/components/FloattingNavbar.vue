@@ -17,18 +17,18 @@ export default {
         getMyProfile() {
             this.$router.push(`/profiles/${localStorage.userID}`);
         },
-        async getPropic(){
-            try{
+        async getPropic() {
+            try {
                 let response = await this.$axios.get(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.propic64 = response.data.user.userPropic64;
 
-            } catch(e){
+            } catch (e) {
                 this.errorMsg = e.toString();
                 this.$emit('error-occurred', this.errorMsg);
             }
         }
     },
-    beforeMount(){
+    mounted() {
         this.getPropic();
     },
 }
@@ -46,7 +46,7 @@ export default {
         <button class="upload-post-button" @click="$emit('show-upload-form')">
             <font-awesome-icon icon="fa-regular fa-square-plus" />
         </button>
-        <SearchBar> </SearchBar>
+        <SearchBar @error-occurred="$emit('error-occurred', value)"> </SearchBar>
     </div>
 </template>
 

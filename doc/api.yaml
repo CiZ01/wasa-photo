@@ -97,7 +97,7 @@ paths:
     parameters:
       - name: profile_user_id
         in: path
-        description: The user Id of the user who want to change username
+        description: The user id of the user who wants his feed
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
       - { $ref: "#/components/parameters/Offset" }
@@ -285,7 +285,7 @@ paths:
               schema: { $ref: "#/components/schemas/User" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -305,7 +305,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bans:
@@ -370,7 +370,7 @@ paths:
               schema: { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -419,12 +419,7 @@ paths:
               type: object
               properties:
                 caption: { $ref: "#/components/schemas/Caption" }
-                file:
-                  description: The photo to upload.
-                  type: string
-                  format: binary
-                  minLength: 1
-                  maxLength: 1000000
+                file: { $ref: "#/components/schemas/Img64" }
 
       responses:
         "201":
@@ -434,7 +429,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -457,7 +452,7 @@ paths:
               schema: { $ref: "#/components/schemas/PostsList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}:
@@ -491,7 +486,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
@@ -528,7 +523,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -547,7 +542,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes:
@@ -583,7 +578,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments:
@@ -619,7 +614,7 @@ paths:
               schema: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -640,7 +635,7 @@ paths:
 
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments/{comment_id}:
@@ -677,7 +672,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles:
@@ -716,7 +711,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-       
+
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bio:
@@ -773,12 +768,7 @@ paths:
               type: object
               description: The photo to upload.
               properties:
-                file:
-                  description: The photo to upload.
-                  type: string
-                  format: binary
-                  minLength: 1
-                  maxLength: 1000000
+                file: { $ref: "#/components/schemas/Img64" }
       responses:
         "200":
           description: Profile picture setted successful
@@ -938,7 +928,7 @@ components:
         comment_id: { $ref: "#/components/schemas/CommentID" }
         owner_id: { $ref: "#/components/schemas/UserID" }
         user: { $ref: "#/components/schemas/User" }
-        comment:
+        text:
           type: string
           description: Text of the comment
           example: "Bella foto!"
@@ -1044,6 +1034,8 @@ components:
       description: base 64 image.
       type: string
       format: byte
+      minLength: 0
+      maxLength: 1000000000
     Timestamp:
       title: Timestamp
       description: The timestamp of the post.

@@ -4,7 +4,7 @@ import ProfilesList from '@/components/ProfilesList.vue';
 import utils from '@/services/utils.js';
 
 export default {
-    emits: ['update-like', 'delete-post', 'error-occured'],
+    emits: ['update-like', 'delete-post', 'error-occurred'],
     components: {
         ProfilesList,
     },
@@ -55,7 +55,7 @@ export default {
                 this.likesCount++;
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occured', this.errorMsg);
+                this.$emit('error-occurred', this.errorMsg);
             }
         },
         async unlike() {
@@ -66,7 +66,7 @@ export default {
                 this.likesCount--;
             } catch (e) {
                 this.errorMsg = e.toString();
-                this.$emit('error-occured', this.errorMsg);
+                this.$emit('error-occurred', this.errorMsg);
             }
         },
         toggleComment() {
@@ -121,9 +121,9 @@ export default {
         },
         editingCaption() {
             if (this.isOwner) {
-                document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
-                document.getElementsByClassName("post-tail-caption")[0].style.outline = "auto";
-                document.getElementsByClassName("post-tail-caption")[0].style.outlineColor = "#03C988";
+                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
+                document.querySelectorAll(".post-tail-caption")[0].style.outline = "auto";
+                document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "#03C988";
             }
         },
         async saveChangeCaption() {
@@ -131,15 +131,15 @@ export default {
                 if (this.captionPost == "") {
                     this.captionPost = "This user have notighing to say";
                 }
-                document.getElementsByClassName("post-tail-caption")[0].style.outline = "none";
+                document.querySelectorAll(".post-tail-caption")[0].style.outline = "none";
                 try {
                     await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.captionPost }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
                     this.errorMsg = e.toString();
-                    this.$emit('error-occured', this.errorMsg);
+                    this.$emit('error-occurred', this.errorMsg);
                 }
-                document.getElementsByClassName("post-tail-caption-text-counter")[0].style.color = "#fff";
+                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.color = "#fff";
             }
         },
         goToProfile() {
@@ -158,7 +158,7 @@ export default {
     },
     afterMount() {
         if (this.isOwner) {
-            document.getElementsByClassName("post-tail-caption-text")[0].style.cursor = "text";
+            document.querySelectorAll(".post-tail-caption-text")[0].style.cursor = "text";
         }
     },
 

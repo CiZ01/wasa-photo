@@ -41,7 +41,7 @@ export default {
         getID(entry) {
             if (this.typeList == 'comment') {
                 return entry.commentID;
-            } else if (['comment', 'simple', 'ban'].includes(this.typeList)){
+            } else if (['comment', 'simple', 'ban'].includes(this.typeList)) {
                 return entry.userID;
             }
         },
@@ -67,7 +67,7 @@ export default {
     mounted() {
         this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
 
-        const el = document.getElementsByClassName("list-entries")[0];
+        const el = document.querySelectorAll(".list-entries")[0];
         el.addEventListener('scroll', e => {
             if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
                 this.loadMoreContents();
@@ -93,21 +93,21 @@ export default {
             <span class="list-header-text">{{ textHeader }}</span>
             <div v-if="typeList == 'simple'" class="list-entries">
                 <SimpleProfileEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
-                @exit-list-from-entr="$emit('exit-list')" @error-occured="handleError" />
+                    @exit-list-from-entr="$emit('exit-list')" @error-occurred="handleError" />
             </div>
             <div v-else-if="typeList == 'comment'" class="list-entries">
                 <CommentEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
                     @exit-list-from-entry="$emit('exit-list')" @data-update="dataUpdaterEvent"
-                    @error-occured="handleError" />
+                    @error-occurred="handleError" />
             </div>
             <div v-else class="list-entries">
                 <BanEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
-                @exit-list-from-entry="$emit('exit-list')" @error-occured="handleError" />
+                    @exit-list-from-entry="$emit('exit-list')" @error-occurred="handleError" />
             </div>
 
             <span v-if="entries.length == 0" class="empty-list-msg">Nothing to see</span>
             <CommentFooter v-if="typeList == 'comment'" :data="additionalData" @data-update="dataUpdaterEvent"
-                @error-occured="handleError" />
+                @error-occurred="handleError" />
         </div>
 
     </div>
