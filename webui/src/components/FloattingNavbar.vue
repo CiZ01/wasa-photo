@@ -23,7 +23,7 @@ export default {
                 this.propic64 = response.data.user.userPropic64;
 
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
                 this.$emit('error-occurred', this.errorMsg);
             }
         }

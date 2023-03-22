@@ -31,6 +31,7 @@ export default {
                     this.dataAvaible = false;
                     return;
                 }
+                this.usernameList = [];
                 this.usernameList.push(...response.data);
             } catch (e) {
                 this.$emit('error-occurred', e.toString());
@@ -60,14 +61,20 @@ export default {
             }
         });
     },
+    watch: {
+        search() {
+            this.searchOffset = 0;
+            this.updateSearch();
+        }
+    }
 }
 </script>
 
 
 <template>
     <div class="search-navbar-container">
-        <input placeholder="Search..." class="search-bar" @input="() => { usernameList = []; updateSearch() }"
-            v-model="search" @focusout="exitList" maxlength="13">
+        <input autoComplete='none' placeholder="Search..." class="search-bar" v-model="search" @focusout="exitList"
+            maxlength="13" spellcheck="false" />
         <div class="users-list" v-show="usernameList.length">
             <SimpleProfileEntry v-for="user in usernameList" :key="user.userID" :data="user"
                 @exit-list-from-entry="exitList" />

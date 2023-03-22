@@ -36,6 +36,12 @@ func (rt *_router) setMyBio(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
+	// Check if the bio is valid
+	if !isValid(bio.Text) {
+		http.Error(w, "Bad Request invalid bio", http.StatusBadRequest)
+		return
+	}
+
 	// Set the bio
 	if err := rt.db.SetBio(profileUserID, bio.Text); err != nil {
 		ctx.Logger.WithError(err).Error("error setting bio")

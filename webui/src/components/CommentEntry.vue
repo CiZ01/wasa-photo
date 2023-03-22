@@ -1,5 +1,4 @@
 <script>
-import utils from "../services/utils.js";
 
 export default {
     emits: ["exit-list-from-entry", 'error-occurred', 'data-update'],
@@ -36,9 +35,6 @@ export default {
         }
     },
     methods: {
-        since(timestamp) {
-            return utils.since(timestamp);
-        },
         goToProfile() {
             this.$router.push(`/profiles/${this.userID}`);
             this.$emit('exit-list-from-entry')
@@ -65,8 +61,8 @@ export default {
         <div class="comment-entry-info">
             <img class="propic-image" @click="goToProfile" :src="`data:image/jpg;base64,${propic64}`" loading="lazy">
             <span class="profile-entry-username" @click="goToProfile">{{ username }}</span>
-            <span class="comment-entry-timestamp">{{ since(timestamp) }}</span>
-            <button v-if="!isOwner"  class="comment-entry-button-menu" @click="deleteComment">
+            <span class="comment-entry-timestamp">{{ $utils.since(timestamp) }}</span>
+            <button v-if="isOwner"  class="comment-entry-button-menu" @click="deleteComment">
                 <font-awesome-icon class="comments-icon" icon="fa-regular fa-trash-can" />
             </button>
         </div>
@@ -126,11 +122,9 @@ export default {
     width: 2em;
     height: 2em;
     border: none;
-    background-color: white;
+    background-color: transparent;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-left: auto;
 }
 
 .comment-entry-text {

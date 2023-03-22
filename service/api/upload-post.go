@@ -84,6 +84,12 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		Caption: caption,
 	}
 
+	// Check if the caption is valid
+	if !newPost.isValid() {
+		http.Error(w, "Bad Request invalid caption", http.StatusBadRequest)
+		return
+	}
+
 	// Parse the new post from the api package to the Post struct in the database package
 	dbPost := newPost.ToDatabase()
 

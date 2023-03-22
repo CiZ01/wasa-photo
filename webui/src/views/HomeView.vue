@@ -8,7 +8,7 @@ export default {
 	},
 	data() {
 		return {
-			errorMsg: '',
+			errorMsg: "",
 			loading: false,
 			posts: [],
 			feedLimit: 5,
@@ -46,7 +46,7 @@ export default {
 				}
 				this.posts.push(...response.data);
 			} catch (e) {
-				this.errorMsg = e.toString();
+				this.errorMsg = this.$utils.errorToString(e);;
 			}
 			this.isLoading = false;
 		},
@@ -71,18 +71,16 @@ export default {
 				await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
 				this.posts.splice(index, 1);
 			} catch (e) {
-				this.errorMsg = e.toString();
+				this.errorMsg = $utils.errorToString();
 			}
 		},
 	},
-	beforeMount() {
+	mounted() {
 		if (!localStorage.token) {
 			this.$router.push('/login');
 			return
 		}
 		this.getMyStream();
-	},
-	mounted() {
 
 		document.addEventListener('scroll', e => {
 			if (document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight * (0.7)) {
@@ -99,11 +97,11 @@ export default {
 	<LoadingSpinner :loading=isLoading />
 
 	<UploadPhoto v-if="showUploadPhoto" :photoType="'post'" @exit-upload-form="showUploadPhoto = false"
-		@refresh-data="$router.go(0)" @error-occurred="errorMsg = value" />
-	<FloatingNavbar @show-upload-form="showUploadPhoto = true" @error-occurred="errorMsg = value" />
+		@refresh-data="$router.go(0)" @error-occurred="(value) => { errorMsg = value }" />
+	<FloatingNavbar @show-upload-form="showUploadPhoto = true" @error-occurred="(value) => { errorMsg = value }" />
 
 	<span v-if="posts.length == 0" class="no-posts-text"> There are no posts yet </span>
 	<span v-if="posts.length == 0" class="no-posts-text fw-500 fs-6"> Start to follow someone!</span>
 	<Post v-for="post in posts" :key="getID(post)" :postData="post" @delete-post="deletePost"
-		@error-occurred="errorMsg = value" />
+		@error-occurred="(value) => { errorMsg = value }" />
 </template>

@@ -6,12 +6,16 @@ export default {
             errorMsg: "",
 
             isLoading: false,
+
+            usernameValidator: new RegExp('^[a-z0-9]*$'),
         }
     },
     methods: {
         async doLogin() {
             this.isLoading = true;
             try {
+                if (!this.usernameValidator.test(this.username)) throw "Invalid username, it must contain only lowercase letters and numbers"
+                if (this.username.length < 3 || this.username.length > 13) throw "Invalid username, it must contains mininum 3 characters and maximum 13 characters"
                 let response = await this.$axios.post('/session', {
                     username: this.username,
                 });
@@ -21,7 +25,7 @@ export default {
                 localStorage.token = response.data.token;
                 this.$router.push("/home");
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);
                 document.getElementsByTagName("input")[0].style.outline = "auto";
                 document.getElementsByTagName("input")[0].style.outlineColor = "red";
             };

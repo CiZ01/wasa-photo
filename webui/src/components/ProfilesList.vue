@@ -35,13 +35,16 @@ export default {
 
             errorMsg: '',
 
+
+            isLoading: false,
+
         }
     },
     methods: {
         getID(entry) {
             if (this.typeList == 'comment') {
                 return entry.commentID;
-            } else if (['comment', 'simple', 'ban'].includes(this.typeList)) {
+            } else if (['simple', 'ban'].includes(this.typeList)) {
                 return entry.userID;
             }
         },
@@ -49,8 +52,10 @@ export default {
             if (this.busy || !this.dataAvaible) return;
             this.busy = true;
             this.offset += this.limit;
+            this.isLoading = true;
             this.dataGetter(this.entries, this.limit, this.offset, this.dataAvaible);
             this.busy = false;
+            this.isLoading = false;
 
         },
         handleError(msg) {
@@ -58,7 +63,9 @@ export default {
         },
         dataUpdaterEvent(values) {
             if (this.dataUpdater) {
+                this.isLoading = true;
                 this.dataUpdater(this.entries, values, this.additionalData);
+                this.isLoading = false;
             } else {
                 this.errorMsg = "Data Updater not defined";
             }
@@ -86,6 +93,7 @@ export default {
 
 <template>
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
+    <LoadingSpinner :loading="isLoading"></LoadingSpinner>
 
 
     <div class="list-container-background" @click.self="$emit('exit-list')">
@@ -93,7 +101,7 @@ export default {
             <span class="list-header-text">{{ textHeader }}</span>
             <div v-if="typeList == 'simple'" class="list-entries">
                 <SimpleProfileEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
-                    @exit-list-from-entr="$emit('exit-list')" @error-occurred="handleError" />
+                    @exit-list-from-entry="$emit('exit-list')" @error-occurred="handleError" />
             </div>
             <div v-else-if="typeList == 'comment'" class="list-entries">
                 <CommentEntry class="list-entry" v-for="entry in entries" :key="getID(entry)" :data="entry"
@@ -210,4 +218,4 @@ export default {
 .component-footer {
     position: fixed;
 }
-</style>
+</style>    

@@ -1,7 +1,6 @@
 <script>
 
 import ProfilesList from '@/components/ProfilesList.vue';
-import utils from '@/services/utils.js';
 
 export default {
     emits: ['update-like', 'delete-post', 'error-occurred'],
@@ -45,7 +44,7 @@ export default {
     },
     methods: {
         since(timestamp) {
-            return utils.since(timestamp);
+            return this.$utils.since(timestamp);
         },
         async like() {
             try {
@@ -54,7 +53,7 @@ export default {
                 this.$emit('update-like', { postID: this.postID, liked: true });
                 this.likesCount++;
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);
                 this.$emit('error-occurred', this.errorMsg);
             }
         },
@@ -65,7 +64,7 @@ export default {
                 this.$emit('update-like', { postID: this.postID, liked: false });
                 this.likesCount--;
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);
                 this.$emit('error-occurred', this.errorMsg);
             }
         },
@@ -86,7 +85,7 @@ export default {
                     }
                     profilesArray.push(...response.data);
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);
                 }
             };
             this.dataUpdater = (entries, values) => {
@@ -115,7 +114,7 @@ export default {
                     }
                     profilesArray.push(...response.data);
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);
                 }
             }
         },
@@ -136,7 +135,7 @@ export default {
                     await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.captionPost }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);
                     this.$emit('error-occurred', this.errorMsg);
                 }
                 document.querySelectorAll(".post-tail-caption-text-counter")[0].style.color = "#fff";
@@ -167,6 +166,8 @@ export default {
             this.textCounter = this.captionPost.length;
             if (this.captionPost.includes("\n")) {
                 this.captionPost = this.captionPost.replace("\n", "");
+                this.captionPost = this.captionPost.replace("/", "");
+                this.captionPost = this.captionPost.replace("\\", "");
             }
         },
     },

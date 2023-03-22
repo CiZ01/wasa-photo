@@ -16,17 +16,34 @@ export default {
     },
     data() {
         return {
-            file: null,
             file64: "",
-            fileType: "",
 
             errorMsg: '',
         }
     },
     methods: {
         onChange() {
-            this.file = this.$refs.file.files[0];
-            this.fileType = this.file.type;
+            const file = this.$refs.file.files[0];
+
+            // Check file type, only jpg and jpeg are allowed
+            const fileType = file.type;
+            if (fileType !== "image/jpeg") {
+                this.errorMsg = "File type not supported, only jpg and jpeg are allowed";
+                document.querySelector('.drag-drop-area').style.backgroundColor = "#FF8989";
+                return
+            }
+
+            // Check file size, max 5MB
+            const fileSize = file.size;
+            if (fileSize > 5242880) {
+                console.log("cioa");
+                this.errorMsg = "File size is too big. Max size is 5MB";
+                document.querySelector('.drag-drop-area').style.backgroundColor = "#FF8989";
+                return
+            }
+
+            // Convert file to base64
+            this.file64 = URL.createObjectURL(file);
         },
 
         saveData(data) {
@@ -52,7 +69,7 @@ export default {
                 this.$emit('refresh-data')
                 setTimeout(this.$emit('exit-upload-form'), 1000);
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
                 this.$emit('error-occurred', this.errorMsg);
             }
         },
@@ -70,16 +87,17 @@ export default {
                 this.$emit('refresh-data');
                 this.$emit('exit-upload-form');
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
                 this.$emit('error-occurred', this.errorMsg);
             }
         }
     },
     watch: {
-        file() {
-            this.file64 = URL.createObjectURL(this.file);
-        }
-    }
+        errorMsg(){
+            this.$emit('error-occurred', this.errorMsg);
+            console.log(this.errorMsg)
+        },
+    },
 }
 </script>
 
@@ -87,21 +105,21 @@ export default {
 <template>
     <div class="upload-form-background" @click.self="this.$emit('exit-upload-form')">
         <div class="upload-form-container" v-if="!file64">
-            <div class="drag-drop-area-container" @dragover="dragover" @dragleave="dragleave" @drop="drop">
+            <div class="drag-drop-area-container">
                 <button class="drag-drop-area" @click="this.$refs.file.click()">
-                    <input type="file" ref="file" accept=".pdf,.jpg,.jpeg,.png" @change="onChange" hidden />
+                    <input type="file" ref="file" accept=".jpg,.jpeg" @change="onChange" hidden />
                     <span class="drag-drop-area-text">
                         Drop your photo here
                     </span>
                     <span class="drag-drop-area-subtext">
-                        max size 5MB, only jpg, png, gif
+                        max size 5MB, only jpg, jpeg
                     </span>
 
                 </button>
             </div>
             <div class="bottom-area">
-                <button @click="this.$refs.file.click()" type="file" class="upload-button" title="Choose file">Choose File
-                    <input type="file" ref="file" accept=".pdf,.jpg,.jpeg,.png" @change="onChange" hidden />
+                <button @click="this.$refs.file.click()" class="upload-button">Choose File
+                    <input type="file" ref="file" accept=".jpg,.jpeg" @change="onChange" hidden />
                 </button>
 
             </div>

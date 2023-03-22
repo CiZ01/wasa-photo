@@ -71,7 +71,7 @@ export default {
                 this.followTextButton = this.isFollowed ? "Unfollow" : "Follow";
                 this.isOwner = localStorage.userID == this.userID;
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);;
             }
             this.isLoading = false;
         },
@@ -86,7 +86,7 @@ export default {
                 }
                 this.posts.push(...response.data);
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             };
             this.isLoading = false;
         },
@@ -108,7 +108,7 @@ export default {
                 try {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/bio`, { bio: this.bio }, { headers: { 'Authorization': `${localStorage.token}` } });
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
                 document.querySelectorAll(".top-body-profile-bio-text-counter")[0].style.color = "#fff";
                 this.isLoading = false;
@@ -132,7 +132,7 @@ export default {
                     let _ = await this.$axios.put(`/profiles/${this.userID}/username`, { username: this.username }, { headers: { 'Authorization': `${localStorage.token}` } });
                     localStorage.username = this.username;
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                     this.username = localStorage.username;
                 }
                 this.isLoading = false;
@@ -151,7 +151,7 @@ export default {
                     }
                     profilesArray.push(...response.data);
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
             }
         },
@@ -168,7 +168,7 @@ export default {
                     }
                     profilesArray.push(...response.data);
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
             }
         },
@@ -185,7 +185,7 @@ export default {
                     this.followTextButton = "Follow";
                     this.followersCount--;
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
             } else {
                 try {
@@ -194,7 +194,7 @@ export default {
                     this.followTextButton = "Unfollow";
                     this.followersCount++;
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
             }
         },
@@ -240,7 +240,7 @@ export default {
                     }
                     profilesArray.push(...response.data);
                 } catch (e) {
-                    this.errorMsg = e.toString();
+                    this.errorMsg = this.$utils.errorToString(e);;
                 }
             }
         },
@@ -254,7 +254,7 @@ export default {
                 let _ = await this.$axios.put(`/profiles/${localStorage.userID}/bans/${this.userID}`, {}, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.$router.push(`/profiles/${localStorage.userID}`);
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             }
             this.showOptions = false;
         },
@@ -266,7 +266,7 @@ export default {
                 this.postsCount--;
                 this.exitPost();
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             }
             this.isLoading = false;
         },
@@ -280,7 +280,7 @@ export default {
                 let _ = await this.$axios.delete(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.doLogout();
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             }
             this.isLoading = false;
         },
@@ -290,7 +290,7 @@ export default {
                 this.proPic64 = response.data.userPropic64;
                 this.updateProfile();
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             }
         }
     },

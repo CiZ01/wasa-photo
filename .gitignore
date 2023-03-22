@@ -18,5 +18,5 @@ docker-compose.log
 webapi
 *.json
 *.txt
-storage
+storage/[0-9]*
 tmp

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"regexp"
 	"time"
 
 	"git.francescofazzari.it/wasa_photo/service/api/utils"
@@ -74,4 +75,10 @@ func (p *Post) FromDatabase(dbPost database.Post) error {
 	p.Liked = dbPost.Liked
 	p.Timestamp = dbPost.Timestamp
 	return nil
+}
+
+func (p *Post) isValid() bool {
+	caption := p.Caption
+	validCaption := regexp.MustCompile(`^[^\/\\]{0,64}$`)
+	return validCaption.MatchString(caption)
 }

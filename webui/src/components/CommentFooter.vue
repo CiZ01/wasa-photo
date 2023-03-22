@@ -22,7 +22,7 @@ export default {
                 let response = await this.$axios.get(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.propic64 = response.data.user.userPropic64;
             } catch (e) {
-                this.errorMsg = e.toString();
+                this.errorMsg = this.$utils.errorToString(e);;
             }
         },
         writingComment() {

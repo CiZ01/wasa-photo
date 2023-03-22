@@ -2,6 +2,7 @@ import {createApp, reactive} from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from './services/axios.js';
+import utils from './services/utils.js';
 import LoadingSpinner from './components/LoadingSpinner.vue'
 
 import ErrorMsg from './components/ErrorMsg.vue'
@@ -21,6 +22,7 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$utils = utils;
 
 //--- COMPONENT ---//
 app.component("ErrorMsg", ErrorMsg);

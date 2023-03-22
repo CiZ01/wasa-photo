@@ -25,6 +25,7 @@ export default {
         return {
             textCounter: 0,
             textCaption: "",
+
             imageData: {
                 imageFile: null,
                 caption: "",
@@ -86,6 +87,7 @@ export default {
     watch: {
         textCaption() {
             this.textCounter = this.textCaption.length;
+            this.textCaption = this.textCaption.replace(/\\|\/|\n|\t/, '');
         }
     }
 };
@@ -93,9 +95,7 @@ export default {
 
 <template>
     <div class="cropper-container">
-        <cropper v-if="editorType == 'post'" class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="RectangleStencil"
-            :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
-        <cropper v-else class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
+        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
             :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
         <div class="caption-form-container" v-if="editorType === 'post'">
             <div class="label-container">
@@ -113,16 +113,27 @@ export default {
 </template>
   
 <style>
+.cropper{
+    
+    height: auto;
+    min-height: 30vh;
+    max-height: 90vh;
+
+    width: auto;
+    min-width: 30vw;
+    max-width: 90vw;
+}
+
 .cropper-container {
     background-color: #fff;
 
     height: auto;
-    min-height: 30em;
-    max-height: 60em;
+    min-height: 30vh;
+    max-height: 90vh;
 
     width: auto;
-    min-width: 30em;
-    max-width: 60em;
+    min-width: 30vw;
+    max-width: 90vw;
 
     border-radius: 0.5em;
 

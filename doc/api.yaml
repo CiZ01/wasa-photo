@@ -973,15 +973,11 @@ components:
     Caption:
       title: Caption
       description: Caption of the post
-      type: object
-      properties:
-        caption:
-          type: string
-          description: Caption of the post.
-          example: "Foto al lago con Haru"
-          pattern: '^[^\/\\]{1,100}$'
-          minLength: 0
-          maxLength: 64
+      type: string
+      example: "Foto al lago con Haru"
+      pattern: '^[^\/\\]{0,64}$'
+      minLength: 0
+      maxLength: 64
     UsersList:
       title: Users List
       description: |-
@@ -1004,9 +1000,9 @@ components:
         text:
           type: string
           description: Text of the bio
-          example: "Io sono Haru, ho 1 anno e sono un gatto 🐱"
-          pattern: '^[^\/\\]{1,64}$'
-          minLength: 1
+          example: "Io sono Haru, ho 1 anno e sono un gatto"
+          pattern: '^[^\/\\]{0,64}$'
+          minLength: 0
           maxLength: 64
     Auth:
       title: Auth

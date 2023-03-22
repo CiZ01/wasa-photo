@@ -1,6 +1,8 @@
 package api
 
 import (
+	"regexp"
+
 	"git.francescofazzari.it/wasa_photo/service/database"
 )
 
@@ -37,4 +39,9 @@ func (p *Profile) FromDatabase(dbProfile database.Profile) error {
 	}
 
 	return nil
+}
+
+func isValid(bio string) bool {
+	validBio := regexp.MustCompile(`^[^\/\\]{0,64}$`)
+	return validBio.MatchString(bio)
 }

@@ -9,6 +9,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+commentPhoto is the handler for the POST /users/:profileUserID/posts/:postID/comments endpoint
+It creates a new comment for the specified post and returns the new comment
+*/
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the request
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -26,6 +30,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	userID := ctx.UserID
 
+	// Check if the user is banned
 	isBanned, err := rt.db.IsBanned(profileUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error while checking if the user is banned")
@@ -37,6 +42,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Retrieve the comment from the request body
 	var tmpComment Comment
 
 	err = json.NewDecoder(r.Body).Decode(&tmpComment)
@@ -51,6 +57,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Create the comment in the database
 	dbComment, err := rt.db.CreateComment(userID, profileUserID, postID, tmpComment.Text)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error creating comment")
@@ -58,6 +65,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Convert the comment to the API format
 	var comment Comment
 	err = comment.FromDatabase(dbComment)
 	if err != nil {
@@ -66,6 +74,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
+	// Return the comment
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(comment); err != nil {
