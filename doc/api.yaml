@@ -684,15 +684,8 @@ paths:
           type: string
           minLength: 1
           maxLength: 13
-          pattern: ^[a-z0-9_]{1,13}$
+          pattern: ^[a-z0-9]{1,13}$
         required: true
-      - name: from_follows
-        in: query
-        description: The search is limited to followers and followings.
-        schema:
-          type: boolean
-          default: false
-        required: false
       - { $ref: "#/components/parameters/Offset" }
       - { $ref: "#/components/parameters/Limit" }
     get:
@@ -779,10 +772,6 @@ paths:
                 description: The url of the profile picture
                 properties:
                   schema: { $ref: "#/components/schemas/Img64" }
-                example:
-                  {
-                    "img_url": "https://www.example.com/storage/2/profile_pic_250x250.jpeg",
-                  }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -838,17 +827,24 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/Caption" }
+            schema:
+              type: object
+              description: The caption to set
+              properties:
+                caption: { $ref: "#/components/schemas/Caption" }
       responses:
         "200":
           description: Caption setted successful
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Caption" }
-              example:
-                { "caption": "Io sono Haru, ho 1 anno e sono un gatto 🐱" }
+              schema:
+                type: object
+                description: The setted caption
+                properties:
+                  caption: { $ref: "#/components/schemas/Caption" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
 #---------------------------COMPONENTS--------------------------#
