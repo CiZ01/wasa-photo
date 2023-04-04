@@ -23,14 +23,14 @@ export default {
                     let _ = await this.$axios.delete(`/profiles/${localStorage.userID}/bans/${this.userID}`, { headers: { "Authorization": `${localStorage.token}` } });
                     this.isBanned = false;
                 } catch (e) {
-                    this.$emit('error-occurred',e.toString());
+                    this.$emit('error-occurred',this.$utils.errorToString(e));
                 }
             } else {
                 try{
                     let _ = await this.$axios.put(`/profiles/${localStorage.userID}/bans/${this.userID}`,{}, { headers: { "Authorization": `${localStorage.token}` } });
                     this.isBanned = true;
                 } catch (e) {
-                    this.$emit('error-occurred',e.toString());
+                    this.$emit('error-occurred',this.$utils.errorToString(e));
                 }
 
             }

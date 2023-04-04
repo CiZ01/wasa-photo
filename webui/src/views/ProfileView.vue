@@ -71,7 +71,7 @@ export default {
                 this.followTextButton = this.isFollowed ? "Unfollow" : "Follow";
                 this.isOwner = localStorage.userID == this.userID;
             } catch (e) {
-                this.errorMsg = this.$utils.errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);errorToString(e);;
+                this.errorMsg = this.$utils.errorToString(e);
             }
             this.isLoading = false;
         },
@@ -339,7 +339,7 @@ export default {
 	<LoadingSpinner :loading=isLoading />
     <ErrorMsg v-if="errorMsg" :msg="errorMsg" @close-error="errorMsg = ''"></ErrorMsg>
     <UploadPhoto v-if="isEditingPropic" :photoType="'proPic'" @exit-upload-form="isEditingPropic = false"
-        @refresh-data="updateProfile" @error-occurred="errorMsg = value" />
+        @refresh-data="updateProfile" @error-occurred="(value) => { errorMsg = value }" />
     <div class="top-profile-container">
         <div class="top-profile-picture" @mouseover="showEditPropic = isOwner" @mouseleave="showEditPropic = false">
             <div class="edit-propic" v-if="showEditPropic">
@@ -407,7 +407,7 @@ export default {
     <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :typeList="typeList"
         @exit-list="freeLists" />
         <div v-if="showPost" class="post-view" @click.self="exitPost">
-            <Post :postData="postViewData" @delete-post="deletePost" />
+            <Post :postData="postViewData" @delete-post="deletePost" @error-occurred="(value) => { errorMsg = value }" />
         </div>
 
     <div class="posts-container">

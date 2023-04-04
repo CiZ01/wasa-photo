@@ -38,6 +38,8 @@ export default {
                 },
                 stencilComponent: '',
             },
+
+            captionValidation: new RegExp('^[^/\\\\]{0,64}$'),
         };
     },
     methods: {
@@ -87,16 +89,24 @@ export default {
     watch: {
         textCaption() {
             this.textCounter = this.textCaption.length;
-            this.textCaption = this.textCaption.replace(/\\|\/|\n|\t/, '');
+            this.textCaption = this.textCaption.replace(/\r|\n|\t/, '');
+            if (!this.captionValidation.test(this.textCaption)) {
+                document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "red";
+                document.querySelectorAll(".save-button")[0].disabled = true;
+            } else {
+                document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "rgb(0, 0, 0, 0.9)";
+                document.querySelectorAll(".save-button")[0].disabled = false;
+            }
         }
-    }
+    },
 };
 </script>
 
 <template>
     <div class="cropper-container">
-        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper" :stencil-component="cropperProps.stencilComponent"
-            :stencil-size="cropperProps.stencilSize" image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
+        <cropper class="cropper" :src="image64" :auto-zoom="true" ref="cropper"
+            :stencil-component="cropperProps.stencilComponent" :stencil-size="cropperProps.stencilSize"
+            image-restriction="stencil" :stencil-props="{ aspectRatio: 1 / 1 }" />
         <div class="caption-form-container" v-if="editorType === 'post'">
             <div class="label-container">
                 <span class="caption-title">Caption</span>
@@ -113,8 +123,8 @@ export default {
 </template>
   
 <style>
-.cropper{
-    
+.cropper {
+
     height: auto;
     min-height: 30vh;
     max-height: 90vh;

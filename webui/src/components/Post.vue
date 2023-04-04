@@ -39,6 +39,8 @@ export default {
             dataUpdater: () => { },
             additionalData: {},
 
+            oldCaption: this.postData.caption,
+            captionValidation: new RegExp('^[^/\\\\]{0,64}$'),
             errorMsg: "",
         };
     },
@@ -89,10 +91,10 @@ export default {
                 }
             };
             this.dataUpdater = (entries, values) => {
-                if (values['opType'] == 'insert') {
+                if (values.opType == 'insert') {
                     entries.push(values['value']);
                     this.commentsCount++;
-                } else if (values['opType'] == 'delete') {
+                } else if (values.opType == 'delete') {
                     const index = entries.findIndex((entry) => entry.commentID == values['value']);
                     entries.splice(index, 1);
                     this.commentsCount--;
@@ -120,7 +122,8 @@ export default {
         },
         editingCaption() {
             if (this.isOwner) {
-                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.color = "rgb(0,0,0,0.5)";
+                this.oldCaption = this.captionPost;
+                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.display = "block";
                 document.querySelectorAll(".post-tail-caption")[0].style.outline = "auto";
                 document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "#03C988";
             }
@@ -135,10 +138,12 @@ export default {
                     await this.$axios.put(`/profiles/${this.ownerID}/posts/${this.postID}/caption`, { caption: this.captionPost }, { headers: { "Authorization": `${localStorage.token}` } });
                 }
                 catch (e) {
+                    this.captionPost = this.oldCaption;
+                    document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "red";
                     this.errorMsg = this.$utils.errorToString(e);
                     this.$emit('error-occurred', this.errorMsg);
                 }
-                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.color = "#fff";
+                document.querySelectorAll(".post-tail-caption-text-counter")[0].style.display = "none";
             }
         },
         goToProfile() {
@@ -148,26 +153,23 @@ export default {
             this.$emit('delete-post', this.postID);
         },
     },
-    beforeMount() {
+    mounted() {
         if (this.ownerID == localStorage.userID) {
             this.isOwner = true;
         }
-    },
-    mounted() {
-    },
-    afterMount() {
         if (this.isOwner) {
-            document.querySelectorAll(".post-tail-caption-text")[0].style.cursor = "text";
+            document.querySelectorAll(".post-tail-caption")[0].style.cursor = "text";
         }
     },
 
     watch: {
         captionPost() {
             this.textCounter = this.captionPost.length;
-            if (this.captionPost.includes("\n")) {
-                this.captionPost = this.captionPost.replace("\n", "");
-                this.captionPost = this.captionPost.replace("/", "");
-                this.captionPost = this.captionPost.replace("\\", "");
+            this.captionPost = this.captionPost.replace(/\r|\n|\t/, '');;
+            if (!this.captionValidation.test(this.captionPost))
+                document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "red";
+            else{
+                document.querySelectorAll(".post-tail-caption")[0].style.outlineColor = "#03C988";
             }
         },
     },
@@ -364,9 +366,11 @@ export default {
 
 .post-tail-caption-text-counter {
     position: relative;
-    color: #fff;
+    color: rgb(0, 0, 0, 0.5);
     float: right;
     font-size: 0.7em;
     line-height: 0;
+
+    display: none;
 }
 </style>

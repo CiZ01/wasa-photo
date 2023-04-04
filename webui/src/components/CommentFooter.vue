@@ -22,7 +22,7 @@ export default {
                 let response = await this.$axios.get(`profiles/${localStorage.userID}`, { headers: { 'Authorization': `${localStorage.token}` } });
                 this.propic64 = response.data.user.userPropic64;
             } catch (e) {
-                this.errorMsg = this.$utils.errorToString(e);;
+                this.errorMsg = this.$utils.errorToString(e);
             }
         },
         writingComment() {
@@ -48,7 +48,7 @@ export default {
                 this.$emit('data-update', { 'value': response.data, 'opType': 'insert' });
                 this.commentText = '';
             } catch (e) {
-                this.$emit('error-occurred', e.toString());
+                this.$emit('error-occurred', this.$utils.errorToString(e));
             }
         }
     },

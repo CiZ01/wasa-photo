@@ -34,7 +34,7 @@ export default {
                 this.usernameList = [];
                 this.usernameList.push(...response.data);
             } catch (e) {
-                this.$emit('error-occurred', e.toString());
+                this.$emit('error-occurred',this.$utils.errorToString(e));
             }
         },
         exitList() {

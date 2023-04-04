@@ -20,3 +20,4 @@ webapi
 *.txt
 storage/[0-9]*
 tmp
+*.db

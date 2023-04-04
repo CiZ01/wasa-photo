@@ -23,7 +23,7 @@ def create_users(count: int):
 
 
 def create_posts(count: int):
-    for i in range(10, count):
+    for i in range(1, count):
         for j in range(5):
             res = 0
             while res != 201:
@@ -52,10 +52,10 @@ def create_posts(count: int):
 
 
 def create_likes(count: int) -> None:
-    for i in range(10, count):
+    for i in range(1, count):
         header = {'Authorization': str(i)}
         response = r.put(
-            f"http://localhost:3000/profiles/5/posts/2/likes/{i}", headers=header)
+            f"http://localhost:3000/profiles/{random.randint(1,20)}/posts/{random.randint(1,10)}/likes/{i}", headers=header)
         if response.status_code != 200:
             print("Error creating like " + str(i))
             print(response.text)
@@ -82,16 +82,16 @@ def create_comments(count):
 
 
 def create_follows(count: int):
-    for i in range(20, count):
+    for i in range(1, count):
         user1 = random.randint(1, 20)
         header = {'Authorization': str(i)}
         response = r.put(
-            f"http://localhost:3000/profiles/14/followings/{user1}", headers=header)
-        if response != '201':
+            f"http://localhost:3000/profiles/{i}/followings/{user1}", headers=header)
+        if response.status_code != 200:
             print(f"Follow non creato!, {user1} and 14")
             print(response.text)
         else:
-            print(f"{i}. {response.text}")
+            print(f"{i}. Seguito!")
     return
 
 
@@ -117,12 +117,12 @@ def create_propic(count: int):
                 response_image.raw.decode_content = True
                 shutil.copyfileobj(response_image.raw, f)
 
-        header = {'Authorization': str(i+22)}
+        header = {'Authorization': str(i)}
         multipart_form_data = {
             'image': ('image.jpg', open('tmp/tmp_img.jpeg', 'rb')),
         }
         response = r.put(
-            f"http://localhost:3000/profiles/{i+22}/profile-picture", headers=header, files=multipart_form_data)
+            f"http://localhost:3000/profiles/{i}/profile-picture", headers=header, files=multipart_form_data)
         if response.status_code != 201:
             print(f"Error creating propic  user:{i}")
             print(response.text)
@@ -131,12 +131,12 @@ def create_propic(count: int):
 
 
 def main():
-    # create_users(20)
-    # create_propic(20)
-    # create_posts(20)
-    create_likes(40)
-    # create_comments(30)
-    # create_follows(40)
+    #create_users(20)
+    #create_propic(20)
+    #create_posts(20)
+    #create_likes(20)
+    #create_comments(20)
+    create_follows(20)
     # create_ban(20)
 
 

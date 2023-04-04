@@ -30,6 +30,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
+	// Check if the user is allowed to delete the comment
 	if profileUserID != ctx.UserID {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
@@ -50,5 +51,6 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
+	// Return a 200 OK status code
 	w.WriteHeader(http.StatusOK)
 }

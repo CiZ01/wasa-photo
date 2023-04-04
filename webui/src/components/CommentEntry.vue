@@ -43,14 +43,14 @@ export default {
             try {
                 let _ = await this.$axios.delete(`profiles/${this.ownerID}/posts/${this.postID}/comments/${this.commentID}`,
                     { headers: { 'Authorization': `${localStorage.token}` } });
-                this.$emit('data-update', {'value': this.commentID, 'opType:': 'delete'});
+                this.$emit('data-update', {'value': this.commentID, 'opType': 'delete'});
             } catch (e) {
-                this.$emit('error-occurred', e.response.data.message);
+                this.$emit('error-occurred', this.$utils.errorToString(e));
             }
         }
     },
     mounted() {
-        if (localStorage.userID == this.userID) this.isOwner = true;
+        if (localStorage.userID == this.ownerID) this.isOwner = true;
     }
 }
 </script>
