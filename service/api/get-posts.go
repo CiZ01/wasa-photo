@@ -12,11 +12,8 @@ import (
 )
 
 /*
-getPosts returns the posts of the user with the given profileUserID.
-The posts are returned in the response body.
-The response body is a JSON array of posts.
-The posts are returned in reverse chronological order.
-It's possible to specify the offset and limit of the posts to return.
+getPosts is the handler for the GET /users/:profileUserID/posts endpoint
+It return the posts of the user with the given profileUserID.
 */
 func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
@@ -54,17 +51,17 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	var posts []Post
+	posts := make([]User, len(dbPosts))
 
-	for _, dbPost := range dbPosts {
+	for i, dbBan := range dbPosts {
 		var post Post
-		err = post.FromDatabase(dbPost)
+		err := post.FromDatabase(dbPost)
 		if err != nil {
-			ctx.Logger.WithError(err).Error("Error converting post")
+			ctx.Logger.WithError(err).Error("Error while converting the post")
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		posts = append(posts, post)
+		posts[i] = post
 	}
 
 	// Write the response

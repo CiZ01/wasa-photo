@@ -128,7 +128,7 @@ type AppDatabase interface {
 	// Return true if the user is following the other user, false otherwise
 	IsFollowing(followerID int, followedID int) (bool, error)
 
-	SearchUsers(userID int, search string, from_follow bool, offset int, limit int) ([]User, error)
+	SearchUsers(userID int, search string, offset int, limit int) ([]User, error)
 
 	// Return true if a username already exists, false otherwise
 	ExistsName(username string) (bool, error)

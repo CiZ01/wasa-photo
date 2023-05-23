@@ -429,7 +429,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -452,7 +452,7 @@ paths:
               schema: { $ref: "#/components/schemas/PostsList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}:
@@ -486,7 +486,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes/{user_id}:
@@ -523,7 +523,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
@@ -542,7 +542,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/likes:
@@ -578,7 +578,7 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments:
@@ -614,7 +614,7 @@ paths:
               schema: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
     get:
@@ -635,7 +635,7 @@ paths:
 
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/comments/{comment_id}:
@@ -672,7 +672,7 @@ paths:
               schema: { $ref: "#/components/schemas/OK" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles:
@@ -704,7 +704,6 @@ paths:
               schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
-
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/bio:
@@ -736,6 +735,7 @@ paths:
               example: { "bio": "Io sono Haru, ho 1 anno e sono un gatto 🐱" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/profile-picture:
@@ -756,7 +756,7 @@ paths:
         - bearerAuth: []
       requestBody:
         content:
-          image/jpeg:
+          multipart/form-data:
             schema:
               type: object
               description: The photo to upload.
@@ -774,6 +774,7 @@ paths:
                   schema: { $ref: "#/components/schemas/Img64" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/reset-profile-picture:
@@ -801,6 +802,7 @@ paths:
               schema: { $ref: "#/components/schemas/User" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
 
   /profiles/{profile_user_id}/posts/{post_id}/caption:

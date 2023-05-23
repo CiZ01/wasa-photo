@@ -34,7 +34,7 @@ func (rt *_router) changeCaption(w http.ResponseWriter, r *http.Request, ps http
 
 	// Check if the user is the owner of the post
 	if userID != profileUserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 

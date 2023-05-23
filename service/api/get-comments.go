@@ -11,6 +11,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+GetComments is the handler for the GET /users/:profileUserID/posts/:postID/comments endpoint
+It returns the comments of the post with the given postID
+*/
 func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))

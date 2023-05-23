@@ -13,6 +13,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+SetMyProfilePic is the handler for the POST /users/:profileUserID/profile-pic endpoint
+It sets the profile picture of the user with the given profileUserID
+The profile picture is sent as a multipart form.
+*/
+
 func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the user ID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -28,7 +34,7 @@ func (rt *_router) setMyProfilePic(w http.ResponseWriter, r *http.Request, ps ht
 	}
 
 	// Parse the multipart form
-	err = r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+	err = r.ParseMultipartForm(5 << 20) // maxMemory 5MB
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return

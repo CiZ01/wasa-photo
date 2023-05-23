@@ -10,6 +10,10 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+/*
+likePhoto is the handler for the POST /users/:profileUserID/posts/:postID/like endpoint.
+It adds a like to the post with the given ID.
+*/
 func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
 	if err != nil {

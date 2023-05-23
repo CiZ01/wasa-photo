@@ -9,21 +9,20 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+searchUsers is the handler for the GET /users/search endpoint
+It returns the users that match the given search query
+*/
 func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the search query from the request
 	query_search := r.URL.Query().Get("search")
-	if query_search == "" {
+	validQuerySearch := regexp.MustCompile(`^[a-z0-9]{1,13}$`)
+	if !validQuerySearch.MatchString(query_search) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
 	userID := ctx.UserID
-
-	from_follow := false
-	query_from_follow := r.URL.Query().Get("from_follow")
-	if query_from_follow == "1" {
-		from_follow = true
-	}
 
 	limit, offset, err := utils.GetLimitAndOffset(r.URL.Query())
 	if err != nil {
@@ -31,14 +30,14 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	dbUsers, err := rt.db.SearchUsers(userID, query_search, from_follow, offset, limit)
+	dbUsers, err := rt.db.SearchUsers(userID, query_search, offset, limit)
 	if err != nil {
 		ctx.Logger.Error("Error searching users ", err)
 		http.Error(w, "Error searching users", http.StatusInternalServerError)
 		return
 	}
 
-	var users []User
+	users := make([]User, len(dbUsers))
 	for _, u := range dbUsers {
 		var user User
 		err := user.FromDatabase(u)
@@ -47,7 +46,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 			http.Error(w, "Error converting users ", http.StatusInternalServerError)
 			return
 		}
-		users = append(users, user)
+		users[i] = user
 	}
 
 	// Write the response

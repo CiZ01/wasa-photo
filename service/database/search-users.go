@@ -6,7 +6,7 @@ import (
 
 var query_GETUSERS = `SELECT userID, username FROM User WHERE username regexp ? ORDER BY username LIMIT ?, ? `
 
-func (db *appdbimpl) SearchUsers(userID int, search string, from_follow bool, offset int, limit int) ([]User, error) {
+func (db *appdbimpl) SearchUsers(userID int, search string, offset int, limit int) ([]User, error) {
 	var users []User
 
 	rows, err := db.c.Query(query_GETUSERS, "^"+search, offset, limit)

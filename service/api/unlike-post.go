@@ -10,6 +10,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+unlikePhoto is the handler for the DELETE /users/{profileUserID}/posts/{postID}/likes/{userID} endpoint.
+It removes a like from the post with the given ID.
+*/
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and postID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))

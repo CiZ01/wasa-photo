@@ -10,6 +10,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+getMyStream is the handler for the GET /users/:profileUserID/feed endpoint
+It returns the stream of the user with the given profileUserID
+*/
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -40,7 +44,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	var posts []Post
+	posts :=  make([]Post, len(dbStream))
 
 	for _, dbPost := range dbStream {
 		var post Post
@@ -50,7 +54,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		posts = append(posts, post)
+		posts[i] = post
 	}
 
 	// Write the response

@@ -15,9 +15,6 @@ It change the username of the user with the given userID to the new username.
 The new username must be in the body of the request.
 The request body must be a JSON object with the following fields:
 - username: string
-If the new username is already taken, the request will fail.
-If the user is not authorized, the request will fail.
-If the username is not valid, the request will fail.
 */
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the userID from the URL

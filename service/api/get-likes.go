@@ -11,6 +11,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+GetLikes is the handler for the GET /users/:profileUserID/posts/:postID/likes endpoint
+It returns the likes of the post with the given postID
+*/ 
+
 func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID and postID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
@@ -53,6 +58,7 @@ func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	likes := make([]User, len(dbLikes))
+	
 	for i, dbLike := range dbLikes {
 		var user User
 		err := user.FromDatabase(dbLike)

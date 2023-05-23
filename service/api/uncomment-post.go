@@ -13,7 +13,6 @@ uncommentPhoto is the handler for the DELETE /profiles/:profileUserID/posts/:pos
 It deletes the comment with the given commentID from the post with the given postID.
 The comment is deleted only if the user with the given profileUserID is the owner of the comment.
 The comment is deleted from the database.
-The response body is empty, return a 200 OK status code.
 */
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

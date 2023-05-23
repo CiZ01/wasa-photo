@@ -9,6 +9,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+/*
+setMyBio is the handler for the POST /users/:profileUserID/bio endpoint
+It sets the bio of the user with the given ID.
+The request body must be a JSON object with a "bio" field.
+*/
 func (rt *_router) setMyBio(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the profileUserID from the URL
 	profileUserID, err := strconv.Atoi(ps.ByName("profileUserID"))
