@@ -44,9 +44,9 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	posts :=  make([]Post, len(dbStream))
+	posts := make([]Post, len(dbStream))
 
-	for _, dbPost := range dbStream {
+	for i, dbPost := range dbStream {
 		var post Post
 		err = post.FromDatabase(dbPost)
 		if err != nil {

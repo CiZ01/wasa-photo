@@ -1,10 +1,10 @@
 package api
 
 import (
-	"net/http"
-	"strconv"
-	"regexp"
 	"encoding/json"
+	"net/http"
+	"regexp"
+	"strconv"
 
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -13,7 +13,7 @@ import (
 /*
 * ChangeCaption is the handler for the PUT /profiles/:profileUserID/posts/:postID endpoint
 * It allows a user to change the caption of his own post
-*/
+ */
 func (rt *_router) changeCaption(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// Get the postID from the URL
 	postID, err := strconv.Atoi(ps.ByName("postID"))

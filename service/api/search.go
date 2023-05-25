@@ -2,11 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"git.francescofazzari.it/wasa_photo/service/api/utils"
-	"net/http"
-
 	"git.francescofazzari.it/wasa_photo/service/api/reqcontext"
+	"git.francescofazzari.it/wasa_photo/service/api/utils"
 	"github.com/julienschmidt/httprouter"
+	"net/http"
+	"regexp"
 )
 
 /*
@@ -38,7 +38,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	users := make([]User, len(dbUsers))
-	for _, u := range dbUsers {
+	for i, u := range dbUsers {
 		var user User
 		err := user.FromDatabase(u)
 		if err != nil {

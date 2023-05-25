@@ -32,9 +32,9 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	user := User{Username: ""}
+	var user User
 
-	if err := json.NewDecoder(r.Body).Decode(&user.Username); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
 		return
 	}

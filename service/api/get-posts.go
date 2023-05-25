@@ -51,11 +51,11 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	posts := make([]User, len(dbPosts))
+	posts := make([]Post, len(dbPosts))
 
-	for i, dbBan := range dbPosts {
+	for i, dbPosts := range dbPosts {
 		var post Post
-		err := post.FromDatabase(dbPost)
+		err := post.FromDatabase(dbPosts)
 		if err != nil {
 			ctx.Logger.WithError(err).Error("Error while converting the post")
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
