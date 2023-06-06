@@ -84,6 +84,11 @@ func (db *appdbimpl) CreateBan(bannerID int, bannedID int) error {
 		return err
 	}
 
+	_, err = tx.Exec(query_DELETEFOLLOW, bannedID, bannerID)
+	if err != nil {
+		return err
+	}
+
 	_, err = tx.Exec(query_CREATEBAN, bannerID, bannedID)
 	if err != nil {
 		return err

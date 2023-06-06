@@ -37,6 +37,6 @@ func (u *User) FromDatabase(dbUser database.User) error {
 
 func (u *User) IsValid() bool {
 	username := u.Username
-	validUser := regexp.MustCompile(`^[a-z0-9]{3,13}$`)
+	validUser := regexp.MustCompile(`^[a-z][a-z0-9]{2,13}$`)
 	return validUser.MatchString(username)
 }

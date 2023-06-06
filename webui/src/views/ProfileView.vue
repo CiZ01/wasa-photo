@@ -208,7 +208,7 @@ export default {
         },
         updateLike(data) {
             this.posts.forEach(post => {
-                if (post.postID == data.postID) {
+                if (post.postID == data['postID']) {
                     post.liked = data.liked;
                     post.likesCount = data.liked ? post.likesCount + 1 : post.likesCount - 1;
                 }
@@ -407,7 +407,7 @@ export default {
     <ProfilesList v-if="showList" :dataGetter="dataGetter" :textHeader="textHeader" :typeList="typeList"
         @exit-list="freeLists" />
         <div v-if="showPost" class="post-view" @click.self="exitPost">
-            <Post :postData="postViewData" @delete-post="deletePost" @error-occurred="(value) => { errorMsg = value }" />
+            <Post :postData="postViewData" @update-like="updateLike" @delete-post="deletePost" @error-occurred="(value) => { errorMsg = value }" />
         </div>
 
     <div class="posts-container">

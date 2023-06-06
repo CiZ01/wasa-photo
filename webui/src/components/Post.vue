@@ -52,7 +52,7 @@ export default {
             try {
                 let _ = await this.$axios.put(`profiles/${this.ownerID}/posts/${this.postID}/likes/${localStorage.userID}`, {}, { headers: { "Authorization": `${localStorage.token}` } });
                 this.isLiked = true;
-                this.$emit('update-like', { postID: this.postID, liked: true });
+                this.$emit('update-like', { 'postID': this.postID, 'liked': true });
                 this.likesCount++;
             } catch (e) {
                 this.errorMsg = this.$utils.errorToString(e);
